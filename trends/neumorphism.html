@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neumorphism — UI Design Trends</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    /* The single most important rule of neumorphism:
+       foreground and background are the SAME color. */
+    --bg: #e0e5ec;
+    --shadow-dark: #a3b1c6;
+    --shadow-light: #ffffff;
+    --text: #4a5568;
+    --accent: #5b7cff;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.7;
+  }
+
+  .back-link {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 600;
+    background: var(--bg);
+    padding: 10px 18px; border-radius: 12px;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    transition: box-shadow 0.2s;
+  }
+  .back-link:active {
+    box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+  }
+
+  header {
+    text-align: center;
+    padding: 100px 20px 50px;
+  }
+  header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #3a4256;
+    letter-spacing: -1px;
+    text-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+  }
+  header p { color: #6b7689; font-weight: 300; font-size: 1.1rem; margin-top: 14px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #3a4256;
+    margin: 70px 0 30px;
+    text-align: center;
+  }
+
+  /* ===== CORE NEUMORPHIC SURFACES ===== */
+  .surface-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 40px;
+    margin: 30px 0;
+  }
+  .surface {
+    background: var(--bg);
+    border-radius: 20px;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  /* RAISED / extruded — light from top-left */
+  .surface.raised {
+    box-shadow: 9px 9px 18px var(--shadow-dark), -9px -9px 18px var(--shadow-light);
+  }
+  /* PRESSED / inset — shadows flipped inward */
+  .surface.pressed {
+    box-shadow: inset 9px 9px 18px var(--shadow-dark), inset -9px -9px 18px var(--shadow-light);
+  }
+  /* FLAT — subtle dual edge */
+  .surface.flat {
+    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+  }
+  .surface .s-title { font-weight: 600; color: #3a4256; margin-bottom: 6px; }
+  .surface .s-meta { font-size: 0.75rem; color: #8a93a6; font-family: 'Fira Code', monospace; }
+
+  /* ===== BUTTONS ===== */
+  .btn-row { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
+  .neu-btn {
+    background: var(--bg);
+    color: var(--text);
+    border: none;
+    border-radius: 16px;
+    padding: 16px 32px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+    transition: box-shadow 0.15s, color 0.15s;
+  }
+  .neu-btn:hover { color: var(--accent); }
+  /* The signature press: outer shadow collapses to inset */
+  .neu-btn:active {
+    box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+  }
+  .neu-btn.circle {
+    width: 64px; height: 64px; padding: 0;
+    border-radius: 50%;
+    font-size: 1.4rem;
+  }
+  .neu-btn.accent { color: var(--accent); }
+
+  /* ===== TOGGLE ===== */
+  .toggle-row { display: flex; gap: 40px; justify-content: center; align-items: center; flex-wrap: wrap; margin: 30px 0; }
+  .neu-toggle {
+    width: 90px; height: 46px;
+    border-radius: 23px;
+    background: var(--bg);
+    box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+    position: relative;
+    cursor: pointer;
+  }
+  .neu-toggle .knob {
+    position: absolute; top: 6px; left: 6px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--bg);
+    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+    transition: left 0.25s, background 0.25s;
+  }
+  .neu-toggle.on .knob { left: 50px; background: var(--accent); }
+
+  /* ===== SLIDER / PROGRESS ===== */
+  .neu-slider {
+    height: 18px; border-radius: 9px;
+    background: var(--bg);
+    box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+    margin: 30px auto; max-width: 500px;
+    position: relative;
+  }
+  .neu-slider .fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    width: 60%; border-radius: 9px;
+    background: linear-gradient(90deg, #5b7cff, #8aa0ff);
+  }
+  .neu-slider .handle {
+    position: absolute; top: -7px; left: calc(60% - 16px);
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--bg);
+    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+  }
+
+  /* ===== CARD ===== */
+  .neu-card {
+    background: var(--bg);
+    border-radius: 24px;
+    padding: 36px;
+    max-width: 420px; margin: 30px auto;
+    box-shadow: 12px 12px 24px var(--shadow-dark), -12px -12px 24px var(--shadow-light);
+  }
+  .neu-card .avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--bg);
+    box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin-bottom: 18px;
+  }
+  .neu-card h3 { color: #3a4256; font-weight: 600; margin-bottom: 8px; }
+  .neu-card p { color: #6b7689; font-weight: 300; font-size: 0.9rem; }
+  .neu-card .stats { display: flex; gap: 14px; margin-top: 24px; }
+  .neu-card .stat {
+    flex: 1; text-align: center; padding: 14px; border-radius: 14px;
+    box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+  }
+  .neu-card .stat .num { font-weight: 700; color: #3a4256; }
+  .neu-card .stat .lbl { font-size: 0.7rem; color: #8a93a6; }
+
+  /* ===== LIVE LIGHT-DIRECTION DEMO ===== */
+  .light-demo {
+    background: var(--bg);
+    border-radius: 20px;
+    padding: 50px 30px;
+    text-align: center;
+    box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+  }
+  #lightShape {
+    width: 140px; height: 140px; border-radius: 30px;
+    background: var(--bg);
+    margin: 0 auto 30px;
+  }
+  .controls { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+  .control { font-size: 0.8rem; color: #6b7689; }
+  .control input { width: 180px; }
+
+  /* ===== CONTRAST WARNING ===== */
+  .contrast-demo {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px; margin: 30px 0;
+  }
+  .contrast-card {
+    border-radius: 16px; padding: 24px;
+  }
+  .contrast-card.bad {
+    background: var(--bg);
+    box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+    border: 2px solid transparent;
+  }
+  .contrast-card.good {
+    background: #fff;
+    border: 2px solid #5b7cff;
+    box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+  }
+  .contrast-card .tag {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    padding: 4px 10px; border-radius: 8px; display: inline-block; margin-bottom: 12px;
+  }
+  .contrast-card.bad .tag { background: #ffd2d2; color: #b00020; }
+  .contrast-card.good .tag { background: #d2f5e0; color: #1b7a4b; }
+
+  .code-block {
+    background: #2b303b;
+    border-radius: 16px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #d8dce8;
+    box-shadow: inset 2px 2px 6px rgba(0,0,0,0.4);
+  }
+  .code-block .comment { color: #7a8499; }
+  .code-block .prop { color: #8aa0ff; }
+  .code-block .val { color: #6bd6c0; }
+
+  .theory {
+    background: var(--bg);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 40px 0;
+    box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+  }
+  .theory h2 { color: var(--accent); font-weight: 600; font-size: 1.6rem; margin-bottom: 20px; }
+  .theory p { margin-bottom: 15px; color: #5a6478; font-weight: 300; }
+  .theory strong { color: #3a4256; font-weight: 600; }
+  .theory ul { padding-left: 20px; margin: 15px 0; }
+  .theory li { margin-bottom: 8px; color: #5a6478; font-weight: 300; }
+
+  .callout {
+    border-radius: 16px; padding: 28px; margin: 30px 0;
+    background: #fff5f5; border-left: 6px solid #b00020;
+  }
+  .callout h3 { color: #b00020; margin-bottom: 12px; font-weight: 600; }
+  .callout p { color: #7a3a3a; font-weight: 300; margin-bottom: 10px; }
+  .callout strong { color: #5a2020; font-weight: 600; }
+
+  footer {
+    text-align: center;
+    padding: 50px;
+    color: #9aa3b6;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 600px) { header h1 { font-size: 2.4rem; } }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">← Back to Hub</a>
+
+<header>
+  <h1>Neumorphism</h1>
+  <p>Soft UI — where elements appear extruded from, or pressed into, a single seamless surface</p>
+</header>
+
+<div class="container">
+
+  <!-- CORE SURFACES -->
+  <h2 class="section-title">The Three States of a Soft Surface</h2>
+  <div class="surface-grid">
+    <div class="surface raised">
+      <div class="s-title">Raised</div>
+      <div class="s-meta">outer dual shadow</div>
+    </div>
+    <div class="surface flat">
+      <div class="s-title">Flat</div>
+      <div class="s-meta">subtle dual edge</div>
+    </div>
+    <div class="surface pressed">
+      <div class="s-title">Pressed</div>
+      <div class="s-meta">inset dual shadow</div>
+    </div>
+  </div>
+  <div class="code-block">
+<span class="comment">/* The entire technique in one declaration. */</span>
+<span class="comment">/* Background and element share ONE color (#e0e5ec). */</span>
+<span class="val">.raised</span> {
+  <span class="prop">background</span>: <span class="val">#e0e5ec</span>;
+  <span class="prop">box-shadow</span>:
+    <span class="val">9px 9px 18px #a3b1c6</span>,    <span class="comment">/* dark, bottom-right  */</span>
+    <span class="val">-9px -9px 18px #ffffff</span>;  <span class="comment">/* light, top-left     */</span>
+}
+<span class="val">.pressed</span> {
+  <span class="comment">/* same shadows, just moved INSIDE the box */</span>
+  <span class="prop">box-shadow</span>:
+    <span class="val">inset 9px 9px 18px #a3b1c6</span>,
+    <span class="val">inset -9px -9px 18px #ffffff</span>;
+}
+  </div>
+
+  <!-- BUTTONS -->
+  <h2 class="section-title">Buttons (click & hold to feel the press)</h2>
+  <div class="btn-row">
+    <button class="neu-btn">Continue</button>
+    <button class="neu-btn accent">Subscribe</button>
+    <button class="neu-btn circle">♥</button>
+    <button class="neu-btn circle">⚙</button>
+    <button class="neu-btn circle">↑</button>
+  </div>
+
+  <!-- TOGGLES -->
+  <h2 class="section-title">Toggles & Inputs (click to switch)</h2>
+  <div class="toggle-row">
+    <div class="neu-toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+    <div class="neu-toggle" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+    <div class="neu-toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+  </div>
+  <div class="neu-slider"><div class="fill"></div><div class="handle"></div></div>
+
+  <!-- CARD -->
+  <h2 class="section-title">Profile Card</h2>
+  <div class="neu-card">
+    <div class="avatar">🦊</div>
+    <h3>Riley Hart</h3>
+    <p>Product designer exploring the boundaries of tactile, depth-based interfaces.</p>
+    <div class="stats">
+      <div class="stat"><div class="num">248</div><div class="lbl">Posts</div></div>
+      <div class="stat"><div class="num">14k</div><div class="lbl">Followers</div></div>
+      <div class="stat"><div class="num">192</div><div class="lbl">Following</div></div>
+    </div>
+  </div>
+
+  <!-- LIGHT DIRECTION DEMO -->
+  <h2 class="section-title">Live Shadow Lab — drag the sliders</h2>
+  <div class="light-demo">
+    <div id="lightShape"></div>
+    <div class="controls">
+      <div class="control">Distance<br><input type="range" id="dist" min="2" max="30" value="9"></div>
+      <div class="control">Blur<br><input type="range" id="blur" min="2" max="60" value="18"></div>
+      <div class="control">Intensity<br><input type="range" id="intensity" min="0" max="100" value="50"></div>
+      <div class="control">Shape<br>
+        <select id="state" style="font-family:inherit;padding:4px;border-radius:8px;border:none;">
+          <option value="raised">Raised</option>
+          <option value="pressed">Pressed</option>
+        </select>
+      </div>
+    </div>
+    <div class="code-block" id="liveCode" style="text-align:left;margin-top:30px;"></div>
+  </div>
+
+  <!-- ACCESSIBILITY -->
+  <h2 class="section-title">The Honest Accessibility Problem</h2>
+  <div class="callout">
+    <h3>⚠ Neumorphism fails WCAG contrast almost by definition</h3>
+    <p>The defining trait — foreground and background being the <strong>same color</strong> — means edges are conveyed <em>only</em> by soft shadow. There is no color contrast between a control and its surroundings, so it routinely fails the <strong>WCAG 1.4.11 Non-text Contrast</strong> requirement of 3:1 for UI component boundaries and states.</p>
+    <p>Low-vision users, anyone on a dim or glare-hit screen, and people with reduced contrast sensitivity often <strong>cannot tell a button from the background</strong>, and cannot distinguish a "raised" (clickable) state from a "pressed" (active) one.</p>
+    <p>It also breaks down on pure black or pure white backgrounds (you can't cast a lighter-than-white highlight), and the soft shadows can render unpredictably across displays and at different zoom levels.</p>
+  </div>
+  <div class="contrast-demo">
+    <div class="contrast-card bad">
+      <span class="tag">Risky</span>
+      <p style="color:#6b7689;">Pure neumorphic input — no border, identical fill. A screen reader user is fine, but a sighted low-vision user may never find the field.</p>
+    </div>
+    <div class="contrast-card good">
+      <span class="tag">Accessible fix</span>
+      <p style="color:#3a4256;">Add a real border, a high-contrast text/icon color, and a visible focus ring. You keep the soft aesthetic but restore the 3:1 boundary.</p>
+    </div>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Make it usable: never rely on shadow alone for state */</span>
+<span class="val">.neu-input</span> {
+  <span class="prop">border</span>: <span class="val">2px solid #c2cad6</span>;        <span class="comment">/* visible boundary  */</span>
+  <span class="prop">color</span>: <span class="val">#2b303b</span>;                   <span class="comment">/* AA text contrast  */</span>
+}
+<span class="val">.neu-input:focus-visible</span> {
+  <span class="prop">outline</span>: <span class="val">3px solid #5b7cff</span>;       <span class="comment">/* keyboard focus    */</span>
+  <span class="prop">outline-offset</span>: <span class="val">2px</span>;
+}
+  </div>
+
+  <!-- THEORY -->
+  <div class="theory">
+    <h2>History &amp; Theory</h2>
+    <p><strong>Neumorphism</strong> (a portmanteau of "new" and "skeuomorphism") went viral in December 2019 after designer <strong>Alexander Plyuto</strong> posted a "Skeuomorph Mobile Banking" concept on Dribbble. Michal Malewicz then coined and popularized the term "neumorphism" in a widely-read Medium essay, sparking a flood of soft-UI experiments.</p>
+
+    <p>Conceptually it sits between <strong>skeuomorphism</strong> (rich real-world textures) and <strong>flat design</strong> (no depth at all). Instead of layering elements <em>on top</em> of a surface like Material Design's elevation, neumorphism makes elements look like they were <strong>extruded from the surface itself</strong> — as if the whole UI were molded from one sheet of plastic or clay.</p>
+
+    <p><strong>How the illusion works:</strong></p>
+    <ul>
+      <li><strong>One background color</strong> — the element and page share the exact same fill</li>
+      <li><strong>Two shadows, always</strong> — a dark shadow offset toward the (imaginary) far edge, and a white highlight offset toward the light source (usually top-left)</li>
+      <li><strong>Raised vs. pressed</strong> — flip those same two shadows from outer to <code>inset</code> and the shape appears to sink in</li>
+      <li><strong>Low-contrast palettes</strong> — mid-tone grays and muted colors are needed for the dual shadow to read</li>
+    </ul>
+
+    <p><strong>Why it faded:</strong> Beyond the contrast failures above, neumorphism is hard to scale — every component needs hand-tuned shadows, it doesn't theme well to dark mode, and it offers weak affordances. By 2021 it had largely retreated from production UIs into a stylistic accent.</p>
+
+    <p><strong>When to use:</strong> Small, decorative, low-stakes surfaces — a music player widget, a calculator, a smart-home dashboard, a hero illustration — where the audience is broad-sighted and aesthetics outrank density. <strong>When to avoid:</strong> forms, data tables, primary navigation, accessibility-critical products, or anything that must pass WCAG. A common compromise is "neumorphism-lite": soft shadows for personality, but real borders and contrast for everything interactive.</p>
+  </div>
+
+</div>
+
+<footer>Neumorphism — UI Design Trends Research</footer>
+
+<script>
+  // Live shadow lab
+  const shape = document.getElementById('lightShape');
+  const dist = document.getElementById('dist');
+  const blur = document.getElementById('blur');
+  const intensity = document.getElementById('intensity');
+  const state = document.getElementById('state');
+  const liveCode = document.getElementById('liveCode');
+
+  function clamp(v){ return Math.max(0, Math.min(255, Math.round(v))); }
+  function shade(amount){
+    // base #e0e5ec -> derive darker/lighter shadow colors by intensity
+    const base = [224,229,236];
+    const r = clamp(base[0] + amount), g = clamp(base[1] + amount), b = clamp(base[2] + amount);
+    return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+  }
+  function render() {
+    const d = +dist.value, bl = +blur.value, str = +intensity.value;
+    const dark = shade(-(40 + str*0.6));
+    const light = shade((20 + str*0.5));
+    const inset = state.value === 'pressed' ? 'inset ' : '';
+    const sh = `${inset}${d}px ${d}px ${bl}px ${dark}, ${inset}${-d}px ${-d}px ${bl}px ${light}`;
+    shape.style.boxShadow = sh;
+    liveCode.innerHTML =
+      '<span class="prop">box-shadow</span>: ' +
+      '<span class="val">' + inset + d + 'px ' + d + 'px ' + bl + 'px ' + dark + '</span>,\n' +
+      '            <span class="val">' + inset + (-d) + 'px ' + (-d) + 'px ' + bl + 'px ' + light + '</span>;';
+  }
+  [dist, blur, intensity, state].forEach(el => el.addEventListener('input', render));
+  render();
+</script>
+</body>
+</html>

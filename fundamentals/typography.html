@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typography — UI/UX Fundamentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=Merriweather:wght@300;400;700;900&family=Roboto:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&family=Lora:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=DM+Serif+Display&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+    --border: #2e3346; --text: #e4e6f0; --text-dim: #8b8fa3;
+    --accent: #6c5ce7; --accent2: #00cec9;
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header { text-align: center; padding: 60px 24px 40px; background: linear-gradient(135deg, #1a1d27 0%, #1f2a3e 50%, #1a1d27 100%); border-bottom: 1px solid var(--border); }
+  header h1 { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; background: linear-gradient(135deg, #dfe6e9, #ffeaa7, #fab1a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+  header p { color: var(--text-dim); max-width: 600px; margin: 0 auto; font-size: 1.1rem; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+
+  /* Font Pairings */
+  .pairing { margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .pairing:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .pairing-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+  .pairing h3 { margin-bottom: 8px; }
+  .pairing p { color: var(--text-dim); font-size: 1rem; }
+
+  /* Typographic Scale */
+  .scale-selector { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+  .scale-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+  .scale-btn:hover, .scale-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .scale-item { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .scale-item:last-child { border-bottom: none; }
+  .scale-size { color: var(--accent2); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; width: 70px; flex-shrink: 0; }
+  .scale-text { transition: font-size 0.3s ease; }
+
+  /* Sliders */
+  .demo-controls { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 20px; }
+  .control-group { flex: 1; min-width: 200px; }
+  .control-group label { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 6px; }
+  .control-group label span { color: var(--accent2); font-weight: 600; }
+  input[type="range"] { width: 100%; height: 8px; border-radius: 4px; -webkit-appearance: none; background: var(--surface2); outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; cursor: pointer; }
+  .demo-text { background: var(--surface2); border-radius: 12px; padding: 24px; transition: all 0.2s; }
+
+  /* Font Weight */
+  .weight-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .weight-card { background: var(--surface2); border-radius: 12px; padding: 20px; text-align: center; }
+  .weight-card .sample { font-size: 2rem; margin-bottom: 8px; }
+  .weight-card .meta { font-size: 0.75rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+  /* Comparison */
+  .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media(max-width:700px) { .comparison-grid { grid-template-columns: 1fr; } }
+  .comparison-group h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent2); margin-bottom: 16px; }
+  .font-row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .font-row .name { font-size: 1.1rem; }
+  .font-row .cat { font-size: 0.75rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+  /* Hierarchy */
+  .hierarchy-demo { max-width: 600px; }
+  .hierarchy-demo .pretitle { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 8px; }
+  .hierarchy-demo h3 { font-size: 2rem; font-weight: 800; margin-bottom: 12px; color: #fff; line-height: 1.2; }
+  .hierarchy-demo .excerpt { font-size: 1.05rem; color: var(--text-dim); margin-bottom: 16px; line-height: 1.7; }
+  .hierarchy-demo .body-text { font-size: 0.95rem; color: #aaa; line-height: 1.8; margin-bottom: 12px; }
+  .hierarchy-demo .caption { font-size: 0.8rem; color: #666; }
+
+  .tip { background: var(--accent)15; border-left: 3px solid var(--accent); padding: 16px 20px; margin: 16px 0; border-radius: 0 10px 10px 0; color: var(--text-dim); font-size: 0.9rem; }
+  .tip strong { color: var(--text); }
+
+  footer { text-align: center; padding: 40px 24px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Home</a>
+<header>
+  <h1>Typography</h1>
+  <p>The art of arranging type — the single most important skill in UI design. Good typography makes content readable, beautiful, and usable.</p>
+</header>
+
+<div class="container">
+
+<!-- Section 1: Font Pairings -->
+<section>
+  <h2>Font Pairing Examples</h2>
+  <p class="subtitle">Pairing fonts is like pairing food — contrast and complement. A good pair has enough contrast (serif + sans-serif) but shares a similar mood.</p>
+
+  <div class="card">
+    <div class="pairing">
+      <div class="pairing-label">Classic Editorial</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;">The Art of Visual Storytelling</h3>
+      <p style="font-family:'Inter',sans-serif;">Playfair Display headlines paired with Inter body text create an elegant editorial feel — perfect for magazines, blogs, and content-heavy sites.</p>
+    </div>
+    <div class="pairing">
+      <div class="pairing-label">Modern Warmth</div>
+      <h3 style="font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;">Designing with Empathy</h3>
+      <p style="font-family:'Poppins',sans-serif;font-weight:300;">DM Serif Display with Poppins offers a warm, approachable combination — great for products, SaaS, or lifestyle brands.</p>
+    </div>
+    <div class="pairing">
+      <div class="pairing-label">Technical Precision</div>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;">Building Scalable Systems</h3>
+      <p style="font-family:'Roboto',sans-serif;font-weight:300;">Space Grotesk headlines with Roboto body — clean, technical, modern. Ideal for developer tools, dashboards, and tech products.</p>
+    </div>
+    <div class="pairing">
+      <div class="pairing-label">Literary Elegance</div>
+      <h3 style="font-family:'Merriweather',serif;font-size:2rem;font-weight:700;">Once Upon a Pixel</h3>
+      <p style="font-family:'Lora',serif;font-weight:400;">Merriweather + Lora — both serifs but with different personalities. This works for storytelling, publishing, and long-form reading.</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>💡 Pairing Rule of Thumb:</strong> Pick one font to be the "star" (display/headline) and one to be the "workhorse" (body). They should contrast in style but agree in mood. Don't use more than 2–3 fonts per project.
+  </div>
+</section>
+
+<!-- Section 2: Typographic Scale -->
+<section>
+  <h2>Typographic Scale</h2>
+  <p class="subtitle">A typographic scale creates visual rhythm by using font sizes that relate mathematically. Choose a ratio and a base size — the scale generates all your headings.</p>
+
+  <div class="card">
+    <div class="scale-selector">
+      <button class="scale-btn" data-ratio="1.125" onclick="setScale(1.125,this)">1.125 — Major 2nd</button>
+      <button class="scale-btn active" data-ratio="1.25" onclick="setScale(1.25,this)">1.25 — Major 3rd</button>
+      <button class="scale-btn" data-ratio="1.333" onclick="setScale(1.333,this)">1.333 — Perfect 4th</button>
+      <button class="scale-btn" data-ratio="1.5" onclick="setScale(1.5,this)">1.5 — Perfect 5th</button>
+      <button class="scale-btn" data-ratio="1.618" onclick="setScale(1.618,this)">1.618 — Golden Ratio</button>
+    </div>
+    <div id="scaleDisplay"></div>
+  </div>
+</section>
+
+<!-- Section 3: Line Height & Letter Spacing -->
+<section>
+  <h2>Line Height & Letter Spacing</h2>
+  <p class="subtitle">Line height (leading) and letter spacing (tracking) dramatically affect readability. Adjust the sliders to see the difference in real time.</p>
+
+  <div class="card">
+    <div class="demo-controls">
+      <div class="control-group">
+        <label>Line Height <span id="lhVal">1.6</span></label>
+        <input type="range" id="lhSlider" min="1" max="3" step="0.05" value="1.6">
+      </div>
+      <div class="control-group">
+        <label>Letter Spacing <span id="lsVal">0px</span></label>
+        <input type="range" id="lsSlider" min="-2" max="8" step="0.5" value="0">
+      </div>
+      <div class="control-group">
+        <label>Font Size <span id="fsVal">16px</span></label>
+        <input type="range" id="fsSlider" min="12" max="28" value="16">
+      </div>
+    </div>
+    <div class="demo-text" id="spacingDemo" style="font-family:'Inter',sans-serif;">
+      <p>Typography is the craft of endowing human language with a durable visual form. In the digital age, it's the primary material of user interfaces. When text is set well, readers don't notice the typography — they simply absorb the content. When it's set poorly, everything feels off. Good typography is invisible; bad typography is everywhere.</p>
+      <br>
+      <p>Pay special attention to line height for body text — too tight and lines blend together; too loose and the text floats apart. For body copy, 1.5–1.7 is the sweet spot. Headings can be tighter (1.1–1.3) because they're read differently.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Font Weight Showcase -->
+<section>
+  <h2>Font Weight Showcase</h2>
+  <p class="subtitle">Font weight controls the thickness of characters. Using weight strategically creates hierarchy without changing font size.</p>
+
+  <div class="weight-grid">
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:100;">Aa</div><div class="meta">100 — Thin</div></div>
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:200;">Aa</div><div class="meta">200 — Extra Light</div></div>
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:300;">Aa</div><div class="meta">300 — Light</div></div>
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:400;">Aa</div><div class="meta">400 — Regular</div></div>
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:500;">Aa</div><div class="meta">500 — Medium</div></div>
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:600;">Aa</div><div class="meta">600 — Semi Bold</div></div>
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:700;">Aa</div><div class="meta">700 — Bold</div></div>
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:800;">Aa</div><div class="meta">800 — Extra Bold</div></div>
+    <div class="weight-card"><div class="sample" style="font-family:'Inter';font-weight:900;">Aa</div><div class="meta">900 — Black</div></div>
+  </div>
+
+  <div class="tip" style="margin-top:20px;">
+    <strong>💡 Weight Tips:</strong> Use 400 (Regular) for body text, 600–700 for subheadings, 700–900 for main headings. Avoid using more than 3 weights from the same font — it keeps things clean and loads faster.
+  </div>
+</section>
+
+<!-- Section 5: Web-Safe vs Google Fonts -->
+<section>
+  <h2>Web-Safe vs Google Fonts</h2>
+  <p class="subtitle">Web-safe fonts are pre-installed on all devices (fast, reliable). Google Fonts are loaded from the web (more variety, slight load cost).</p>
+
+  <div class="card">
+    <div class="comparison-grid">
+      <div class="comparison-group">
+        <h4>Web-Safe Fonts (Built-in)</h4>
+        <div class="font-row"><span class="name" style="font-family:Arial,sans-serif;">Arial — The default workhorse</span><span class="cat">sans-serif</span></div>
+        <div class="font-row"><span class="name" style="font-family:Georgia,serif;">Georgia — Elegant screen serif</span><span class="cat">serif</span></div>
+        <div class="font-row"><span class="name" style="font-family:'Times New Roman',serif;">Times New Roman — Classic print</span><span class="cat">serif</span></div>
+        <div class="font-row"><span class="name" style="font-family:Verdana,sans-serif;">Verdana — Wide & readable</span><span class="cat">sans-serif</span></div>
+        <div class="font-row"><span class="name" style="font-family:'Courier New',monospace;">Courier New — Monospace standard</span><span class="cat">mono</span></div>
+        <div class="font-row"><span class="name" style="font-family:Tahoma,sans-serif;">Tahoma — Clean & compact</span><span class="cat">sans-serif</span></div>
+      </div>
+      <div class="comparison-group">
+        <h4>Google Fonts (Loaded)</h4>
+        <div class="font-row"><span class="name" style="font-family:'Inter',sans-serif;">Inter — Modern UI favorite</span><span class="cat">sans-serif</span></div>
+        <div class="font-row"><span class="name" style="font-family:'Playfair Display',serif;">Playfair Display — Editorial elegance</span><span class="cat">serif</span></div>
+        <div class="font-row"><span class="name" style="font-family:'Poppins',sans-serif;">Poppins — Geometric & friendly</span><span class="cat">sans-serif</span></div>
+        <div class="font-row"><span class="name" style="font-family:'JetBrains Mono',monospace;">JetBrains Mono — Dev's choice</span><span class="cat">mono</span></div>
+        <div class="font-row"><span class="name" style="font-family:'Space Grotesk',sans-serif;">Space Grotesk — Tech & modern</span><span class="cat">sans-serif</span></div>
+        <div class="font-row"><span class="name" style="font-family:'Merriweather',serif;">Merriweather — Reading serif</span><span class="cat">serif</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 6: Hierarchy Examples -->
+<section>
+  <h2>Visual Hierarchy</h2>
+  <p class="subtitle">Hierarchy guides the eye. Size, weight, color, and spacing tell readers what to read first, second, and third.</p>
+
+  <div class="card">
+    <div class="hierarchy-demo">
+      <div class="pretitle">Design Principles</div>
+      <h3 style="font-family:'Playfair Display',serif;">Why White Space Is Not Wasted Space</h3>
+      <p class="excerpt">Empty space isn't empty — it's a powerful design tool that lets content breathe and helps users focus on what matters.</p>
+      <p class="body-text">In the early days of web design, every pixel was precious. Designers crammed content into every corner, fearing that white space meant lost opportunity. But research has shown the opposite: generous spacing improves comprehension by up to 20% and makes interfaces feel more premium and trustworthy.</p>
+      <p class="body-text">White space creates visual hierarchy. It separates unrelated elements and groups related ones. It gives the eye a rest between sections. Masters of design — from Dieter Rams to Apple's Jony Ive — have always known: less is more.</p>
+      <p class="caption">Published on June 16, 2026 · 4 min read · Design, UX</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>💡 Hierarchy is built with:</strong> (1) Size — larger = more important. (2) Weight — bolder = more emphatic. (3) Color — brighter/saturated = higher priority; muted = supporting. (4) Spacing — more space above = new section. (5) Position — top-left is read first in LTR languages.
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p>Typography — UI/UX Design Fundamentals</p>
+</footer>
+
+<script>
+// Typographic Scale
+const scaleLabels = ['Small (xs)', 'Body', 'Large (lg)', 'H6', 'H5', 'H4', 'H3', 'H2', 'H1', 'Display'];
+let currentRatio = 1.25;
+const baseSize = 16;
+
+function renderScale() {
+  const container = document.getElementById('scaleDisplay');
+  container.innerHTML = '';
+  for (let i = 0; i < scaleLabels.length; i++) {
+    const exp = i - 1; // body = base (exp 0)
+    const size = (baseSize * Math.pow(currentRatio, exp)).toFixed(1);
+    container.innerHTML += `
+      <div class="scale-item">
+        <span class="scale-size">${size}px</span>
+        <span class="scale-text" style="font-size:${Math.min(size,64)}px;font-weight:${i>=6?700:i>=3?600:400};line-height:1.2;">${scaleLabels[i]}</span>
+      </div>`;
+  }
+}
+
+function setScale(ratio, btn) {
+  currentRatio = ratio;
+  document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderScale();
+}
+renderScale();
+
+// Line height & letter spacing demo
+const lhSlider = document.getElementById('lhSlider');
+const lsSlider = document.getElementById('lsSlider');
+const fsSlider = document.getElementById('fsSlider');
+const demo = document.getElementById('spacingDemo');
+
+function updateSpacing() {
+  const lh = lhSlider.value;
+  const ls = lsSlider.value;
+  const fs = fsSlider.value;
+  document.getElementById('lhVal').textContent = lh;
+  document.getElementById('lsVal').textContent = ls + 'px';
+  document.getElementById('fsVal').textContent = fs + 'px';
+  demo.style.lineHeight = lh;
+  demo.style.letterSpacing = ls + 'px';
+  demo.style.fontSize = fs + 'px';
+}
+
+lhSlider.oninput = updateSpacing;
+lsSlider.oninput = updateSpacing;
+fsSlider.oninput = updateSpacing;
+</script>
+</body>
+</html>

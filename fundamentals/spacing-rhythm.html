@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spacing & Rhythm — UI/UX Fundamentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+    --border: #2e3346; --text: #e4e6f0; --text-dim: #8b8fa3;
+    --accent: #6c5ce7; --accent2: #00cec9;
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header { text-align: center; padding: 60px 24px 40px; background: linear-gradient(135deg, #1a1d27 0%, #2a1f3e 50%, #1a1d27 100%); border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 2.8rem; font-weight: 900; background: linear-gradient(135deg, #a29bfe, #6c5ce7, #00cec9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+  header p { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1.1rem; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  h3 { font-size: 1.2rem; font-weight: 600; margin: 8px 0; color: #ddd; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  p.prose { color: var(--text-dim); margin-bottom: 16px; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--surface2); padding: 2px 7px; border-radius: 5px; font-size: 0.85em; color: var(--accent2); }
+  .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 14px; font-weight: 700; }
+
+  .tip { background: #6c5ce715; border-left: 3px solid var(--accent); padding: 16px 20px; margin: 16px 0; border-radius: 0 10px 10px 0; color: var(--text-dim); font-size: 0.9rem; }
+  .tip strong { color: var(--text); }
+
+  /* Spacing scale visual */
+  .scale-row { display: flex; align-items: center; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .scale-row:last-child { border-bottom: none; }
+  .scale-token { width: 90px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--accent2); }
+  .scale-bar { height: 22px; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 5px; }
+  .scale-px { font-size: 0.78rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+  /* Good vs bad */
+  .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:720px){ .vs { grid-template-columns: 1fr; } }
+  .vs-panel { background: var(--surface2); border-radius: 12px; padding: 20px; border: 1px solid var(--border); }
+  .vs-panel.bad { border-color: #e1705644; }
+  .vs-panel.good { border-color: #00b89444; }
+  .vs-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 3px 10px; border-radius: 6px; margin-bottom: 16px; }
+  .vs-tag.bad { background: #e1705622; color: #e17056; }
+  .vs-tag.good { background: #00b89422; color: #00b894; }
+  .mini-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
+  .mini-card h4 { font-size: 1rem; color: #fff; }
+  .mini-card p { font-size: 0.85rem; color: var(--text-dim); }
+  .mini-card button { background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 0.82rem; }
+
+  /* bad: cramped, inconsistent */
+  .cramped { padding: 4px; }
+  .cramped h4 { margin: 1px 0; }
+  .cramped p { margin: 1px 0 7px; line-height: 1.25; }
+  .cramped button { padding: 3px 6px; margin-top: 2px; }
+  /* good: 8pt rhythm */
+  .roomy { padding: 24px; }
+  .roomy h4 { margin: 0 0 8px; }
+  .roomy p { margin: 0 0 16px; line-height: 1.6; }
+  .roomy button { padding: 10px 20px; }
+
+  /* Vertical rhythm / baseline */
+  .rhythm-toggle { display: flex; gap: 10px; margin-bottom: 18px; }
+  .rhythm-toggle button { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
+  .rhythm-toggle button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #rhythmText { position: relative; padding: 4px 0; }
+  #rhythmText.show-baseline { background-image: repeating-linear-gradient(to bottom, transparent, transparent 27px, #6c5ce740 27px, #6c5ce740 28px); }
+  #rhythmText h4 { color: #fff; margin-bottom: 8px; }
+  #rhythmText p { color: var(--text-dim); margin-bottom: 16px; }
+
+  /* Line height demo */
+  .lh-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media(max-width:720px){ .lh-grid { grid-template-columns: 1fr; } }
+  .lh-sample { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 18px; font-size: 0.9rem; color: var(--text-dim); }
+  .lh-sample .lh-meta { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent2); margin-bottom: 10px; }
+
+  /* Modular scale */
+  .mod-row { display: flex; align-items: baseline; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .mod-row:last-child { border-bottom: none; }
+  .mod-px { width: 80px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent2); }
+  .mod-controls { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .mod-controls button { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; transition: all 0.15s; }
+  .mod-controls button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  footer { text-align: center; padding: 40px 24px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<a class="back-link" href="../index.html">Back to Hub</a>
+<header>
+  <h1>Spacing & Rhythm</h1>
+  <p>Whitespace is not wasted space — it is the invisible grid that makes interfaces feel calm, organized, and premium. Learn the spacing scale, vertical rhythm, and the math behind balanced type.</p>
+</header>
+
+<div class="container">
+
+<!-- Section 1: The spacing scale -->
+<section>
+  <h2>The 8-Point Spacing Scale</h2>
+  <p class="subtitle">Instead of typing arbitrary pixel values, pick from a fixed scale based on multiples of 8 (with a 4px half-step). Consistency across every margin and padding is what separates polished UIs from messy ones.</p>
+
+  <div class="card">
+    <div class="scale-row"><span class="scale-token">space-1</span><div class="scale-bar" style="width:4px;"></div><span class="scale-px">4px</span></div>
+    <div class="scale-row"><span class="scale-token">space-2</span><div class="scale-bar" style="width:8px;"></div><span class="scale-px">8px</span></div>
+    <div class="scale-row"><span class="scale-token">space-3</span><div class="scale-bar" style="width:12px;"></div><span class="scale-px">12px</span></div>
+    <div class="scale-row"><span class="scale-token">space-4</span><div class="scale-bar" style="width:16px;"></div><span class="scale-px">16px</span></div>
+    <div class="scale-row"><span class="scale-token">space-6</span><div class="scale-bar" style="width:24px;"></div><span class="scale-px">24px</span></div>
+    <div class="scale-row"><span class="scale-token">space-8</span><div class="scale-bar" style="width:32px;"></div><span class="scale-px">32px</span></div>
+    <div class="scale-row"><span class="scale-token">space-12</span><div class="scale-bar" style="width:48px;"></div><span class="scale-px">48px</span></div>
+    <div class="scale-row"><span class="scale-token">space-16</span><div class="scale-bar" style="width:64px;"></div><span class="scale-px">64px</span></div>
+    <div class="scale-row"><span class="scale-token">space-24</span><div class="scale-bar" style="width:96px;"></div><span class="scale-px">96px</span></div>
+  </div>
+  <div class="tip"><strong>8dp / 8pt:</strong> the "dp" (density-independent pixel) and "pt" units come from <a href="https://m3.material.io/foundations/layout/understanding-layout/spacing" target="_blank">Material Design</a> and Apple's <a href="https://developer.apple.com/design/human-interface-guidelines/layout" target="_blank">HIG</a>. On a 2x screen, 8dp renders as 16 physical pixels — always a whole number, so edges stay crisp.</div>
+</section>
+
+<!-- Section 2: Good vs bad spacing -->
+<section>
+  <h2>Whitespace: Good vs Bad</h2>
+  <p class="subtitle">The same card, same content — only the spacing changes. Cramped, inconsistent gaps make content hard to parse; generous, rhythmic spacing groups related elements and lets each one breathe.</p>
+
+  <div class="vs">
+    <div class="vs-panel bad">
+      <span class="vs-tag bad">✗ Cramped & inconsistent</span>
+      <div class="mini-card cramped">
+        <h4>Pro Plan</h4>
+        <p>Everything in Starter plus unlimited projects, priority support, and advanced analytics for growing teams.</p>
+        <button>Upgrade</button>
+      </div>
+    </div>
+    <div class="vs-panel good">
+      <span class="vs-tag good">✓ 8pt rhythm</span>
+      <div class="mini-card roomy">
+        <h4>Pro Plan</h4>
+        <p>Everything in Starter plus unlimited projects, priority support, and advanced analytics for growing teams.</p>
+        <button>Upgrade</button>
+      </div>
+    </div>
+  </div>
+  <div class="tip"><strong>Law of Proximity:</strong> elements placed close together are perceived as related. Use <em>less</em> space within a group and <em>more</em> space between groups — spacing itself communicates structure before anyone reads a word.</div>
+</section>
+
+<!-- Section 3: Line height -->
+<section>
+  <h2>Line Height & Readability</h2>
+  <p class="subtitle">Line height (leading) is the vertical space between lines. Too tight and lines collide; too loose and the eye loses the thread returning to the next line. For body text, <code>1.5–1.7</code> is the sweet spot.</p>
+
+  <div class="card">
+    <div class="lh-grid">
+      <div class="lh-sample" style="line-height:1.1;">
+        <div class="lh-meta">line-height: 1.1 — too tight</div>
+        Good typography is invisible. When leading is this tight, descenders nearly touch the next line and reading becomes tiring almost immediately.
+      </div>
+      <div class="lh-sample" style="line-height:1.6;">
+        <div class="lh-meta">line-height: 1.6 — just right</div>
+        Good typography is invisible. With comfortable leading the eye glides from line to line, and a wall of text suddenly feels effortless to read.
+      </div>
+      <div class="lh-sample" style="line-height:2.4;">
+        <div class="lh-meta">line-height: 2.4 — too loose</div>
+        Good typography is invisible. When leading is this loose the lines drift apart and the paragraph stops reading as a single connected block of text.
+      </div>
+    </div>
+  </div>
+  <div class="tip"><strong>Rule of thumb:</strong> the longer the line of text, the more line height it needs. Headings (short lines) can go as tight as <code>1.1–1.3</code>; long-form body copy benefits from <code>1.6+</code>.</div>
+</section>
+
+<!-- Section 4: Vertical rhythm / baseline -->
+<section>
+  <h2>Vertical Rhythm & the Baseline Grid</h2>
+  <p class="subtitle">When every element's height and margin is a multiple of one base unit (here, 28px), text and components snap to a shared vertical grid. This invisible regularity is what makes a page feel composed rather than assembled.</p>
+
+  <div class="card">
+    <div class="rhythm-toggle">
+      <button id="btnGrid" class="active" onclick="toggleBaseline(true)">Show baseline grid</button>
+      <button id="btnNoGrid" onclick="toggleBaseline(false)">Hide grid</button>
+    </div>
+    <div id="rhythmText" class="show-baseline">
+      <h4>Rhythm you can feel</h4>
+      <p>Vertical rhythm means spacing the elements of a page at consistent intervals derived from your base line-height. When headings, paragraphs, and images all align to the same baseline grid, the result is a subtle visual harmony.</p>
+      <p>Toggle the grid above. Notice how each line of text sits on a purple guide and the gaps between blocks are whole multiples of the base unit — never a stray 13px or 19px to break the cadence.</p>
+    </div>
+  </div>
+  <div class="tip"><strong>How to set it up:</strong> choose a base unit (commonly your body line-height, e.g. 28px) and make every vertical margin a multiple of it. Even approximate adherence dramatically improves perceived quality.</div>
+</section>
+
+<!-- Section 5: Modular scale -->
+<section>
+  <h2>The Modular Scale</h2>
+  <p class="subtitle">A modular scale generates font sizes by repeatedly multiplying a base size by a ratio. Related sizes produce instant hierarchy and harmony — the same principle behind the typographic scale, applied to your whole type system. Pick a ratio:</p>
+
+  <div class="card">
+    <div class="mod-controls">
+      <button data-ratio="1.2" onclick="setMod(1.2,this)">1.2 — Minor 3rd</button>
+      <button data-ratio="1.25" class="active" onclick="setMod(1.25,this)">1.25 — Major 3rd</button>
+      <button data-ratio="1.333" onclick="setMod(1.333,this)">1.333 — Perfect 4th</button>
+      <button data-ratio="1.5" onclick="setMod(1.5,this)">1.5 — Perfect 5th</button>
+      <button data-ratio="1.618" onclick="setMod(1.618,this)">1.618 — Golden</button>
+    </div>
+    <div id="modDisplay"></div>
+  </div>
+  <div class="tip"><strong>Spacing and type share the same idea:</strong> a small, consistent set of values — derived mathematically rather than chosen at random — is the foundation of every coherent design system. See Tim Brown's classic essay at <a href="https://every-layout.dev/rudiments/modular-scale/" target="_blank">Every Layout</a>.</div>
+</section>
+
+</div>
+
+<footer>
+  <p>Spacing & Rhythm — UI/UX Design Fundamentals</p>
+</footer>
+
+<script>
+// Baseline toggle
+function toggleBaseline(show) {
+  document.getElementById('rhythmText').classList.toggle('show-baseline', show);
+  document.getElementById('btnGrid').classList.toggle('active', show);
+  document.getElementById('btnNoGrid').classList.toggle('active', !show);
+}
+
+// Modular scale
+const modLabels = ['Caption', 'Body', 'H5', 'H4', 'H3', 'H2', 'H1'];
+const baseSize = 16;
+let modRatio = 1.25;
+
+function renderMod() {
+  const c = document.getElementById('modDisplay');
+  c.innerHTML = '';
+  for (let i = modLabels.length - 1; i >= 0; i--) {
+    const exp = i - 1; // body = base
+    const size = (baseSize * Math.pow(modRatio, exp)).toFixed(1);
+    c.innerHTML += `
+      <div class="mod-row">
+        <span class="mod-px">${size}px</span>
+        <span style="font-size:${Math.min(size,56)}px;font-weight:${i>=4?700:i>=2?600:400};line-height:1.2;">${modLabels[i]}</span>
+      </div>`;
+  }
+}
+function setMod(ratio, btn) {
+  modRatio = ratio;
+  document.querySelectorAll('.mod-controls button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMod();
+}
+renderMod();
+</script>
+</body>
+</html>

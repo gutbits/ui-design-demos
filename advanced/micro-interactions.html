@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Micro-interactions — Advanced UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0b0c12; --surface: #14161f; --surface2: #1e212c;
+    --border: #2a2e3c; --text: #e7e9f1; --text-dim: #888da0;
+    --accent: #8b7cff; --accent2: #2fd3a7; --like: #ff4d6d; --warn: #ffc46b;
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header {
+    text-align: center; padding: 70px 24px 50px;
+    background: radial-gradient(1000px 380px at 50% -10%, rgba(139,124,255,0.2), transparent),
+                radial-gradient(900px 380px at 80% 20%, rgba(47,211,167,0.12), transparent),
+                linear-gradient(135deg, #14161f, #181425 50%, #14161f);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    font-size: 3.1rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff, #cfc7ff 40%, #9ff0d8 85%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  header p { color: var(--text-dim); max-width: 660px; margin: 0 auto; font-size: 1.1rem; }
+  .pill { display: inline-block; margin-top: 18px; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border); padding: 6px 14px; border-radius: 999px; background: rgba(139,124,255,0.07); }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 58px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.85rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  .subtitle { color: var(--text-dim); margin-bottom: 30px; font-size: 1.02rem; max-width: 780px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+
+  /* four parts grid */
+  .parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; }
+  .part { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .part .num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; }
+  .part h4 { font-size: 1.05rem; margin-bottom: 8px; }
+  .part p { font-size: 0.86rem; color: var(--text-dim); }
+
+  /* demo grid generic */
+  .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 22px; }
+  .demo-tile { background: var(--surface2); border: 1px solid var(--border); border-radius: 16px; padding: 28px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 180px; text-align: center; }
+  .demo-tile .label { font-size: 0.8rem; color: var(--text-dim); }
+
+  /* 1. button press */
+  .btn-press {
+    padding: 13px 28px; border: none; border-radius: 12px; font-family: inherit; font-weight: 600;
+    font-size: 0.95rem; color: #fff; cursor: pointer; background: linear-gradient(135deg, #8b7cff, #6b5cff);
+    box-shadow: 0 8px 18px rgba(107,92,255,0.4);
+    transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.12s ease;
+  }
+  .btn-press:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(107,92,255,0.5); }
+  .btn-press:active { transform: translateY(1px) scale(0.96); box-shadow: 0 4px 10px rgba(107,92,255,0.35); }
+
+  /* 2. toggle */
+  .toggle { width: 64px; height: 34px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); position: relative; cursor: pointer; transition: background 0.3s ease; }
+  .toggle .knob { position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; transition: left 0.3s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+  .toggle.on { background: var(--accent2); border-color: var(--accent2); }
+  .toggle.on .knob { left: 35px; }
+
+  /* 3. like */
+  .like-btn { background: none; border: none; cursor: pointer; font-size: 2.4rem; line-height: 1; color: var(--text-dim); position: relative; transition: transform 0.15s; user-select: none; }
+  .like-btn:active { transform: scale(0.85); }
+  .like-btn.liked { color: var(--like); animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+  .heart-particles { position: absolute; inset: 0; pointer-events: none; }
+  .heart-particles span { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; border-radius: 50%; background: var(--like); opacity: 0; }
+  .like-count { font-size: 0.9rem; color: var(--text-dim); min-width: 30px; }
+
+  /* 4. loading */
+  .spinner { width: 38px; height: 38px; border-radius: 50%; border: 4px solid var(--surface); border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .dots { display: flex; gap: 8px; }
+  .dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--accent2); animation: bounce 1.2s ease-in-out infinite; }
+  .dots span:nth-child(2) { animation-delay: 0.16s; }
+  .dots span:nth-child(3) { animation-delay: 0.32s; }
+  @keyframes bounce { 0%, 80%, 100% { transform: scale(0.4); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+  .progress-track { width: 100%; height: 8px; border-radius: 999px; background: var(--surface); overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.3s ease; }
+
+  /* success checkmark / submit button */
+  .submit-btn { padding: 13px 30px; border: none; border-radius: 12px; font-family: inherit; font-weight: 600; color: #fff; cursor: pointer; background: var(--accent); min-width: 150px; transition: background 0.3s, transform 0.12s; }
+  .submit-btn:active { transform: scale(0.97); }
+  .submit-btn.loading { background: var(--surface2); cursor: wait; }
+  .submit-btn.done { background: var(--accent2); color: #0b0c12; }
+
+  /* easing visualizer */
+  .easing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; }
+  .ease-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 18px; cursor: pointer; }
+  .ease-card .name { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+  .ease-card .fn { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent2); margin-bottom: 14px; }
+  .ease-track { height: 10px; background: var(--surface); border-radius: 999px; position: relative; }
+  .ease-ball { position: absolute; top: -5px; left: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); }
+
+  table.cmp { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
+  table.cmp th, table.cmp td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  table.cmp th { color: var(--accent2); font-weight: 600; }
+  table.cmp td:first-child { color: var(--text); font-weight: 500; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+  table.cmp td { color: var(--text-dim); }
+
+  .code-block {
+    background: #05060c; border: 1px solid var(--border); border-radius: 12px; padding: 22px;
+    margin: 18px 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.7; color: #c8cee8; white-space: pre;
+  }
+  .code-block .c { color: #5f6a8a; }
+  .code-block .k { color: var(--accent); }
+  .code-block .v { color: var(--accent2); }
+  .code-block .n { color: var(--warn); }
+
+  .note { background: rgba(255,196,107,0.08); border-left: 3px solid var(--warn); padding: 16px 20px; margin: 18px 0; border-radius: 0 10px 10px 0; color: var(--text-dim); font-size: 0.92rem; }
+  .note strong { color: var(--text); }
+  ul { padding-left: 22px; margin: 14px 0; }
+  li { margin-bottom: 8px; color: var(--text-dim); }
+  li strong { color: var(--text); }
+
+  footer { text-align: center; padding: 44px 24px; color: var(--text-dim); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <h1>Micro-interactions</h1>
+  <p>The small moments — a button press, a toggle, a like, a loading dot — that make an interface feel alive, responsive, and human. Tiny details, outsized impact.</p>
+  <span class="pill">Advanced · Motion &amp; Feedback</span>
+</header>
+
+<div class="container">
+
+<!-- ===== THE FOUR PARTS ===== -->
+<section>
+  <h2>The Four Parts</h2>
+  <p class="subtitle">Dan Saffer's model (from <em>Microinteractions</em>, O'Reilly 2013) breaks every micro-interaction into four parts. Get all four right and the interaction feels effortless.</p>
+
+  <div class="parts">
+    <div class="part">
+      <div class="num">01</div>
+      <h4>Trigger</h4>
+      <p>What starts it. A user action (click, hover, drag) or a system event (data loaded, timer fired). The trigger should be obvious and consistent.</p>
+    </div>
+    <div class="part">
+      <div class="num">02</div>
+      <h4>Rules</h4>
+      <p>What happens once triggered. The logic and constraints: what can the user do, in what order, what's allowed. Invisible, but it shapes everything.</p>
+    </div>
+    <div class="part">
+      <div class="num">03</div>
+      <h4>Feedback</h4>
+      <p>What the user sees, hears, or feels. The animation, color change, sound, or haptic that says "I heard you, here's what's happening."</p>
+    </div>
+    <div class="part">
+      <div class="num">04</div>
+      <h4>Loops &amp; Modes</h4>
+      <p>The meta-rules: how long it lasts, what happens on repeat, and any special state. "What happens the 100th time?" "What if it's empty?"</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BUTTON PRESS ===== -->
+<section>
+  <h2>Demo · Button Press</h2>
+  <p class="subtitle">The most common micro-interaction. Hover lifts it; press squashes it. The spring easing on release makes it feel physical. Try it.</p>
+  <div class="card">
+    <div class="demo-grid">
+      <div class="demo-tile">
+        <button class="btn-press">Press me</button>
+        <div class="label">Hover · Active states</div>
+      </div>
+      <div class="demo-tile">
+        <button class="btn-press" style="background:linear-gradient(135deg,#2fd3a7,#1ba888);box-shadow:0 8px 18px rgba(47,211,167,0.4);">Confirm</button>
+        <div class="label">Same pattern, success color</div>
+      </div>
+      <div class="demo-tile">
+        <button class="submit-btn" id="submitBtn">Submit</button>
+        <div class="label">Click: loading → done loop</div>
+      </div>
+    </div>
+    <div class="code-block"><span class="k">.btn-press</span> {
+  <span class="k">transition</span>: <span class="v">transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1)</span>;  <span class="c">/* spring */</span>
+}
+<span class="k">.btn-press:hover</span>  { <span class="k">transform</span>: <span class="v">translateY(-2px)</span>; }   <span class="c">/* lift  */</span>
+<span class="k">.btn-press:active</span> { <span class="k">transform</span>: <span class="v">translateY(1px) scale(0.96)</span>; } <span class="c">/* squash */</span></div>
+  </div>
+</section>
+
+<!-- ===== TOGGLE ===== -->
+<section>
+  <h2>Demo · Toggle Switch</h2>
+  <p class="subtitle">A toggle is a tiny state machine. The knob slides with a slight overshoot (spring), and the track color confirms the new state. Click to flip.</p>
+  <div class="card">
+    <div class="demo-grid">
+      <div class="demo-tile">
+        <div class="toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+        <div class="label">Wi-Fi</div>
+      </div>
+      <div class="demo-tile">
+        <div class="toggle" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+        <div class="label">Notifications</div>
+      </div>
+      <div class="demo-tile">
+        <div class="toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+        <div class="label">Dark mode</div>
+      </div>
+    </div>
+    <div class="code-block"><span class="k">.toggle .knob</span> {
+  <span class="k">transition</span>: <span class="v">left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)</span>; <span class="c">/* overshoot */</span>
+}
+<span class="k">.toggle.on</span>        { <span class="k">background</span>: <span class="v">var(--accent2)</span>; }  <span class="c">/* state feedback */</span>
+<span class="k">.toggle.on .knob</span>   { <span class="k">left</span>: <span class="v">35px</span>; }              <span class="c">/* slide across */</span></div>
+  </div>
+</section>
+
+<!-- ===== LIKE ===== -->
+<section>
+  <h2>Demo · Like Button</h2>
+  <p class="subtitle">A delight moment. The heart pops past its final size and settles, particles burst outward, and the count animates. This is "what happens the 100th time" done right. Click the hearts.</p>
+  <div class="card">
+    <div class="demo-grid">
+      <div class="demo-tile">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="like-btn" onclick="toggleLike(this, 0)">♡<span class="heart-particles"></span></button>
+          <span class="like-count" id="count0">128</span>
+        </div>
+        <div class="label">Tap to like</div>
+      </div>
+      <div class="demo-tile">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="like-btn liked" style="color:var(--like)" onclick="toggleLike(this, 1)">♥<span class="heart-particles"></span></button>
+          <span class="like-count" id="count1">1.2k</span>
+        </div>
+        <div class="label">Already liked</div>
+      </div>
+      <div class="demo-tile">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="like-btn" onclick="toggleLike(this, 2)">♡<span class="heart-particles"></span></button>
+          <span class="like-count" id="count2">42</span>
+        </div>
+        <div class="label">Tap to like</div>
+      </div>
+    </div>
+    <div class="code-block"><span class="k">@keyframes pop</span> {                       <span class="c">/* overshoot &amp; settle */</span>
+  <span class="n">0%</span>   { <span class="k">transform</span>: <span class="v">scale(0.8)</span>; }
+  <span class="n">50%</span>  { <span class="k">transform</span>: <span class="v">scale(1.3)</span>; }     <span class="c">/* past target = delight */</span>
+  <span class="n">100%</span> { <span class="k">transform</span>: <span class="v">scale(1.0)</span>; }
+}</div>
+  </div>
+</section>
+
+<!-- ===== LOADING ===== -->
+<section>
+  <h2>Demo · Loading &amp; Progress</h2>
+  <p class="subtitle">Loaders are looping micro-interactions — they keep reassuring the user while the system works. Use a spinner for unknown waits, a progress bar for known ones.</p>
+  <div class="card">
+    <div class="demo-grid">
+      <div class="demo-tile">
+        <div class="spinner"></div>
+        <div class="label">Indeterminate spinner</div>
+      </div>
+      <div class="demo-tile">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="label">Bouncing dots</div>
+      </div>
+      <div class="demo-tile">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="label" id="progressLabel">Determinate · 0%</div>
+        <button class="btn-press" style="font-size:0.8rem;padding:8px 16px;" onclick="runProgress()">Run</button>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Rule of thumb:</strong> if you know how long it'll take, show progress (a bar, a percentage). If you don't, show activity (a spinner). Under ~1s, a subtle state change often beats a spinner — flashing a loader for 200ms feels janky.
+  </div>
+</section>
+
+<!-- ===== EASING ===== -->
+<section>
+  <h2>Easing — the Soul of Motion</h2>
+  <p class="subtitle">Easing controls how a value changes over time. Linear feels robotic; eased motion feels natural because nothing in the real world starts or stops instantly. Click a card to replay.</p>
+
+  <div class="card">
+    <div class="easing-grid" id="easingGrid">
+      <div class="ease-card" data-ease="linear">
+        <div class="name">Linear</div><div class="fn">linear</div>
+        <div class="ease-track"><div class="ease-ball"></div></div>
+      </div>
+      <div class="ease-card" data-ease="ease-in">
+        <div class="name">Ease-in</div><div class="fn">cubic-bezier(.42,0,1,1)</div>
+        <div class="ease-track"><div class="ease-ball"></div></div>
+      </div>
+      <div class="ease-card" data-ease="ease-out">
+        <div class="name">Ease-out</div><div class="fn">cubic-bezier(0,0,.58,1)</div>
+        <div class="ease-track"><div class="ease-ball"></div></div>
+      </div>
+      <div class="ease-card" data-ease="ease-in-out">
+        <div class="name">Ease-in-out</div><div class="fn">cubic-bezier(.42,0,.58,1)</div>
+        <div class="ease-track"><div class="ease-ball"></div></div>
+      </div>
+      <div class="ease-card" data-ease="cubic-bezier(0.34,1.56,0.64,1)">
+        <div class="name">Spring / Overshoot</div><div class="fn">cubic-bezier(.34,1.56,.64,1)</div>
+        <div class="ease-track"><div class="ease-ball"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Practical defaults:</strong> Use <strong>ease-out</strong> for elements entering or responding to a tap (fast start, gentle stop — feels snappy). Use <strong>ease-in</strong> for elements leaving the screen. Use <strong>ease-in-out</strong> for elements moving within the screen. Reserve <strong>overshoot/spring</strong> for playful, attention-worthy moments (likes, toggles) — not everything.
+  </div>
+</section>
+
+<!-- ===== DURATION ===== -->
+<section>
+  <h2>Duration Guidelines</h2>
+  <p class="subtitle">Too fast and the user misses it; too slow and it's in the way. These ranges (aligned with Material Design's motion guidance) are reliable starting points.</p>
+
+  <div class="card">
+    <table class="cmp">
+      <tr><th>Duration</th><th>Use for</th></tr>
+      <tr><td>100–150ms</td><td>Hover, small state changes, tooltips, icon toggles — near-instant feedback.</td></tr>
+      <tr><td>200–300ms</td><td>Most UI transitions: buttons, switches, expanding panels, simple fades. The everyday sweet spot.</td></tr>
+      <tr><td>300–400ms</td><td>Larger movements: modals, sheets, full-screen transitions, cards entering.</td></tr>
+      <tr><td>400ms+</td><td>Big, deliberate, attention-drawing choreography. Rare in UI; risks feeling sluggish.</td></tr>
+    </table>
+  </div>
+  <div class="note">
+    <strong>Scale duration with distance &amp; size.</strong> A small icon flipping can be 150ms; a full-screen panel sliding in needs ~300ms+ or it feels abrupt. Larger or farther-traveling elements need a touch more time to read as natural.
+  </div>
+</section>
+
+<!-- ===== PRINCIPLES ===== -->
+<section>
+  <h2>Principles &amp; Pitfalls</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Be meaningful, not decorative.</strong> Every animation should communicate — confirm an action, show a relationship, guide attention. Motion for its own sake becomes noise.</li>
+      <li><strong>Respect <code style="color:var(--accent2)">prefers-reduced-motion</code>.</strong> Some users get motion sickness. Always provide a reduced-motion path that swaps big movement for simple fades.</li>
+      <li><strong>Keep feedback immediate.</strong> The trigger response should begin within ~100ms or the interface feels laggy, even if the full animation runs longer.</li>
+      <li><strong>Stay consistent.</strong> The same action should always feel the same. A shared set of durations and easing tokens keeps a product coherent.</li>
+      <li><strong>Don't block the user.</strong> Animations should never make people wait. Let interactions be interruptible.</li>
+    </ul>
+  </div>
+  <div class="code-block"><span class="c">/* Always honor the user's motion preference */</span>
+<span class="k">@media</span> (<span class="v">prefers-reduced-motion: reduce</span>) {
+  <span class="k">*</span> {
+    <span class="k">animation-duration</span>: <span class="n">0.01ms</span> !important;
+    <span class="k">transition-duration</span>: <span class="n">0.01ms</span> !important;
+  }
+}</div>
+</section>
+
+</div>
+
+<footer>Micro-interactions — Advanced UI Research · four parts: trigger · rules · feedback · loops &amp; modes</footer>
+
+<script>
+  // --- Submit button: loading -> done -> reset loop ---
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.addEventListener('click', () => {
+    if (submitBtn.classList.contains('loading') || submitBtn.classList.contains('done')) return;
+    submitBtn.classList.add('loading');
+    submitBtn.textContent = 'Sending…';
+    setTimeout(() => {
+      submitBtn.classList.remove('loading');
+      submitBtn.classList.add('done');
+      submitBtn.textContent = '✓ Sent';
+      setTimeout(() => {
+        submitBtn.classList.remove('done');
+        submitBtn.textContent = 'Submit';
+      }, 1400);
+    }, 1100);
+  });
+
+  // --- Like button with particle burst ---
+  function toggleLike(btn, idx) {
+    const countEl = document.getElementById('count' + idx);
+    const liked = btn.classList.toggle('liked');
+    btn.textContent = liked ? '♥' : '♡';
+    // re-append particle container (textContent wiped it)
+    const wrap = document.createElement('span');
+    wrap.className = 'heart-particles';
+    btn.appendChild(wrap);
+
+    let raw = countEl.dataset.raw ? +countEl.dataset.raw : parseCount(countEl.textContent);
+    raw += liked ? 1 : -1;
+    countEl.dataset.raw = raw;
+    countEl.textContent = formatCount(raw);
+
+    if (liked) burstParticles(wrap);
+  }
+  function burstParticles(wrap) {
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('span');
+      wrap.appendChild(p);
+      const angle = (Math.PI * 2 * i) / 8;
+      const dist = 26 + Math.random() * 12;
+      const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist;
+      p.animate([
+        { transform: 'translate(-50%,-50%) translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(0)`, opacity: 0 }
+      ], { duration: 500, easing: 'cubic-bezier(0.2,0.6,0.3,1)' });
+    }
+    setTimeout(() => { wrap.innerHTML = ''; }, 520);
+  }
+  function parseCount(t) {
+    if (t.endsWith('k')) return Math.round(parseFloat(t) * 1000);
+    return parseInt(t.replace(/\D/g, ''), 10) || 0;
+  }
+  function formatCount(n) {
+    return n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : '' + n;
+  }
+
+  // --- Progress bar run ---
+  function runProgress() {
+    const fill = document.getElementById('progressFill');
+    const label = document.getElementById('progressLabel');
+    let pct = 0;
+    fill.style.width = '0%';
+    const id = setInterval(() => {
+      pct += Math.random() * 14;
+      if (pct >= 100) { pct = 100; clearInterval(id); }
+      fill.style.width = pct + '%';
+      label.textContent = 'Determinate · ' + Math.round(pct) + '%';
+    }, 220);
+  }
+
+  // --- Easing visualizer: animate ball across track on click ---
+  function playEase(card) {
+    const ball = card.querySelector('.ease-ball');
+    const track = card.querySelector('.ease-track');
+    const ease = card.dataset.ease;
+    const dist = track.clientWidth - ball.offsetWidth;
+    ball.animate([
+      { left: '0px' },
+      { left: dist + 'px' }
+    ], { duration: 1100, easing: ease, fill: 'forwards' });
+  }
+  document.querySelectorAll('.ease-card').forEach(card => {
+    card.addEventListener('click', () => playEase(card));
+  });
+  // auto-play all once on load so the page feels alive
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.ease-card').forEach((c, i) => setTimeout(() => playEase(c), 300 + i * 150));
+  });
+</script>
+</body>
+</html>

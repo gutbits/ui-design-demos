@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skeuomorphism — UI Design Trends</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Georgia&family=Playfair+Display:wght@700&family=Fira+Code&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a1a;
+    color: #e0d6c8;
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  .back-link {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    color: #c8a96e; text-decoration: none; font-size: 14px;
+    background: linear-gradient(145deg, #3a3a3a, #222);
+    padding: 8px 16px; border-radius: 6px;
+    border: 1px solid #555;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: all 0.2s;
+  }
+  .back-link:hover { background: linear-gradient(145deg, #444, #2a2a2a); color: #e0c080; }
+
+  header {
+    text-align: center;
+    padding: 80px 20px 40px;
+    background: linear-gradient(180deg, #2a2218 0%, #1a1a1a 100%);
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    background: linear-gradient(180deg, #f0d090, #c8a050);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    margin-bottom: 10px;
+  }
+  header p { color: #a09080; font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #d4b068;
+    margin: 60px 0 30px;
+    text-align: center;
+  }
+
+  /* ===== LEATHER NOTEBOOK ===== */
+  .leather-notebook {
+    background: linear-gradient(135deg, #5a3a1a 0%, #3d2510 30%, #4a2e14 60%, #5a3a1a 100%);
+    border-radius: 12px;
+    padding: 40px;
+    margin: 30px 0;
+    position: relative;
+    box-shadow:
+      0 10px 40px rgba(0,0,0,0.6),
+      inset 0 2px 4px rgba(255,220,150,0.15),
+      inset 0 -2px 4px rgba(0,0,0,0.3);
+    border: 1px solid #6a4a2a;
+    overflow: hidden;
+  }
+  .leather-notebook::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .leather-notebook::after {
+    content: '';
+    position: absolute; top: 0; left: 50px; bottom: 0; width: 2px;
+    background: linear-gradient(180deg, transparent, #8a6a3a, #8a6a3a, transparent);
+    opacity: 0.5;
+  }
+  .notebook-content {
+    position: relative; z-index: 1;
+    padding-left: 40px;
+    font-style: italic;
+    color: #d4c0a0;
+    font-size: 1.1rem;
+    line-height: 2;
+    background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(100,80,50,0.3) 31px, rgba(100,80,50,0.3) 32px);
+    min-height: 160px;
+  }
+  .notebook-content .title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-style: normal;
+    color: #e8d0a0;
+  }
+
+  /* ===== METAL TOGGLE ===== */
+  .toggle-row { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
+  .toggle-group { text-align: center; }
+  .toggle-label { display: block; color: #a09080; font-size: 0.85rem; margin-bottom: 10px; }
+
+  .metal-toggle {
+    width: 80px; height: 40px;
+    background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 50%, #2a2a2a 100%);
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    border: 2px solid #444;
+    box-shadow:
+      inset 0 2px 6px rgba(0,0,0,0.8),
+      0 1px 3px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(255,255,255,0.05);
+    transition: all 0.3s;
+  }
+  .metal-toggle .knob {
+    width: 32px; height: 32px;
+    background: linear-gradient(145deg, #e0e0e0, #a0a0a0);
+    border-radius: 50%;
+    position: absolute; top: 2px; left: 3px;
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.5),
+      inset 0 2px 4px rgba(255,255,255,0.8),
+      inset 0 -2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  .metal-toggle .knob::after {
+    content: '';
+    position: absolute; top: 4px; left: 4px; right: 4px; bottom: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), transparent);
+    border-radius: 50%;
+  }
+  .metal-toggle.active {
+    background: linear-gradient(180deg, #1a4a1a 0%, #0a3a0a 50%, #1a4a1a 100%);
+    border-color: #3a7a3a;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 0 15px rgba(0,180,0,0.2);
+  }
+  .metal-toggle.active .knob { left: 43px; }
+
+  /* ===== GLOSSY BUTTONS ===== */
+  .button-row { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
+
+  .glossy-btn {
+    padding: 14px 32px;
+    font-size: 1rem;
+    font-family: Georgia, serif;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.4);
+    transition: all 0.15s;
+  }
+  .glossy-btn::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 100%);
+    border-radius: 10px 10px 0 0;
+  }
+  .glossy-btn:active { transform: translateY(2px); }
+
+  .glossy-btn.blue {
+    background: linear-gradient(180deg, #4a8ae0, #2a5ab0);
+    box-shadow: 0 4px 12px rgba(30,70,150,0.5), inset 0 -2px 4px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1);
+    border-bottom: 3px solid #1a3a70;
+  }
+  .glossy-btn.red {
+    background: linear-gradient(180deg, #e04a4a, #b02a2a);
+    box-shadow: 0 4px 12px rgba(150,30,30,0.5), inset 0 -2px 4px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1);
+    border-bottom: 3px solid #701a1a;
+  }
+  .glossy-btn.green {
+    background: linear-gradient(180deg, #4ae04a, #2ab02a);
+    box-shadow: 0 4px 12px rgba(30,150,30,0.5), inset 0 -2px 4px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1);
+    border-bottom: 3px solid #1a701a;
+    color: #1a3a1a;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+  }
+  .glossy-btn.gold {
+    background: linear-gradient(180deg, #e0c050, #b09030);
+    box-shadow: 0 4px 12px rgba(150,120,30,0.5), inset 0 -2px 4px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.1);
+    border-bottom: 3px solid #706020;
+    color: #3a2a0a;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+  }
+
+  /* ===== WOODEN BOOKSHELF ===== */
+  .bookshelf {
+    margin: 30px auto;
+    max-width: 800px;
+  }
+  .shelf {
+    display: flex; gap: 12px; padding: 10px 20px 0;
+    align-items: flex-end;
+    min-height: 120px;
+  }
+  .shelf-board {
+    height: 20px;
+    background: linear-gradient(180deg, #6a4a2a 0%, #5a3a1a 40%, #7a5a3a 60%, #5a3a1a 100%);
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,220,150,0.1);
+    position: relative;
+  }
+  .shelf-board::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(180deg, rgba(255,220,150,0.15), transparent);
+  }
+  .book {
+    width: 40px;
+    border-radius: 3px 6px 6px 3px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    position: relative;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.5), inset -2px 0 4px rgba(0,0,0,0.3);
+  }
+  .book:hover { transform: translateY(-10px) rotate(-2deg); }
+  .book::after {
+    content: '';
+    position: absolute; top: 5px; left: 3px; bottom: 5px; width: 3px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 2px;
+  }
+
+  /* ===== EMBOSSED TEXT ===== */
+  .embossed-section {
+    text-align: center; margin: 40px 0;
+    padding: 40px;
+    background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
+    border-radius: 12px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .embossed {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: #3a3a3a;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.15), 0 -1px 1px rgba(0,0,0,0.8);
+  }
+  .debossed {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: #333;
+    text-shadow: 0 -1px 1px rgba(255,255,255,0.1), 0 1px 3px rgba(0,0,0,0.8);
+  }
+
+  /* ===== CODE BLOCK ===== */
+  .code-block {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #c8c8c8;
+  }
+  .code-block .comment { color: #6a9955; }
+  .code-block .prop { color: #9cdcfe; }
+  .code-block .val { color: #ce9178; }
+  .code-block .sel { color: #d7ba7d; }
+
+  /* ===== THEORY SECTION ===== */
+  .theory {
+    background: linear-gradient(135deg, #2a2218, #1a1810);
+    border: 1px solid #4a3a20;
+    border-radius: 12px;
+    padding: 40px;
+    margin: 40px 0;
+  }
+  .theory h2 {
+    font-family: 'Playfair Display', serif;
+    color: #d4b068;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  .theory p { margin-bottom: 15px; color: #c8b898; }
+  .theory strong { color: #e0c878; }
+  .theory ul { padding-left: 20px; margin: 15px 0; }
+  .theory li { margin-bottom: 8px; color: #c8b898; }
+
+  /* ===== VOLUME KNOB ===== */
+  .knob-section { text-align: center; margin: 40px 0; }
+  .volume-knob {
+    width: 120px; height: 120px;
+    background: linear-gradient(145deg, #555, #222);
+    border-radius: 50%;
+    margin: 0 auto;
+    position: relative;
+    box-shadow:
+      0 8px 30px rgba(0,0,0,0.6),
+      inset 0 2px 4px rgba(255,255,255,0.1),
+      0 0 0 8px #2a2a2a,
+      0 0 0 10px #444;
+    cursor: grab;
+  }
+  .volume-knob::before {
+    content: '';
+    position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #666, #333 40%, #222 70%);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .volume-knob .indicator {
+    position: absolute;
+    width: 4px; height: 20px;
+    background: #e0c050;
+    top: 12px; left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+    box-shadow: 0 0 6px rgba(224,192,80,0.5);
+    z-index: 1;
+    transition: transform 0.1s;
+  }
+  .knob-value {
+    font-size: 1.4rem;
+    color: #e0c050;
+    margin-top: 20px;
+    font-family: 'Fira Code', monospace;
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 0.85rem;
+    border-top: 1px solid #333;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">← Back to Index</a>
+
+<header>
+  <h1>Skeuomorphism</h1>
+  <p>The art of making digital interfaces mimic their real-world counterparts — textures, shadows, reflections, and all.</p>
+</header>
+
+<div class="container">
+
+  <!-- LEATHER NOTEBOOK -->
+  <h2 class="section-title">📒 Leather Notebook</h2>
+  <div class="leather-notebook">
+    <div class="notebook-content">
+      <div class="title">Design Notes — June 2012</div>
+      <br>
+      "Make it look real. If it's a bookshelf, use wood grain.<br>
+      If it's a notepad, use lined paper and leather binding.<br>
+      The user should feel like they're touching something physical."<br>
+      <br>— The Skeuomorphic Manifesto
+    </div>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Leather texture with CSS */</span>
+<span class="sel">.leather</span> {
+  <span class="prop">background</span>: <span class="val">linear-gradient(135deg, #5a3a1a, #3d2510, #4a2e14, #5a3a1a)</span>;
+  <span class="prop">box-shadow</span>:
+    <span class="val">0 10px 40px rgba(0,0,0,0.6)</span>,
+    <span class="val">inset 0 2px 4px rgba(255,220,150,0.15)</span>,
+    <span class="val">inset 0 -2px 4px rgba(0,0,0,0.3)</span>;
+  <span class="prop">border</span>: <span class="val">1px solid #6a4a2a</span>;
+}
+  </div>
+
+  <!-- METAL TOGGLES -->
+  <h2 class="section-title">🔧 Metal Toggle Switches</h2>
+  <div class="toggle-row">
+    <div class="toggle-group">
+      <span class="toggle-label">Wi-Fi</span>
+      <div class="metal-toggle active" onclick="this.classList.toggle('active')">
+        <div class="knob"></div>
+      </div>
+    </div>
+    <div class="toggle-group">
+      <span class="toggle-label">Bluetooth</span>
+      <div class="metal-toggle" onclick="this.classList.toggle('active')">
+        <div class="knob"></div>
+      </div>
+    </div>
+    <div class="toggle-group">
+      <span class="toggle-label">Airplane</span>
+      <div class="metal-toggle" onclick="this.classList.toggle('active')">
+        <div class="knob"></div>
+      </div>
+    </div>
+    <div class="toggle-group">
+      <span class="toggle-label">Location</span>
+      <div class="metal-toggle active" onclick="this.classList.toggle('active')">
+        <div class="knob"></div>
+      </div>
+    </div>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Metal knob with highlight reflection */</span>
+<span class="sel">.knob</span> {
+  <span class="prop">background</span>: <span class="val">linear-gradient(145deg, #e0e0e0, #a0a0a0)</span>;
+  <span class="prop">border-radius</span>: <span class="val">50%</span>;
+  <span class="prop">box-shadow</span>:
+    <span class="val">0 2px 8px rgba(0,0,0,0.5)</span>,
+    <span class="val">inset 0 2px 4px rgba(255,255,255,0.8)</span>,  <span class="comment">/* top highlight */</span>
+    <span class="val">inset 0 -2px 4px rgba(0,0,0,0.2)</span>;       <span class="comment">/* bottom shadow */</span>
+}
+  </div>
+
+  <!-- GLOSSY BUTTONS -->
+  <h2 class="section-title">✨ Glossy Buttons</h2>
+  <div class="button-row">
+    <button class="glossy-btn blue">Download</button>
+    <button class="glossy-btn red">Delete</button>
+    <button class="glossy-btn green">Accept</button>
+    <button class="glossy-btn gold">Purchase</button>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Glossy button with reflection overlay */</span>
+<span class="sel">.glossy-btn</span> {
+  <span class="prop">background</span>: <span class="val">linear-gradient(180deg, #4a8ae0, #2a5ab0)</span>;
+  <span class="prop">border-bottom</span>: <span class="val">3px solid #1a3a70</span>;  <span class="comment">/* depth */</span>
+  <span class="prop">text-shadow</span>: <span class="val">0 -1px 1px rgba(0,0,0,0.4)</span>;
+}
+<span class="sel">.glossy-btn::before</span> {
+  <span class="prop">content</span>: <span class="val">''</span>;
+  <span class="prop">position</span>: <span class="val">absolute</span>; <span class="prop">top</span>: <span class="val">0</span>; <span class="prop">height</span>: <span class="val">50%</span>;
+  <span class="prop">background</span>: <span class="val">linear-gradient(180deg, rgba(255,255,255,0.4), rgba(255,255,255,0.05))</span>;
+}
+  </div>
+
+  <!-- WOODEN BOOKSHELF -->
+  <h2 class="section-title">📚 Wooden Bookshelf</h2>
+  <div class="bookshelf">
+    <div class="shelf" id="shelf1"></div>
+    <div class="shelf-board"></div>
+    <div class="shelf" id="shelf2"></div>
+    <div class="shelf-board"></div>
+  </div>
+
+  <!-- EMBOSSED TEXT -->
+  <h2 class="section-title">🔤 Embossed & Debossed Text</h2>
+  <div class="embossed-section">
+    <div class="embossed">EMBOSSED</div>
+    <div style="height: 30px;"></div>
+    <div class="debossed">DEBOSSED</div>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Embossed: light shadow below, dark above */</span>
+<span class="sel">.embossed</span> {
+  <span class="prop">color</span>: <span class="val">#3a3a3a</span>;
+  <span class="prop">text-shadow</span>: <span class="val">0 1px 2px rgba(255,255,255,0.15), 0 -1px 1px rgba(0,0,0,0.8)</span>;
+}
+<span class="comment">/* Debossed: dark shadow below, light above */</span>
+<span class="sel">.debossed</span> {
+  <span class="prop">color</span>: <span class="val">#333</span>;
+  <span class="prop">text-shadow</span>: <span class="val">0 -1px 1px rgba(255,255,255,0.1), 0 1px 3px rgba(0,0,0,0.8)</span>;
+}
+  </div>
+
+  <!-- VOLUME KNOB -->
+  <h2 class="section-title">🎛️ Volume Knob</h2>
+  <div class="knob-section">
+    <div class="volume-knob" id="volumeKnob">
+      <div class="indicator" id="knobIndicator"></div>
+    </div>
+    <div class="knob-value" id="knobValue">5</div>
+    <p style="color:#888;margin-top:10px;font-size:0.85rem;">Click and drag to rotate</p>
+  </div>
+
+  <!-- THEORY -->
+  <div class="theory">
+    <h2>📖 History & Theory</h2>
+    <p><strong>Skeuomorphism</strong> (from Greek: <em>skeuos</em> = tool, <em>morphe</em> = shape) is a design approach where digital elements mimic their real-world counterparts in appearance, texture, and behavior.</p>
+    
+    <p><strong>The Apple iOS 6 Era (2007–2013)</strong> — Under Scott Forstall's leadership, Apple's iOS was the gold standard of skeuomorphic design. The Notes app had yellow legal pad paper with torn edges. The Compass app had a realistic compass face with reflections. iBooks displayed a wooden bookshelf. The podcast app had a reel-to-reel tape recorder. Game Center featured green felt casino textures.</p>
+
+    <p><strong>Why it worked:</strong> In the early smartphone era, users were transitioning from physical to digital. Skeuomorphic cues made interfaces instantly understandable — a virtual toggle that looks like a real switch tells you exactly what it does.</p>
+
+    <p><strong>The fall:</strong> In 2013, Jony Ive took over iOS design and launched iOS 7 with a completely flat redesign. Critics had long argued skeuomorphism was:</p>
+    <ul>
+      <li>Artificially constraining — why should a digital book app look like wood?</li>
+      <li>Inconsistent — each app had its own visual metaphor with no unified language</li>
+      <li>Heavy on resources — complex textures and gradients used more GPU/battery</li>
+      <li>Culturally dated — younger users had never seen a Rolodex or tape recorder</li>
+    </ul>
+
+    <p><strong>When to use today:</strong> Skeuomorphism still thrives in music production software (virtual synthesizers, mixing boards), gaming UIs, and luxury brand apps. Subtle skeuomorphic touches (soft shadows, gentle gradients) are making a comeback as "rich design" after years of flat extremism.</p>
+  </div>
+
+</div>
+
+<footer>Skeuomorphism — UI Design Trends Research</footer>
+
+<script>
+  // Generate books
+  const colors = [
+    ['#8b2500','#a03000'], ['#1a3a6a','#2a4a8a'], ['#2a5a2a','#3a7a3a'],
+    ['#6a2a6a','#8a3a8a'], ['#8a7a2a','#a09030'], ['#5a3a2a','#7a4a3a'],
+    ['#2a4a5a','#3a6a7a'], ['#7a2a3a','#9a3a4a'], ['#3a3a3a','#5a5a5a']
+  ];
+  function makeBook(h) {
+    const c = colors[Math.floor(Math.random()*colors.length)];
+    const book = document.createElement('div');
+    book.className = 'book';
+    book.style.height = h + 'px';
+    book.style.background = `linear-gradient(90deg, ${c[0]}, ${c[1]}, ${c[0]})`;
+    return book;
+  }
+  const s1 = document.getElementById('shelf1');
+  const s2 = document.getElementById('shelf2');
+  [100,90,110,85,105,95,100,88,112,92].forEach(h => s1.appendChild(makeBook(h)));
+  [95,108,88,102,92,110,85,98,105].forEach(h => s2.appendChild(makeBook(h)));
+
+  // Volume knob
+  const knob = document.getElementById('volumeKnob');
+  const indicator = document.getElementById('knobIndicator');
+  const valDisplay = document.getElementById('knobValue');
+  let isDragging = false;
+  let knobAngle = 0; // -135 to 135
+  function updateKnob(angle) {
+    knobAngle = Math.max(-135, Math.min(135, angle));
+    indicator.style.transform = `translateX(-50%) rotate(${knobAngle}deg)`;
+    const val = Math.round(((knobAngle + 135) / 270) * 10);
+    valDisplay.textContent = val;
+  }
+  updateKnob(0);
+  knob.addEventListener('mousedown', (e) => { isDragging = true; e.preventDefault(); });
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const rect = knob.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const angle = Math.atan2(e.clientX - cx, -(e.clientY - cy)) * (180/Math.PI);
+    updateKnob(angle);
+  });
+  document.addEventListener('mouseup', () => { isDragging = false; });
+</script>
+</body>
+</html>

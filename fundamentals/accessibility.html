@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accessibility — UI/UX Fundamentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+    --border: #2e3346; --text: #e4e6f0; --text-dim: #8b8fa3;
+    --accent: #6c5ce7; --accent2: #00cec9;
+    --pass: #00b894; --warn: #fdcb6e; --fail: #e17056;
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+  /* Visible focus ring for the whole page — practicing what we preach */
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--accent2); outline-offset: 2px; border-radius: 4px; }
+
+  header { text-align: center; padding: 60px 24px 40px; background: linear-gradient(135deg, #1a1d27 0%, #1f3e2f 50%, #1a1d27 100%); border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 2.8rem; font-weight: 900; background: linear-gradient(135deg, #00cec9, #00b894, #74b9ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+  header p { color: var(--text-dim); max-width: 660px; margin: 0 auto; font-size: 1.1rem; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  h3 { font-size: 1.2rem; font-weight: 600; margin: 8px 0; color: #ddd; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  p.prose { color: var(--text-dim); margin-bottom: 16px; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--surface2); padding: 2px 7px; border-radius: 5px; font-size: 0.85em; color: var(--accent2); }
+  .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 14px; font-weight: 700; }
+  .tip { background: #00b89415; border-left: 3px solid var(--pass); padding: 16px 20px; margin: 16px 0; border-radius: 0 10px 10px 0; color: var(--text-dim); font-size: 0.9rem; }
+  .tip strong { color: var(--text); }
+
+  /* POUR / level cards */
+  .pour-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .pour-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .pour-card .letter { font-size: 1.6rem; font-weight: 900; color: var(--accent2); margin-bottom: 6px; }
+  .pour-card p { font-size: 0.85rem; color: var(--text-dim); }
+
+  .levels { display: flex; gap: 14px; flex-wrap: wrap; }
+  .level-card { flex: 1; min-width: 200px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .level-card .lvl { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.4rem; color: var(--accent); margin-bottom: 6px; }
+  .level-card p { font-size: 0.85rem; color: var(--text-dim); }
+
+  /* Contrast checker */
+  .contrast-demo { display: flex; flex-wrap: wrap; gap: 24px; }
+  .contrast-inputs { flex: 1; min-width: 260px; }
+  .contrast-result { flex: 1; min-width: 260px; }
+  .color-input-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .color-input-row label { width: 110px; font-size: 0.9rem; color: var(--text-dim); }
+  .color-input-row input[type="color"] { width: 48px; height: 36px; border: 2px solid var(--border); border-radius: 8px; background: transparent; cursor: pointer; }
+  .color-input-row input[type="text"] { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; width: 110px; font-family: 'JetBrains Mono', monospace; }
+  .contrast-preview { padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 16px; }
+  .contrast-preview .big { font-size: 1.5rem; font-weight: 700; }
+  .contrast-preview .small { font-size: 0.85rem; margin-top: 4px; }
+  .ratio-display { font-size: 2.5rem; font-weight: 800; text-align: center; margin: 8px 0 16px; }
+  .pass-fail { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pf-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; text-align: center; }
+  .pf-pass { background: #00b89422; color: var(--pass); border: 1px solid #00b89444; }
+  .pf-fail { background: #e1705622; color: var(--fail); border: 1px solid #e1705644; }
+
+  /* Focus demo */
+  .focus-demo { display: flex; gap: 16px; flex-wrap: wrap; }
+  .focus-col { flex: 1; min-width: 240px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .focus-col h4 { color: #fff; margin-bottom: 12px; font-size: 0.95rem; }
+  .demo-btn { display: block; width: 100%; background: var(--accent); color: #fff; border: none; padding: 11px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-size: 0.9rem; }
+  .no-focus:focus { outline: none; } /* intentionally bad for demo */
+  .good-focus:focus { outline: 3px solid var(--accent2); outline-offset: 3px; }
+
+  /* Keyboard nav */
+  .kbd { display: inline-block; font-family: 'JetBrains Mono', monospace; background: var(--surface2); border: 1px solid var(--border); border-bottom-width: 3px; border-radius: 6px; padding: 2px 9px; font-size: 0.82rem; color: var(--text); }
+  .key-table { width: 100%; border-collapse: collapse; }
+  .key-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--text-dim); }
+  .key-table td:first-child { width: 180px; }
+
+  /* ARIA / code blocks */
+  pre { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.6; color: #cdd3e8; margin: 8px 0; }
+  pre .c { color: var(--text-dim); }
+  pre .t { color: #74b9ff; }
+  pre .a { color: var(--accent2); }
+  pre .s { color: #ffeaa7; }
+
+  /* reduced motion demo */
+  .motion-box { width: 70px; height: 70px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); margin: 10px auto; animation: spin 2.5s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .motion-box { animation: none; }
+  }
+  .motion-note { text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+
+  footer { text-align: center; padding: 40px 24px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<a class="back-link" href="../index.html">Back to Hub</a>
+<header>
+  <h1>Accessibility</h1>
+  <p>Accessible design isn't a feature you bolt on — it's how you build for the full range of human ability. Master WCAG 2.2, contrast, ARIA, keyboard navigation, and motion preferences.</p>
+</header>
+
+<div class="container">
+
+<!-- Section 1: POUR + levels -->
+<section>
+  <h2>WCAG 2.2 — The Foundations</h2>
+  <p class="subtitle">The Web Content Accessibility Guidelines are organized around four principles, remembered as <strong>POUR</strong>. Every success criterion supports one of them.</p>
+
+  <div class="card">
+    <div class="pour-grid">
+      <div class="pour-card"><div class="letter">P</div><h3>Perceivable</h3><p>Information must be presentable in ways users can perceive — text alternatives, captions, sufficient contrast.</p></div>
+      <div class="pour-card"><div class="letter">O</div><h3>Operable</h3><p>Interface and navigation must be operable — keyboard access, enough time, no seizure-inducing flashes.</p></div>
+      <div class="pour-card"><div class="letter">U</div><h3>Understandable</h3><p>Content and operation must be understandable — readable text, predictable behavior, helpful errors.</p></div>
+      <div class="pour-card"><div class="letter">R</div><h3>Robust</h3><p>Content must be robust enough to work with current and future tools, including assistive technologies.</p></div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:8px;">Conformance Levels</h3>
+  <p class="prose">Each criterion is graded A, AA, or AAA. <strong>AA is the practical target</strong> for most products and the level referenced by laws like the ADA, EN 301 549, and Section 508.</p>
+  <div class="levels">
+    <div class="level-card"><div class="lvl">A</div><h3>Minimum</h3><p>Essential. Without it, some groups cannot use the content at all (e.g. keyboard operability, text alternatives).</p></div>
+    <div class="level-card"><div class="lvl">AA</div><h3>Standard target</h3><p>The legal and industry benchmark. Adds 4.5:1 text contrast, resizable text, consistent navigation.</p></div>
+    <div class="level-card"><div class="lvl">AAA</div><h3>Enhanced</h3><p>Highest bar (7:1 contrast, sign language for video). Aspirational; rarely required site-wide.</p></div>
+  </div>
+  <div class="tip"><strong>New in WCAG 2.2 (2023):</strong> nine added criteria including <em>Focus Not Obscured</em>, <em>Dragging Movements</em> (offer a non-drag alternative), <em>Target Size (Minimum)</em> of 24×24 CSS px, and <em>Accessible Authentication</em>. Reference: <a href="https://www.w3.org/TR/WCAG22/" target="_blank">w3.org/TR/WCAG22</a>.</div>
+</section>
+
+<!-- Section 2: Contrast checker -->
+<section>
+  <h2>Color Contrast (Live)</h2>
+  <p class="subtitle">Contrast ratio measures the luminance difference between text and its background. WCAG AA requires <strong>4.5:1</strong> for normal text and <strong>3:1</strong> for large text (≥24px, or ≥18.66px bold). AAA requires <strong>7:1</strong>. Adjust the colors and watch the verdict update.</p>
+
+  <div class="card">
+    <div class="contrast-demo">
+      <div class="contrast-inputs">
+        <div class="color-input-row">
+          <label for="fgColor">Text color</label>
+          <input type="color" id="fgColor" value="#8b8fa3">
+          <input type="text" id="fgHex" value="#8b8fa3" aria-label="Text hex value">
+        </div>
+        <div class="color-input-row">
+          <label for="bgColor">Background</label>
+          <input type="color" id="bgColor" value="#1a1d27">
+          <input type="text" id="bgHex" value="#1a1d27" aria-label="Background hex value">
+        </div>
+        <button onclick="swapColors()" style="background:var(--accent);color:#fff;border:none;padding:9px 20px;border-radius:8px;cursor:pointer;font-size:0.9rem;">⇅ Swap colors</button>
+        <p class="prose" style="margin-top:16px;font-size:0.82rem;">Try the default muted grey on the dark card — it's a common "looks fine" choice that quietly fails AA for body text.</p>
+      </div>
+      <div class="contrast-result">
+        <div class="contrast-preview" id="contrastPreview">
+          <div class="big">Sample Heading</div>
+          <div class="small">The quick brown fox jumps over the lazy dog</div>
+        </div>
+        <div class="ratio-display" id="ratioDisplay">—</div>
+        <div class="pass-fail" id="passFail"></div>
+      </div>
+    </div>
+  </div>
+  <div class="tip"><strong>Beyond text:</strong> WCAG 2.1+ also requires <strong>3:1</strong> contrast for UI components and graphical objects — icons, input borders, focus indicators, and chart elements. Color must never be the <em>only</em> way information is conveyed (the "use of color" criterion).</div>
+</section>
+
+<!-- Section 3: Focus states -->
+<section>
+  <h2>Focus States</h2>
+  <p class="subtitle">A visible focus indicator tells keyboard and switch users where they are on the page. Removing it (<code>outline: none</code>) with no replacement is one of the most common — and most damaging — accessibility mistakes. Tab through both columns to compare.</p>
+
+  <div class="card">
+    <div class="focus-demo">
+      <div class="focus-col">
+        <h4>✗ Focus removed (don't do this)</h4>
+        <button class="demo-btn no-focus">Tab to me — no ring</button>
+        <button class="demo-btn no-focus">Where am I?</button>
+        <p class="prose" style="font-size:0.82rem;margin:0;">With <code>outline:none</code> and no substitute, a keyboard user is lost.</p>
+      </div>
+      <div class="focus-col">
+        <h4>✓ Clear focus ring</h4>
+        <button class="demo-btn good-focus">Tab to me — I glow</button>
+        <button class="demo-btn good-focus">Easy to track</button>
+        <p class="prose" style="font-size:0.82rem;margin:0;">A 3px <code>outline</code> with <code>outline-offset</code> is unmistakable.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tip"><strong>Use <code>:focus-visible</code>:</strong> it shows the ring for keyboard navigation but not for mouse clicks, giving you the best of both. WCAG 2.2 also adds <em>Focus Appearance</em> (the indicator must be large and high-contrast enough) and <em>Focus Not Obscured</em> (sticky headers must not hide the focused element).</div>
+</section>
+
+<!-- Section 4: Keyboard navigation -->
+<section>
+  <h2>Keyboard Navigation</h2>
+  <p class="subtitle">Everything achievable with a mouse must be achievable with a keyboard alone. Many users — motor-impaired, blind, or simply power users — never touch a pointer.</p>
+
+  <div class="card">
+    <table class="key-table">
+      <tr><td><span class="kbd">Tab</span> / <span class="kbd">Shift + Tab</span></td><td>Move forward / backward through focusable elements.</td></tr>
+      <tr><td><span class="kbd">Enter</span></td><td>Activate links and buttons; submit forms.</td></tr>
+      <tr><td><span class="kbd">Space</span></td><td>Activate buttons, toggle checkboxes, scroll the page.</td></tr>
+      <tr><td><span class="kbd">Arrow keys</span></td><td>Move within a composite widget — menus, radios, tabs, sliders.</td></tr>
+      <tr><td><span class="kbd">Esc</span></td><td>Close dialogs, menus, and popovers.</td></tr>
+    </table>
+  </div>
+  <div class="tip"><strong>Golden rules:</strong> (1) Use native <code>&lt;button&gt;</code>, <code>&lt;a&gt;</code>, and <code>&lt;input&gt;</code> — they're keyboard-accessible for free. (2) Keep a <strong>logical tab order</strong> (follow the DOM; avoid positive <code>tabindex</code>). (3) Provide a <strong>"Skip to content" link</strong> so users can bypass repeated navigation. (4) Never trap focus except inside an open modal.</div>
+</section>
+
+<!-- Section 5: ARIA & screen readers -->
+<section>
+  <h2>ARIA & Screen Readers</h2>
+  <p class="subtitle">Screen readers announce the page through its semantic structure. <strong>The first rule of ARIA is: don't use ARIA</strong> when a native HTML element will do — semantic HTML is accessible by default. Reach for ARIA only to fill gaps.</p>
+
+  <div class="card">
+    <div class="label">Native semantics first — these convey role, name, and state automatically</div>
+<pre><span class="c">&lt;!-- Good: the browser already knows this is a button --&gt;</span>
+<span class="t">&lt;button</span> <span class="a">type</span>=<span class="s">"submit"</span><span class="t">&gt;</span>Save changes<span class="t">&lt;/button&gt;</span>
+
+<span class="c">&lt;!-- Landmarks let users jump between regions --&gt;</span>
+<span class="t">&lt;nav</span> <span class="a">aria-label</span>=<span class="s">"Primary"</span><span class="t">&gt;</span> ... <span class="t">&lt;/nav&gt;</span>
+<span class="t">&lt;main&gt;</span> ... <span class="t">&lt;/main&gt;</span></pre>
+
+    <div class="label" style="margin-top:20px;">When native HTML falls short — use ARIA to add the missing semantics</div>
+<pre><span class="c">&lt;!-- An icon-only button needs an accessible name --&gt;</span>
+<span class="t">&lt;button</span> <span class="a">aria-label</span>=<span class="s">"Close dialog"</span><span class="t">&gt;</span>✕<span class="t">&lt;/button&gt;</span>
+
+<span class="c">&lt;!-- Communicate a custom toggle's state --&gt;</span>
+<span class="t">&lt;button</span> <span class="a">aria-pressed</span>=<span class="s">"true"</span><span class="t">&gt;</span>Mute<span class="t">&lt;/button&gt;</span>
+
+<span class="c">&lt;!-- Announce dynamic updates without moving focus --&gt;</span>
+<span class="t">&lt;div</span> <span class="a">role</span>=<span class="s">"status"</span> <span class="a">aria-live</span>=<span class="s">"polite"</span><span class="t">&gt;</span>Saved!<span class="t">&lt;/div&gt;</span>
+
+<span class="c">&lt;!-- Decorative images get an empty alt so SRs skip them --&gt;</span>
+<span class="t">&lt;img</span> <span class="a">src</span>=<span class="s">"swirl.svg"</span> <span class="a">alt</span>=<span class="s">""</span><span class="t">&gt;</span></pre>
+  </div>
+  <div class="tip"><strong>Always provide an accessible name</strong> for interactive elements (visible text, <code>aria-label</code>, or <code>aria-labelledby</code>), and meaningful <code>alt</code> text for informative images. Common roles: <code>button</code>, <code>navigation</code>, <code>dialog</code>, <code>alert</code>, <code>status</code>, <code>tab</code>/<code>tabpanel</code>. Full reference: <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA" target="_blank">MDN ARIA</a> and the <a href="https://www.w3.org/WAI/ARIA/apg/" target="_blank">ARIA Authoring Practices Guide</a>.</div>
+</section>
+
+<!-- Section 6: prefers-reduced-motion -->
+<section>
+  <h2>Respecting Motion Preferences</h2>
+  <p class="subtitle">Animation can cause nausea, dizziness, and migraines for users with vestibular disorders. Operating systems expose a "reduce motion" setting; honor it with the <code>prefers-reduced-motion</code> media query.</p>
+
+  <div class="card">
+    <div class="label">Live demo — this spins, unless your OS requests reduced motion</div>
+    <div class="motion-box"></div>
+    <p class="motion-note">Enable "Reduce motion" in your OS accessibility settings, then reload — the box will hold still.</p>
+<pre><span class="t">@media</span> (<span class="a">prefers-reduced-motion</span>: reduce) {
+  * { <span class="a">animation</span>: none <span class="a">!important</span>; <span class="a">transition</span>: none <span class="a">!important</span>; }
+}</pre>
+  </div>
+  <div class="tip"><strong>Design motion-safe by default:</strong> prefer subtle fades over large parallax or zoom. Provide essential motion (like a loading spinner) but strip decorative, distance-covering animation when reduction is requested. See <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank">MDN: prefers-reduced-motion</a>.</div>
+</section>
+
+</div>
+
+<footer>
+  <p>Accessibility — UI/UX Design Fundamentals</p>
+</footer>
+
+<script>
+// ---- Contrast utilities (WCAG relative luminance) ----
+function hexToRgb(hex) {
+  hex = hex.replace('#','');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  return [parseInt(hex.substr(0,2),16), parseInt(hex.substr(2,2),16), parseInt(hex.substr(4,2),16)];
+}
+function luminance(r,g,b) {
+  const a = [r,g,b].map(v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+  return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2];
+}
+function contrastRatio(c1, c2) {
+  const l1 = luminance(...c1), l2 = luminance(...c2);
+  return (Math.max(l1,l2) + 0.05) / (Math.min(l1,l2) + 0.05);
+}
+
+const fgC = document.getElementById('fgColor'), bgC = document.getElementById('bgColor');
+const fgH = document.getElementById('fgHex'), bgH = document.getElementById('bgHex');
+
+function updateContrast() {
+  const ratio = contrastRatio(hexToRgb(fgC.value), hexToRgb(bgC.value));
+  const preview = document.getElementById('contrastPreview');
+  preview.style.background = bgC.value;
+  preview.style.color = fgC.value;
+  const rd = document.getElementById('ratioDisplay');
+  rd.textContent = ratio.toFixed(2) + ':1';
+  rd.style.color = ratio >= 4.5 ? 'var(--pass)' : ratio >= 3 ? 'var(--warn)' : 'var(--fail)';
+
+  const checks = [
+    ['AA Normal', ratio >= 4.5], ['AAA Normal', ratio >= 7],
+    ['AA Large', ratio >= 3], ['AAA Large', ratio >= 4.5],
+  ];
+  document.getElementById('passFail').innerHTML = checks.map(([lbl, ok]) =>
+    `<span class="pf-badge ${ok?'pf-pass':'pf-fail'}">${lbl} ${ok?'✓ Pass':'✗ Fail'}</span>`
+  ).join('');
+}
+
+fgC.oninput = () => { fgH.value = fgC.value; updateContrast(); };
+bgC.oninput = () => { bgH.value = bgC.value; updateContrast(); };
+fgH.oninput = () => { if (/^#[0-9a-f]{6}$/i.test(fgH.value)) { fgC.value = fgH.value; updateContrast(); } };
+bgH.oninput = () => { if (/^#[0-9a-f]{6}$/i.test(bgH.value)) { bgC.value = bgH.value; updateContrast(); } };
+function swapColors() {
+  const t = fgC.value; fgC.value = bgC.value; bgC.value = t;
+  fgH.value = fgC.value; bgH.value = bgC.value; updateContrast();
+}
+updateContrast();
+</script>
+</body>
+</html>

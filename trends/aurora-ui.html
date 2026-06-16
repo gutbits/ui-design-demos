@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora UI — UI Design Trends</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a12;
+    color: #e6e8f0;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  .back-link {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    color: #c7d2fe; text-decoration: none; font-size: 14px; font-weight: 600;
+    background: rgba(30,30,55,0.6);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: background 0.2s;
+  }
+  .back-link:hover { background: rgba(50,50,85,0.7); }
+
+  /* ===== THE LIVE AURORA HERO ===== */
+  .aurora-hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    background: #0a0a12;
+  }
+  /* The aurora layer = a stage holding several huge blurred blobs */
+  .aurora {
+    position: absolute; inset: -20%;
+    filter: blur(80px);
+    z-index: 0;
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.7;
+    mix-blend-mode: screen;       /* additive light, like real aurora */
+    will-change: transform;
+  }
+  .blob.b1 {
+    width: 50vw; height: 50vw; top: -10%; left: -5%;
+    background: radial-gradient(circle, #5b7cfa, transparent 60%);
+    animation: drift1 18s ease-in-out infinite alternate;
+  }
+  .blob.b2 {
+    width: 45vw; height: 45vw; top: 20%; right: -10%;
+    background: radial-gradient(circle, #c44cff, transparent 60%);
+    animation: drift2 22s ease-in-out infinite alternate;
+  }
+  .blob.b3 {
+    width: 40vw; height: 40vw; bottom: -15%; left: 25%;
+    background: radial-gradient(circle, #2dd4bf, transparent 60%);
+    animation: drift3 16s ease-in-out infinite alternate;
+  }
+  .blob.b4 {
+    width: 38vw; height: 38vw; top: 30%; left: 30%;
+    background: radial-gradient(circle, #fb7185, transparent 60%);
+    animation: drift4 26s ease-in-out infinite alternate;
+  }
+  @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(12vw, 8vh) scale(1.25); } }
+  @keyframes drift2 { from { transform: translate(0,0) scale(1.1); } to { transform: translate(-10vw, 12vh) scale(0.9); } }
+  @keyframes drift3 { from { transform: translate(0,0) scale(0.95); } to { transform: translate(8vw, -10vh) scale(1.2); } }
+  @keyframes drift4 { from { transform: translate(0,0) scale(1); } to { transform: translate(-12vw, -6vh) scale(1.15); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blob { animation: none !important; }
+  }
+
+  .hero-content { position: relative; z-index: 1; padding: 20px; max-width: 760px; }
+  .hero-content h1 {
+    font-size: 4rem; font-weight: 800; letter-spacing: -2px;
+    background: linear-gradient(120deg, #fff, #c7d2fe 60%, #f5d0fe);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-content p { color: #b4b9d6; font-size: 1.2rem; font-weight: 300; margin-top: 18px; }
+  .hero-cta {
+    margin-top: 32px; display: inline-block;
+    padding: 14px 32px; border-radius: 12px;
+    background: linear-gradient(120deg, #6366f1, #a855f7);
+    color: #fff; font-weight: 600; text-decoration: none;
+    box-shadow: 0 10px 40px rgba(129,80,255,0.4);
+    transition: transform 0.2s;
+  }
+  .hero-cta:hover { transform: translateY(-2px); }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 60px 20px; position: relative; }
+
+  .section-title {
+    font-size: 1.9rem; font-weight: 700; color: #fff;
+    margin: 70px 0 30px; text-align: center; letter-spacing: -0.5px;
+  }
+
+  /* ===== GLASS CARDS ON AURORA ===== */
+  .aurora-panel {
+    position: relative; overflow: hidden;
+    border-radius: 24px; padding: 50px 30px; margin: 30px 0;
+    background: #0d0d18;
+  }
+  .aurora-panel .panel-aurora { position: absolute; inset: -30%; filter: blur(70px); z-index: 0; }
+  .aurora-panel .pblob { position: absolute; width: 40%; height: 60%; border-radius: 50%; opacity: 0.6; mix-blend-mode: screen; }
+  .glass-grid {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;
+  }
+  .glass-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px; padding: 26px;
+  }
+  .glass-card h3 { font-weight: 600; margin-bottom: 8px; color: #fff; }
+  .glass-card p { font-size: 0.88rem; color: #c4c8e0; font-weight: 300; }
+  .glass-card .ic { font-size: 1.8rem; margin-bottom: 12px; }
+
+  /* ===== PALETTE ===== */
+  .palette { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 12px; margin: 30px 0; }
+  .swatch {
+    height: 110px; border-radius: 16px; padding: 12px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    font-family: 'Fira Code', monospace; font-size: 0.72rem; font-weight: 600;
+    filter: blur(0); position: relative; overflow: hidden;
+  }
+  .swatch span { position: relative; z-index: 1; }
+  .swatch .glow { position: absolute; inset: 0; filter: blur(20px); opacity: 0.9; }
+
+  /* ===== INTERACTIVE CONTROLS ===== */
+  .aurora-lab {
+    position: relative; height: 320px; border-radius: 24px; overflow: hidden;
+    background: #08080f; margin: 30px 0;
+  }
+  .aurora-lab .lab-stage { position: absolute; inset: -20%; z-index: 0; }
+  .aurora-lab .lab-blob { position: absolute; border-radius: 50%; mix-blend-mode: screen; }
+  .lab-controls {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+    display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;
+    padding: 16px; background: rgba(8,8,15,0.55); backdrop-filter: blur(10px);
+  }
+  .lab-controls label { font-size: 0.78rem; color: #c4c8e0; display: flex; flex-direction: column; gap: 4px; }
+
+  .code-block {
+    background: #11111e;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 24px; margin: 20px 0; overflow-x: auto;
+    font-family: 'Fira Code', monospace; font-size: 0.85rem; line-height: 1.7; color: #d4d8ee;
+  }
+  .code-block .comment { color: #6b6f96; }
+  .code-block .prop { color: #93c5fd; }
+  .code-block .val { color: #5eead4; }
+
+  .theory {
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 44px; margin: 40px 0;
+  }
+  .theory h2 { color: #c7d2fe; font-weight: 700; font-size: 1.7rem; margin-bottom: 20px; }
+  .theory p { margin-bottom: 15px; color: #b4b9d6; font-weight: 300; }
+  .theory strong { color: #fff; font-weight: 600; }
+  .theory ul { padding-left: 20px; margin: 15px 0; }
+  .theory li { margin-bottom: 8px; color: #b4b9d6; font-weight: 300; }
+
+  .callout {
+    background: rgba(99,102,241,0.08); border-left: 4px solid #818cf8;
+    border-radius: 14px; padding: 28px; margin: 30px 0;
+  }
+  .callout h3 { color: #a5b4fc; margin-bottom: 12px; font-weight: 600; }
+  .callout p { color: #b4b9d6; font-weight: 300; margin-bottom: 10px; }
+  .callout strong { color: #e6e8f0; font-weight: 600; }
+
+  footer { text-align: center; padding: 50px; color: #4a4f6e; font-size: 0.85rem; }
+
+  @media (max-width: 600px) { .hero-content h1 { font-size: 2.6rem; } }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">← Back to Hub</a>
+
+<!-- LIVE AURORA HERO -->
+<section class="aurora-hero">
+  <div class="aurora">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="blob b4"></div>
+  </div>
+  <div class="hero-content">
+    <h1>Aurora UI</h1>
+    <p>Ambient, blurred gradient light that drifts behind your interface — the soft, atmospheric look popularized by Stripe, Linear, Vercel and friends.</p>
+    <a href="#how" class="hero-cta">See how it's made ↓</a>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- HOW IT WORKS -->
+  <h2 class="section-title" id="how">Anatomy of an Aurora</h2>
+  <div class="code-block">
+<span class="comment">/* 1. A stage that holds the light, sitting behind your content */</span>
+<span class="val">.aurora</span> {
+  <span class="prop">position</span>: <span class="val">absolute</span>; <span class="prop">inset</span>: <span class="val">-20%</span>;   <span class="comment">/* overscan so blur has no hard edge */</span>
+  <span class="prop">filter</span>: <span class="val">blur(80px)</span>;             <span class="comment">/* the heavy blur IS the effect      */</span>
+}
+<span class="comment">/* 2. A few oversized radial-gradient blobs */</span>
+<span class="val">.blob</span> {
+  <span class="prop">position</span>: <span class="val">absolute</span>;
+  <span class="prop">width</span>: <span class="val">50vw</span>; <span class="prop">height</span>: <span class="val">50vw</span>; <span class="prop">border-radius</span>: <span class="val">50%</span>;
+  <span class="prop">background</span>: <span class="val">radial-gradient(circle, #5b7cfa, transparent 60%)</span>;
+  <span class="prop">mix-blend-mode</span>: <span class="val">screen</span>;        <span class="comment">/* colors add like real light         */</span>
+  <span class="prop">animation</span>: <span class="val">drift 18s ease-in-out infinite alternate</span>;
+}
+<span class="comment">/* 3. Slow, looping translate/scale keyframes give the living glow */</span>
+<span class="val">@keyframes drift</span> {
+  <span class="prop">from</span> { <span class="prop">transform</span>: <span class="val">translate(0,0) scale(1)</span>; }
+  <span class="prop">to</span>   { <span class="prop">transform</span>: <span class="val">translate(12vw, 8vh) scale(1.25)</span>; }
+}
+  </div>
+  <div class="callout">
+    <h3>Three ingredients, that's it</h3>
+    <p><strong>Big.</strong> Blobs are 40–50vw — far larger than they look once blurred. <strong>Blurred.</strong> A 60–100px blur dissolves them into soft ambient color. <strong>Additive.</strong> <code>mix-blend-mode: screen</code> makes overlapping colors brighten and blend like actual aurora light rather than muddy overlapping paint.</p>
+  </div>
+
+  <!-- GLASS ON AURORA -->
+  <h2 class="section-title">Glass Content over Aurora</h2>
+  <div class="aurora-panel">
+    <div class="panel-aurora">
+      <div class="pblob" style="top:-10%;left:-5%;background:radial-gradient(circle,#6366f1,transparent 60%);"></div>
+      <div class="pblob" style="bottom:-10%;right:-5%;background:radial-gradient(circle,#d946ef,transparent 60%);"></div>
+      <div class="pblob" style="top:20%;left:40%;background:radial-gradient(circle,#14b8a6,transparent 60%);"></div>
+    </div>
+    <div class="glass-grid">
+      <div class="glass-card"><div class="ic">⚡</div><h3>Fast</h3><p>Aurora is pure CSS — gradients, blur and transforms are GPU-accelerated and ship zero images.</p></div>
+      <div class="glass-card"><div class="ic">🪟</div><h3>Layered</h3><p>Frosted glass cards (backdrop-filter) sit on top, letting the ambient color bleed softly through.</p></div>
+      <div class="glass-card"><div class="ic">🌌</div><h3>Calm</h3><p>Slow drifting motion adds life without distraction — perfect for hero sections and dashboards.</p></div>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE LAB -->
+  <h2 class="section-title">Aurora Lab — tune it live</h2>
+  <div class="aurora-lab">
+    <div class="lab-stage" id="labStage">
+      <div class="lab-blob" style="width:40%;height:60%;top:-10%;left:0;background:radial-gradient(circle,#5b7cfa,transparent 60%);"></div>
+      <div class="lab-blob" style="width:45%;height:70%;bottom:-10%;right:0;background:radial-gradient(circle,#c44cff,transparent 60%);"></div>
+      <div class="lab-blob" style="width:35%;height:55%;top:20%;left:35%;background:radial-gradient(circle,#2dd4bf,transparent 60%);"></div>
+    </div>
+    <div class="lab-controls">
+      <label>Blur <input type="range" id="labBlur" min="0" max="120" value="70"></label>
+      <label>Opacity <input type="range" id="labOpacity" min="10" max="100" value="70"></label>
+      <label>Saturation <input type="range" id="labSat" min="50" max="250" value="120"></label>
+    </div>
+  </div>
+
+  <!-- PALETTE -->
+  <h2 class="section-title">Typical Aurora Palette</h2>
+  <div class="palette">
+    <div class="swatch"><div class="glow" style="background:#5b7cfa;"></div><span style="color:#fff;">Indigo<br>#5B7CFA</span></div>
+    <div class="swatch"><div class="glow" style="background:#a855f7;"></div><span style="color:#fff;">Violet<br>#A855F7</span></div>
+    <div class="swatch"><div class="glow" style="background:#c44cff;"></div><span style="color:#fff;">Fuchsia<br>#C44CFF</span></div>
+    <div class="swatch"><div class="glow" style="background:#fb7185;"></div><span style="color:#fff;">Rose<br>#FB7185</span></div>
+    <div class="swatch"><div class="glow" style="background:#2dd4bf;"></div><span style="color:#06281f;">Teal<br>#2DD4BF</span></div>
+  </div>
+
+  <!-- ACCESSIBILITY -->
+  <h2 class="section-title">Accessibility &amp; Performance</h2>
+  <div class="callout">
+    <h3>Keep text off the aurora — keep it on the glass</h3>
+    <p>Because the background drifts and shifts hue, <strong>text contrast over a raw aurora is unstable</strong> and will fail WCAG 1.4.3 in places. The fix is the pattern Stripe and Linear actually use: put the aurora <em>behind</em> a solid or frosted-glass surface and place text on that surface, where contrast is controlled.</p>
+    <p>Respect motion preferences — gate the drift animation behind <strong>@media (prefers-reduced-motion: reduce)</strong> so users who get motion sick see a static gradient. And watch performance: large <code>blur()</code> filters and <code>backdrop-filter</code> are GPU-heavy, so keep blob counts low (3–5), animate only <code>transform</code> (not box positions), and add <code>will-change: transform</code>.</p>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Honor reduced-motion — static aurora for sensitive users */</span>
+<span class="val">@media (prefers-reduced-motion: reduce)</span> {
+  <span class="val">.blob</span> { <span class="prop">animation</span>: <span class="val">none</span>; }
+}
+<span class="comment">/* Text lives on a controlled surface, never on raw aurora */</span>
+<span class="val">.glass-card</span> {
+  <span class="prop">background</span>: <span class="val">rgba(255,255,255,0.06)</span>;
+  <span class="prop">backdrop-filter</span>: <span class="val">blur(16px)</span>;
+  <span class="prop">color</span>: <span class="val">#fff</span>;   <span class="comment">/* contrast checked against the glass, not the glow */</span>
+}
+  </div>
+
+  <!-- THEORY -->
+  <div class="theory">
+    <h2>History &amp; Theory</h2>
+    <p><strong>Aurora UI</strong> (also called ambient gradients, gradient mesh, or simply "glow" backgrounds) describes the use of <strong>large, soft, blurred gradient blobs</strong> as an atmospheric backdrop — color that feels like light leaking in rather than a flat fill. The name evokes the aurora borealis: diffuse bands of shifting color.</p>
+
+    <p>It became the defining look of the early-2020s developer-tool and SaaS aesthetic. <strong>Stripe's</strong> animated gradient hero, <strong>Linear's</strong> dark ambient glows, and the gradient-heavy marketing of <strong>Vercel</strong> and many YC-era startups all share this DNA. The look pairs naturally with dark mode, glassmorphism, and bold gradient typography.</p>
+
+    <p><strong>Defining characteristics:</strong></p>
+    <ul>
+      <li><strong>Ambient color, not objects</strong> — the gradient is mood/atmosphere, sitting behind real content</li>
+      <li><strong>Heavy blur</strong> — there are no hard edges; the blur dissolves blobs into pure color fields</li>
+      <li><strong>Multi-hue blends</strong> — usually 3–5 colors (indigo, violet, fuchsia, teal, rose) melting together</li>
+      <li><strong>Subtle slow motion</strong> — gentle drift gives a sense of life without demanding attention</li>
+      <li><strong>Dark canvas</strong> — most auroras glow against a near-black background for maximum luminance contrast</li>
+    </ul>
+
+    <p>Technically it can be built several ways: animated CSS radial gradients (shown here), a static SVG/PNG gradient-mesh export from a tool like a mesh-gradient generator, or WebGL/Canvas for richer, noise-driven motion. CSS-only is the lightest and most common for hero sections.</p>
+
+    <p><strong>When to use:</strong> Landing pages, hero sections, dashboards, dev tools and any product that wants a modern, premium, atmospheric feel — especially in dark mode. <strong>When to avoid:</strong> content-dense reading interfaces, or anywhere the moving color competes with the content. The golden rule: aurora is a <em>backdrop</em>. Keep your text and controls on a controlled surface in front of it, and the effect stays both beautiful and usable.</p>
+  </div>
+
+</div>
+
+<footer>Aurora UI — UI Design Trends Research</footer>
+
+<script>
+  // Aurora Lab live controls
+  const stage = document.getElementById('labStage');
+  const labBlur = document.getElementById('labBlur');
+  const labOpacity = document.getElementById('labOpacity');
+  const labSat = document.getElementById('labSat');
+  const blobs = stage.querySelectorAll('.lab-blob');
+
+  function applyLab() {
+    stage.style.filter = `blur(${labBlur.value}px) saturate(${labSat.value}%)`;
+    blobs.forEach(b => b.style.opacity = labOpacity.value / 100);
+  }
+  [labBlur, labOpacity, labSat].forEach(el => el.addEventListener('input', applyLab));
+  applyLab();
+
+  // Gentle autonomous drift for the lab blobs (transform only)
+  let t = 0;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) {
+    function tick() {
+      t += 0.008;
+      blobs.forEach((b, i) => {
+        const x = Math.sin(t + i * 2) * 8;
+        const y = Math.cos(t * 0.8 + i) * 6;
+        const s = 1 + Math.sin(t * 0.5 + i) * 0.12;
+        b.style.transform = `translate(${x}%, ${y}%) scale(${s})`;
+      });
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }
+</script>
+</body>
+</html>

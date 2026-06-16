@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Theory — UI/UX Fundamentals</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+    --border: #2e3346; --text: #e4e6f0; --text-dim: #8b8fa3;
+    --accent: #6c5ce7; --accent2: #00cec9;
+  }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header { text-align: center; padding: 60px 24px 40px; background: linear-gradient(135deg, #1a1d27 0%, #2d1f4e 50%, #1a1d27 100%); border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #6c5ce7, #a29bfe, #fd79a8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+  header p { color: var(--text-dim); max-width: 600px; margin: 0 auto; font-size: 1.1rem; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; color: #ddd; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+
+  /* Color Wheel */
+  .wheel-container { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; justify-content: center; }
+  .wheel-canvas-wrap { position: relative; }
+  #colorWheel { border-radius: 50%; cursor: crosshair; box-shadow: 0 0 40px rgba(108,92,231,0.2); }
+  .wheel-marker { position: absolute; width: 16px; height: 16px; border: 3px solid #fff; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); box-shadow: 0 0 6px rgba(0,0,0,0.5); }
+
+  .sliders { min-width: 300px; flex: 1; }
+  .slider-group { margin-bottom: 20px; }
+  .slider-group label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; color: var(--text-dim); }
+  .slider-group label span { color: var(--accent2); font-weight: 600; }
+  input[type="range"] { width: 100%; height: 8px; border-radius: 4px; -webkit-appearance: none; background: var(--surface2); outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+  .color-preview-large { width: 100%; height: 100px; border-radius: 12px; margin: 16px 0; transition: background 0.15s; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
+
+  /* Harmony palette */
+  .harmony-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
+  .harmony-label { width: 130px; font-size: 0.85rem; color: var(--text-dim); flex-shrink: 0; }
+  .harmony-swatches { display: flex; gap: 6px; flex: 1; }
+  .harmony-swatch { width: 48px; height: 48px; border-radius: 10px; border: 2px solid var(--border); transition: all 0.2s; cursor: pointer; position: relative; }
+  .harmony-swatch:hover { transform: scale(1.15); z-index: 2; }
+  .harmony-swatch .tooltip { display: none; position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; white-space: nowrap; }
+  .harmony-swatch:hover .tooltip { display: block; }
+
+  /* Psychology */
+  .psychology-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+  .psych-card { border-radius: 14px; padding: 20px 16px; text-align: center; transition: transform 0.2s; cursor: default; }
+  .psych-card:hover { transform: translateY(-4px); }
+  .psych-card .emoji { font-size: 2rem; margin-bottom: 8px; }
+  .psych-card .color-name { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+  .psych-card .meaning { font-size: 0.8rem; opacity: 0.85; }
+
+  /* Brand Palettes */
+  .brand { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .brand-name { width: 100px; font-weight: 600; font-size: 0.95rem; }
+  .brand-colors { display: flex; gap: 4px; }
+  .brand-color { width: 44px; height: 44px; border-radius: 8px; position: relative; cursor: pointer; }
+  .brand-color:hover::after { content: attr(data-hex); position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 1px 6px; border-radius: 3px; font-size: 0.65rem; white-space: nowrap; }
+
+  /* Contrast Checker */
+  .contrast-demo { display: flex; flex-wrap: wrap; gap: 24px; }
+  .contrast-inputs { flex: 1; min-width: 260px; }
+  .contrast-result { flex: 1; min-width: 260px; }
+  .color-input-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .color-input-row label { width: 100px; font-size: 0.9rem; color: var(--text-dim); }
+  .color-input-row input[type="color"] { width: 48px; height: 36px; border: 2px solid var(--border); border-radius: 8px; background: transparent; cursor: pointer; }
+  .color-input-row input[type="text"] { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; width: 100px; font-family: monospace; }
+  .contrast-preview { padding: 24px; border-radius: 12px; text-align: center; margin-bottom: 16px; }
+  .contrast-preview .big { font-size: 1.5rem; font-weight: 700; }
+  .contrast-preview .small { font-size: 0.9rem; margin-top: 4px; }
+  .ratio-display { font-size: 2.5rem; font-weight: 800; text-align: center; margin: 16px 0; }
+  .pass-fail { display: flex; gap: 12px; flex-wrap: wrap; }
+  .pf-badge { padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; }
+  .pf-pass { background: #00b89422; color: #00b894; border: 1px solid #00b89444; }
+  .pf-fail { background: #e1705622; color: #e17056; border: 1px solid #e1705644; }
+
+  footer { text-align: center; padding: 40px 24px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Home</a>
+<header>
+  <h1>🎨 Color Theory</h1>
+  <p>Master the science and art of color — from the color wheel to harmonies, psychology, and accessibility.</p>
+</header>
+
+<div class="container">
+
+<!-- Section 1: Interactive Color Wheel & HSL Picker -->
+<section id="hsl-picker">
+  <h2>Interactive HSL Color Picker</h2>
+  <p class="subtitle">HSL stands for <strong>Hue</strong> (the color), <strong>Saturation</strong> (intensity), and <strong>Lightness</strong> (brightness). Click the wheel or use the sliders to explore.</p>
+  <div class="card">
+    <div class="wheel-container">
+      <div class="wheel-canvas-wrap">
+        <canvas id="colorWheel" width="280" height="280"></canvas>
+        <div class="wheel-marker" id="wheelMarker"></div>
+      </div>
+      <div class="sliders">
+        <div class="slider-group">
+          <label>Hue (0–360°) <span id="hueVal">210</span>°</label>
+          <input type="range" id="hueSlider" min="0" max="360" value="210">
+        </div>
+        <div class="slider-group">
+          <label>Saturation (0–100%) <span id="satVal">80</span>%</label>
+          <input type="range" id="satSlider" min="0" max="100" value="80">
+        </div>
+        <div class="slider-group">
+          <label>Lightness (0–100%) <span id="lightVal">55</span>%</label>
+          <input type="range" id="lightSlider" min="0" max="100" value="55">
+        </div>
+        <div class="color-preview-large" id="mainPreview">HSL(210, 80%, 55%)</div>
+        <div style="display:flex;gap:12px;font-size:0.85rem;color:var(--text-dim);flex-wrap:wrap;">
+          <span>HEX: <strong id="hexOut" style="color:var(--accent2)">#3388cc</strong></span>
+          <span>RGB: <strong id="rgbOut" style="color:var(--accent2)">rgb(51,136,204)</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: Color Harmonies -->
+<section id="harmonies">
+  <h2>Color Harmonies</h2>
+  <p class="subtitle">Color harmonies are combinations that are visually pleasing. They're based on geometric relationships on the color wheel.</p>
+  <div class="card">
+    <div id="harmonyDisplay">
+      <div class="harmony-row"><span class="harmony-label">Complementary</span><div class="harmony-swatches" id="harmComp"></div></div>
+      <div class="harmony-row"><span class="harmony-label">Analogous</span><div class="harmony-swatches" id="harmAnal"></div></div>
+      <div class="harmony-row"><span class="harmony-label">Triadic</span><div class="harmony-swatches" id="harmTriad"></div></div>
+      <div class="harmony-row"><span class="harmony-label">Split-Compl.</span><div class="harmony-swatches" id="harmSplit"></div></div>
+      <div class="harmony-row"><span class="harmony-label">Tetradic</span><div class="harmony-swatches" id="harmTetra"></div></div>
+      <div class="harmony-row"><span class="harmony-label">Monochromatic</span><div class="harmony-swatches" id="harmMono"></div></div>
+    </div>
+    <div style="margin-top:20px;padding:16px;background:var(--surface2);border-radius:10px;">
+      <h3 style="margin-bottom:8px;">💡 How Harmonies Work</h3>
+      <ul style="color:var(--text-dim);font-size:0.9rem;padding-left:20px;">
+        <li><strong>Complementary:</strong> Opposite on the wheel (180°) — high contrast, vibrant.</li>
+        <li><strong>Analogous:</strong> Neighbors (±30°) — harmonious, serene.</li>
+        <li><strong>Triadic:</strong> Evenly spaced (120° apart) — balanced, colorful.</li>
+        <li><strong>Split-Complementary:</strong> Base + two adjacent to its complement — less tension than complementary.</li>
+        <li><strong>Tetradic:</strong> Four colors in two complementary pairs — rich but needs careful balance.</li>
+        <li><strong>Monochromatic:</strong> Same hue, different saturation/lightness — elegant and cohesive.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: Color Psychology -->
+<section id="psychology">
+  <h2>Color Psychology</h2>
+  <p class="subtitle">Colors evoke specific emotions and associations. Understanding this helps you design interfaces that feel right.</p>
+  <div class="psychology-grid">
+    <div class="psych-card" style="background:linear-gradient(135deg,#e74c3c22,#e74c3c44);color:#ff6b6b;">
+      <div class="emoji">🔴</div><div class="color-name">Red</div>
+      <div class="meaning">Energy, urgency, passion, danger, excitement</div>
+    </div>
+    <div class="psych-card" style="background:linear-gradient(135deg,#e67e2222,#e67e2244);color:#f0a040;">
+      <div class="emoji">🟠</div><div class="color-name">Orange</div>
+      <div class="meaning">Warmth, enthusiasm, creativity, friendliness</div>
+    </div>
+    <div class="psych-card" style="background:linear-gradient(135deg,#f1c40f22,#f1c40f44);color:#f1c40f;">
+      <div class="emoji">🟡</div><div class="color-name">Yellow</div>
+      <div class="meaning">Optimism, happiness, caution, attention</div>
+    </div>
+    <div class="psych-card" style="background:linear-gradient(135deg,#27ae6022,#27ae6044);color:#2ecc71;">
+      <div class="emoji">🟢</div><div class="color-name">Green</div>
+      <div class="meaning">Growth, nature, health, prosperity, calm</div>
+    </div>
+    <div class="psych-card" style="background:linear-gradient(135deg,#3498db22,#3498db44);color:#3498db;">
+      <div class="emoji">🔵</div><div class="color-name">Blue</div>
+      <div class="meaning">Trust, stability, calm, professionalism</div>
+    </div>
+    <div class="psych-card" style="background:linear-gradient(135deg,#9b59b622,#9b59b644);color:#a29bfe;">
+      <div class="emoji">🟣</div><div class="color-name">Purple</div>
+      <div class="meaning">Luxury, wisdom, creativity, royalty</div>
+    </div>
+    <div class="psych-card" style="background:linear-gradient(135deg,#fd79a822,#fd79a844);color:#fd79a8;">
+      <div class="emoji">💗</div><div class="color-name">Pink</div>
+      <div class="meaning">Romance, playfulness, softness, youth</div>
+    </div>
+    <div class="psych-card" style="background:linear-gradient(135deg,#ffffff11,#ffffff22);color:#ccc;">
+      <div class="emoji">⚪</div><div class="color-name">White</div>
+      <div class="meaning">Purity, clarity, simplicity, cleanliness</div>
+    </div>
+    <div class="psych-card" style="background:linear-gradient(135deg,#2d3436,#636e72);color:#b2bec3;">
+      <div class="emoji">⚫</div><div class="color-name">Black</div>
+      <div class="meaning">Elegance, power, mystery, sophistication</div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Brand Palettes -->
+<section id="brands">
+  <h2>Famous Brand Palettes</h2>
+  <p class="subtitle">Great brands choose colors intentionally. Notice how each palette reinforces the brand's identity and values.</p>
+  <div class="card" id="brandPalettes"></div>
+</section>
+
+<!-- Section 5: Contrast Checker -->
+<section id="contrast">
+  <h2>Accessibility Contrast Checker</h2>
+  <p class="subtitle">WCAG requires minimum contrast ratios: <strong>4.5:1</strong> for normal text (AA), <strong>7:1</strong> for enhanced (AAA). Large text needs <strong>3:1</strong> (AA).</p>
+  <div class="card">
+    <div class="contrast-demo">
+      <div class="contrast-inputs">
+        <div class="color-input-row">
+          <label>Foreground</label>
+          <input type="color" id="fgColor" value="#e4e6f0">
+          <input type="text" id="fgHex" value="#e4e6f0">
+        </div>
+        <div class="color-input-row">
+          <label>Background</label>
+          <input type="color" id="bgColor" value="#1a1d27">
+          <input type="text" id="bgHex" value="#1a1d27">
+        </div>
+        <button onclick="swapColors()" style="background:var(--accent);color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:0.9rem;">⇅ Swap Colors</button>
+      </div>
+      <div class="contrast-result">
+        <div class="contrast-preview" id="contrastPreview">
+          <div class="big">Sample Text</div>
+          <div class="small">The quick brown fox jumps over the lazy dog</div>
+        </div>
+        <div class="ratio-display" id="ratioDisplay">12.4:1</div>
+        <div class="pass-fail" id="passFail"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p>Color Theory — UI/UX Design Fundamentals</p>
+</footer>
+
+<script>
+// ---- HSL Utilities ----
+function hslToRgb(h, s, l) {
+  s /= 100; l /= 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => { const k = (n + h / 30) % 12; return l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1); };
+  return [Math.round(f(0)*255), Math.round(f(8)*255), Math.round(f(4)*255)];
+}
+function rgbToHex(r,g,b) { return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join(''); }
+function hexToRgb(hex) {
+  hex = hex.replace('#','');
+  if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  return [parseInt(hex.substr(0,2),16), parseInt(hex.substr(2,2),16), parseInt(hex.substr(4,2),16)];
+}
+function luminance(r,g,b) {
+  const a = [r,g,b].map(v => { v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+  return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2];
+}
+function contrastRatio(rgb1, rgb2) {
+  const l1 = luminance(...rgb1), l2 = luminance(...rgb2);
+  const lighter = Math.max(l1,l2), darker = Math.min(l1,l2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+// ---- Color Wheel ----
+const canvas = document.getElementById('colorWheel');
+const ctx = canvas.getContext('2d');
+const cx = 140, cy = 140, radius = 130;
+
+function drawWheel(sat, light) {
+  const img = ctx.createImageData(280, 280);
+  for (let y = 0; y < 280; y++) {
+    for (let x = 0; x < 280; x++) {
+      const dx = x - cx, dy = y - cy;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const idx = (y * 280 + x) * 4;
+      if (dist <= radius) {
+        const angle = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+        const [r,g,b] = hslToRgb(angle, sat, light);
+        img.data[idx] = r; img.data[idx+1] = g; img.data[idx+2] = b; img.data[idx+3] = 255;
+      } else if (dist <= radius + 2) {
+        img.data[idx] = 46; img.data[idx+1] = 51; img.data[idx+2] = 70; img.data[idx+3] = 255;
+      } else {
+        img.data[idx+3] = 0;
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+// ---- State ----
+let H = 210, S = 80, L = 55;
+const hueS = document.getElementById('hueSlider');
+const satS = document.getElementById('satSlider');
+const lightS = document.getElementById('lightSlider');
+
+function update() {
+  document.getElementById('hueVal').textContent = H;
+  document.getElementById('satVal').textContent = S;
+  document.getElementById('lightVal').textContent = L;
+  hueS.value = H; satS.value = S; lightS.value = L;
+
+  const [r,g,b] = hslToRgb(H, S, L);
+  const hex = rgbToHex(r,g,b);
+  const hsl = `hsl(${H}, ${S}%, ${L}%)`;
+  const preview = document.getElementById('mainPreview');
+  preview.style.background = hsl;
+  preview.textContent = `HSL(${H}, ${S}%, ${L}%)`;
+  preview.style.color = L > 55 ? '#111' : '#fff';
+
+  document.getElementById('hexOut').textContent = hex;
+  document.getElementById('rgbOut').textContent = `rgb(${r},${g},${b})`;
+
+  drawWheel(S, L);
+  updateMarker();
+  updateHarmonies();
+}
+
+function updateMarker() {
+  const angle = H * Math.PI / 180;
+  const r = radius * 0.75;
+  const mx = cx + r * Math.cos(angle);
+  const my = cy + r * Math.sin(angle);
+  const marker = document.getElementById('wheelMarker');
+  marker.style.left = mx + 'px';
+  marker.style.top = my + 'px';
+}
+
+hueS.oninput = () => { H = +hueS.value; update(); };
+satS.oninput = () => { S = +satS.value; update(); };
+lightS.oninput = () => { L = +lightS.value; update(); };
+
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left, y = e.clientY - rect.top;
+  const dx = x - cx, dy = y - cy;
+  if (Math.sqrt(dx*dx+dy*dy) <= radius) {
+    H = Math.round((Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360);
+    update();
+  }
+});
+
+// ---- Harmonies ----
+function makeSwatch(h, s, l) {
+  const [r,g,b] = hslToRgb((h+360)%360, s, l);
+  const hex = rgbToHex(r,g,b);
+  return `<div class="harmony-swatch" style="background:hsl(${(h+360)%360},${s}%,${l}%)"><span class="tooltip">${hex}</span></div>`;
+}
+
+function updateHarmonies() {
+  document.getElementById('harmComp').innerHTML = makeSwatch(H,S,L) + makeSwatch(H+180,S,L);
+  document.getElementById('harmAnal').innerHTML = makeSwatch(H-30,S,L) + makeSwatch(H,S,L) + makeSwatch(H+30,S,L);
+  document.getElementById('harmTriad').innerHTML = makeSwatch(H,S,L) + makeSwatch(H+120,S,L) + makeSwatch(H+240,S,L);
+  document.getElementById('harmSplit').innerHTML = makeSwatch(H,S,L) + makeSwatch(H+150,S,L) + makeSwatch(H+210,S,L);
+  document.getElementById('harmTetra').innerHTML = makeSwatch(H,S,L) + makeSwatch(H+90,S,L) + makeSwatch(H+180,S,L) + makeSwatch(H+270,S,L);
+  document.getElementById('harmMono').innerHTML = makeSwatch(H,S,Math.max(L-30,10)) + makeSwatch(H,S,Math.max(L-15,15)) + makeSwatch(H,S,L) + makeSwatch(H,S,Math.min(L+15,90)) + makeSwatch(H,S,Math.min(L+30,95));
+}
+
+// ---- Brand Palettes ----
+const brands = [
+  { name: 'Spotify', colors: ['#1DB954','#191414','#FFFFFF','#535353','#b3b3b3'] },
+  { name: 'Google', colors: ['#4285F4','#DB4437','#F4B400','#0F9D58','#FFFFFF'] },
+  { name: 'Airbnb', colors: ['#FF5A5F','#00A699','#FC642D','#484848','#767676'] },
+  { name: 'Stripe', colors: ['#635BFF','#0A2540','#00D4AA','#7A73FF','#FFFFFF'] },
+  { name: 'Slack', colors: ['#4A154B','#36C5F0','#2EB67D','#ECB22E','#E01E5A'] },
+  { name: 'Netflix', colors: ['#E50914','#141414','#FFFFFF','#B20710','#564d4d'] },
+  { name: 'Twitter/X', colors: ['#1DA1F2','#14171A','#657786','#AAB8C2','#F5F8FA'] },
+];
+const bp = document.getElementById('brandPalettes');
+brands.forEach(b => {
+  bp.innerHTML += `<div class="brand"><span class="brand-name">${b.name}</span><div class="brand-colors">${b.colors.map(c=>`<div class="brand-color" style="background:${c}" data-hex="${c}"></div>`).join('')}</div></div>`;
+});
+
+// ---- Contrast Checker ----
+const fgC = document.getElementById('fgColor'), bgC = document.getElementById('bgColor');
+const fgH = document.getElementById('fgHex'), bgH = document.getElementById('bgHex');
+
+function updateContrast() {
+  const fg = hexToRgb(fgC.value), bg = hexToRgb(bgC.value);
+  const ratio = contrastRatio(fg, bg);
+  const preview = document.getElementById('contrastPreview');
+  preview.style.background = bgC.value;
+  preview.style.color = fgC.value;
+  document.getElementById('ratioDisplay').textContent = ratio.toFixed(1) + ':1';
+  document.getElementById('ratioDisplay').style.color = ratio >= 4.5 ? '#00b894' : ratio >= 3 ? '#fdcb6e' : '#e17056';
+
+  const pf = document.getElementById('passFail');
+  pf.innerHTML = `
+    <span class="pf-badge ${ratio>=4.5?'pf-pass':'pf-fail'}">AA Normal ${ratio>=4.5?'✓ Pass':'✗ Fail'}</span>
+    <span class="pf-badge ${ratio>=7?'pf-pass':'pf-fail'}">AAA Normal ${ratio>=7?'✓ Pass':'✗ Fail'}</span>
+    <span class="pf-badge ${ratio>=3?'pf-pass':'pf-fail'}">AA Large ${ratio>=3?'✓ Pass':'✗ Fail'}</span>
+    <span class="pf-badge ${ratio>=4.5?'pf-pass':'pf-fail'}">AAA Large ${ratio>=4.5?'✓ Pass':'✗ Fail'}</span>
+  `;
+}
+
+fgC.oninput = () => { fgH.value = fgC.value; updateContrast(); };
+bgC.oninput = () => { bgH.value = bgC.value; updateContrast(); };
+fgH.oninput = () => { if(/^#[0-9a-f]{6}$/i.test(fgH.value)){fgC.value=fgH.value; updateContrast();} };
+bgH.oninput = () => { if(/^#[0-9a-f]{6}$/i.test(bgH.value)){bgC.value=bgH.value; updateContrast();} };
+function swapColors() { const t=fgC.value; fgC.value=bgC.value; bgC.value=t; fgH.value=fgC.value; bgH.value=bgC.value; updateContrast(); }
+
+// ---- Init ----
+update();
+updateContrast();
+</script>
+</body>
+</html>

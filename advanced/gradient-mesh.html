@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gradient Mesh — Advanced UI/UX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+    --border: #2e3346; --text: #e4e6f0; --text-dim: #8b8fa3;
+    --accent: #6c5ce7; --accent2: #00cec9; --code-bg: #111128;
+  }
+  body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, .mono { font-family: 'Fira Code', monospace; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header {
+    position: relative; text-align: center; padding: 80px 24px 56px; overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    background-color: #1a1d27;
+    background-image:
+      radial-gradient(at 18% 22%, hsla(265,90%,62%,0.55) 0px, transparent 50%),
+      radial-gradient(at 82% 18%, hsla(186,95%,55%,0.45) 0px, transparent 50%),
+      radial-gradient(at 25% 88%, hsla(330,90%,60%,0.45) 0px, transparent 50%),
+      radial-gradient(at 78% 82%, hsla(45,95%,58%,0.35) 0px, transparent 50%);
+  }
+  header h1 { position: relative; font-size: 2.9rem; font-weight: 800; margin-bottom: 12px; color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,0.4); }
+  header p { position: relative; color: #e8e9f5; max-width: 660px; margin: 0 auto; font-size: 1.1rem; }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  h3 { font-size: 1.15rem; font-weight: 600; margin: 20px 0 8px; color: #ddd; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1rem; max-width: 760px; }
+  p { margin-bottom: 14px; }
+  ul { padding-left: 22px; margin: 12px 0; }
+  li { margin-bottom: 8px; }
+  strong { color: #fff; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px; margin: 16px 0; overflow-x: auto;
+    font-family: 'Fira Code', monospace; font-size: 0.8rem; line-height: 1.65; color: var(--text);
+  }
+  .code-block .c { color: #6a6aaa; }
+  .code-block .p { color: #6ec6ff; }
+  .code-block .v { color: #ff8fab; }
+  .code-block .k { color: #c792ea; }
+
+  /* === GRADIENT DEMO TILES === */
+  .demo { height: 260px; border-radius: 16px; position: relative; overflow: hidden; margin-bottom: 14px; border: 1px solid var(--border); }
+  .demo .tag { position: absolute; bottom: 12px; left: 14px; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); color: #fff; font-size: 0.72rem; font-family: 'Fira Code', monospace; padding: 4px 10px; border-radius: 20px; }
+
+  /* 1. Mesh via stacked radial gradients */
+  .mesh-classic {
+    background-color: #6c5ce7;
+    background-image:
+      radial-gradient(at 12% 18%, hsla(265,95%,68%,1) 0px, transparent 50%),
+      radial-gradient(at 88% 12%, hsla(186,95%,60%,1) 0px, transparent 50%),
+      radial-gradient(at 20% 85%, hsla(330,90%,62%,1) 0px, transparent 50%),
+      radial-gradient(at 80% 78%, hsla(40,95%,60%,1) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, hsla(210,90%,60%,0.7) 0px, transparent 60%);
+  }
+
+  /* 2. Conic gradient */
+  .mesh-conic {
+    background: conic-gradient(from 220deg at 50% 50%,
+      #6c5ce7, #00cec9, #fd79a8, #fdcb6e, #6c5ce7);
+  }
+
+  /* 3. Conic + radial overlay (iridescent) */
+  .mesh-iridescent {
+    background:
+      radial-gradient(circle at 70% 30%, rgba(255,255,255,0.35), transparent 40%),
+      conic-gradient(from 90deg at 30% 70%, #5e60ce, #48bfe3, #80ffdb, #5390d9, #5e60ce);
+  }
+
+  /* 4. Blend modes */
+  .mesh-blend {
+    background:
+      radial-gradient(circle at 25% 30%, #ff006e, transparent 55%),
+      radial-gradient(circle at 75% 35%, #3a86ff, transparent 55%),
+      radial-gradient(circle at 50% 80%, #ffbe0b, transparent 55%);
+    background-blend-mode: screen;
+    background-color: #07070f;
+  }
+
+  /* 5. Blurred blob technique */
+  .mesh-blob { background: #0c0e16; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.85; }
+  .blob.b1 { width: 220px; height: 220px; background: #6c5ce7; top: -40px; left: -30px; }
+  .blob.b2 { width: 260px; height: 260px; background: #00cec9; bottom: -60px; right: -40px; }
+  .blob.b3 { width: 180px; height: 180px; background: #fd79a8; top: 40%; left: 45%; }
+  .blob.b4 { width: 160px; height: 160px; background: #fdcb6e; bottom: 20px; left: 10%; }
+
+  /* 6. Animated mesh */
+  .mesh-animated {
+    background-color: #120c2e;
+    background-image:
+      radial-gradient(at 20% 30%, hsla(265,95%,65%,0.9) 0px, transparent 50%),
+      radial-gradient(at 80% 20%, hsla(186,95%,58%,0.8) 0px, transparent 50%),
+      radial-gradient(at 60% 80%, hsla(330,90%,62%,0.8) 0px, transparent 50%);
+    background-size: 180% 180%;
+    animation: meshShift 12s ease-in-out infinite;
+  }
+  @keyframes meshShift {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mesh-animated { animation: none; }
+  }
+
+  .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+
+  .callout { border-left: 4px solid var(--accent); background: var(--surface2); padding: 16px 20px; border-radius: 0 10px 10px 0; margin: 18px 0; }
+
+  .pill { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; font-size: 0.78rem; margin: 2px; color: var(--text-dim); }
+
+  /* Blend-mode swatches */
+  .blend-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+  .blend-chip { width: 150px; height: 90px; border-radius: 10px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+  .blend-chip span { position: absolute; bottom: 6px; left: 8px; font-size: 0.7rem; font-family: 'Fira Code', monospace; color: #fff; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; }
+
+  footer { text-align: center; padding: 40px 24px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+<header>
+  <h1>Gradient Mesh</h1>
+  <p>Complex, multi-point gradients with pure CSS — layered radial blobs, conic sweeps, blend modes, and the "blurred blob" technique that powers today's most lush backgrounds.</p>
+</header>
+
+<div class="container">
+
+<!-- 1. The mesh idea -->
+<section>
+  <h2>What Is a Mesh Gradient?</h2>
+  <p class="subtitle">A linear or radial gradient blends between a handful of stops along one axis. A <strong>mesh gradient</strong> blends between many color points scattered across a 2D plane, producing soft, organic, multi-directional color fields — like the iOS lock screen or Stripe's marketing hero.</p>
+  <div class="card">
+    <p>Native CSS has no single <code>mesh-gradient()</code> function, but you can fake one convincingly by stacking several <code>radial-gradient()</code> layers, each anchored at a different point with <code>at x% y%</code> and fading to <code>transparent</code>. The layers blend where they overlap.</p>
+    <div class="demo mesh-classic"><span class="tag">5× layered radial-gradient</span></div>
+    <div class="code-block">
+<span class="v">.mesh</span> {
+  <span class="p">background-color</span>: <span class="v">#6c5ce7</span>;        <span class="c">/* fallback base */</span>
+  <span class="p">background-image</span>:
+    <span class="k">radial-gradient</span>(at 12% 18%, hsla(265,95%,68%,1) 0px, transparent 50%),
+    <span class="k">radial-gradient</span>(at 88% 12%, hsla(186,95%,60%,1) 0px, transparent 50%),
+    <span class="k">radial-gradient</span>(at 20% 85%, hsla(330,90%,62%,1) 0px, transparent 50%),
+    <span class="k">radial-gradient</span>(at 80% 78%, hsla(40,95%,60%,1)  0px, transparent 50%),
+    <span class="k">radial-gradient</span>(at 50% 50%, hsla(210,90%,60%,0.7) 0px, transparent 60%);
+}
+    </div>
+    <div class="callout">
+      <strong>Key trick:</strong> each blob fades to <code>transparent</code> at ~50%, so neighbouring blobs bleed into one another instead of forming hard edges. Keep stops at <code>0px → transparent 50–60%</code> for the softest mesh.
+    </div>
+  </div>
+</section>
+
+<!-- 2. Gallery of techniques -->
+<section>
+  <h2>Live Gallery</h2>
+  <p class="subtitle">Every tile below is rendered with real CSS — no images. Hover to read the technique.</p>
+  <div class="card">
+    <div class="demo-grid">
+      <div>
+        <div class="demo mesh-conic"><span class="tag">conic-gradient</span></div>
+        <h3>Conic sweep</h3>
+        <p>A single <code>conic-gradient</code> rotates hues around a center point — perfect for color wheels and "rainbow ring" accents.</p>
+      </div>
+      <div>
+        <div class="demo mesh-iridescent"><span class="tag">conic + radial highlight</span></div>
+        <h3>Iridescent</h3>
+        <p>A conic base plus a soft white radial highlight reads like an oily, holographic sheen.</p>
+      </div>
+      <div>
+        <div class="demo mesh-blend"><span class="tag">background-blend-mode: screen</span></div>
+        <h3>Additive blend</h3>
+        <p>Three primary blobs combined with <code>screen</code> blend on a near-black base mix like stage lights.</p>
+      </div>
+      <div>
+        <div class="demo mesh-blob">
+          <div class="blob b1"></div><div class="blob b2"></div>
+          <div class="blob b3"></div><div class="blob b4"></div>
+          <span class="tag">blurred blobs + filter: blur()</span>
+        </div>
+        <h3>Blurred blobs</h3>
+        <p>Solid circular divs, heavily blurred and overlapping inside a clipped container. The most flexible technique.</p>
+      </div>
+      <div>
+        <div class="demo mesh-animated"><span class="tag">animated background-position</span></div>
+        <h3>Animated mesh</h3>
+        <p>Oversize the <code>background-size</code> and animate <code>background-position</code> for a slow drift. Respects <code>prefers-reduced-motion</code>.</p>
+      </div>
+      <div>
+        <div class="demo mesh-classic" style="filter:saturate(0.7) hue-rotate(60deg);"><span class="tag">same mesh + filter</span></div>
+        <h3>Recolor with filters</h3>
+        <p>Reuse one mesh and shift its whole palette with <code>filter: hue-rotate()</code> / <code>saturate()</code> — great for theme variants.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Conic deep dive -->
+<section>
+  <h2>Conic Gradients</h2>
+  <p class="subtitle">Where radial gradients radiate <em>outward</em>, conic gradients sweep <em>around</em> a center — the basis for pie charts, loaders, and color wheels.</p>
+  <div class="card">
+    <div class="code-block">
+<span class="c">/* angle sweep around 50% 50% */</span>
+<span class="v">.ring</span> {
+  <span class="p">background</span>: <span class="k">conic-gradient</span>(<span class="k">from</span> 220deg at 50% 50%,
+    #6c5ce7, #00cec9, #fd79a8, #fdcb6e, #6c5ce7);
+}
+
+<span class="c">/* pie / progress: hard stops with repeated angles */</span>
+<span class="v">.pie</span> {
+  <span class="p">background</span>: <span class="k">conic-gradient</span>(#00cec9 0 65%, #2e3346 65% 100%);
+  <span class="p">border-radius</span>: 50%;
+}
+    </div>
+    <p>Repeat the same angle for two adjacent stops (e.g. <code>65% 65%</code>) to get a <strong>hard edge</strong> instead of a blend — that's how conic gradients draw crisp pie slices and donut charts without SVG.</p>
+  </div>
+</section>
+
+<!-- 4. Blend modes -->
+<section>
+  <h2>Blend Modes</h2>
+  <p class="subtitle">Blend modes control how stacked layers mix mathematically. They turn flat overlapping gradients into rich, lit-from-within color.</p>
+  <div class="card">
+    <p><code>background-blend-mode</code> mixes the multiple backgrounds of a single element; <code>mix-blend-mode</code> mixes an element with whatever sits behind it. The same blob set produces wildly different moods per mode:</p>
+    <div class="blend-row" id="blendRow"></div>
+    <ul>
+      <li><strong>screen</strong> / <strong>lighten</strong> — additive, glowing; great on dark bases.</li>
+      <li><strong>multiply</strong> / <strong>darken</strong> — subtractive, like overlapping inks; great on light bases.</li>
+      <li><strong>overlay</strong> / <strong>soft-light</strong> — contrast-boosting; adds depth without washing out.</li>
+      <li><strong>color-dodge</strong> — intense highlights; use sparingly for neon hotspots.</li>
+    </ul>
+    <div class="code-block">
+<span class="v">.lights</span> {
+  <span class="p">background</span>:
+    <span class="k">radial-gradient</span>(circle at 25% 30%, #ff006e, transparent 55%),
+    <span class="k">radial-gradient</span>(circle at 75% 35%, #3a86ff, transparent 55%),
+    <span class="k">radial-gradient</span>(circle at 50% 80%, #ffbe0b, transparent 55%);
+  <span class="p">background-blend-mode</span>: <span class="v">screen</span>;
+  <span class="p">background-color</span>: <span class="v">#07070f</span>;
+}
+    </div>
+  </div>
+</section>
+
+<!-- 5. Blurred blob technique -->
+<section>
+  <h2>The "Blurred Blob" Technique</h2>
+  <p class="subtitle">The most controllable mesh: position solid colored circles, blur them into soft clouds, and clip to the container. Easy to animate, easy to recolor, no gradient math.</p>
+  <div class="card">
+    <div class="code-block">
+<span class="v">.stage</span> { <span class="p">position</span>: relative; <span class="p">overflow</span>: hidden; <span class="p">background</span>: #0c0e16; }
+
+<span class="v">.blob</span> {
+  <span class="p">position</span>: absolute;
+  <span class="p">border-radius</span>: 50%;
+  <span class="p">filter</span>: <span class="k">blur</span>(60px);   <span class="c">/* the magic: turns a circle into a soft cloud */</span>
+  <span class="p">opacity</span>: 0.85;
+}
+<span class="v">.blob.b1</span> { <span class="p">width</span>:220px; <span class="p">height</span>:220px; <span class="p">background</span>:#6c5ce7; <span class="p">top</span>:-40px; <span class="p">left</span>:-30px; }
+<span class="v">.blob.b2</span> { <span class="p">width</span>:260px; <span class="p">height</span>:260px; <span class="p">background</span>:#00cec9; <span class="p">bottom</span>:-60px; <span class="p">right</span>:-40px; }
+    </div>
+    <p>Why designers love it:</p>
+    <ul>
+      <li><strong>Independent layers</strong> — animate each blob's position or hue separately for living backgrounds.</li>
+      <li><strong>Cheap to recolor</strong> — change one <code>background</code>, not five gradient stops.</li>
+      <li><strong>Naturally soft</strong> — Gaussian blur gives a smoother falloff than any gradient stop.</li>
+    </ul>
+    <div class="callout">
+      <strong>Performance:</strong> <code>filter: blur()</code> is GPU-heavy on large, animated elements. Keep blurred layers modestly sized, add <code>will-change: transform</code> when animating, and avoid blurring a full-viewport element on low-end mobile.
+    </div>
+    <p style="margin-top:14px;">
+      <span class="pill">radial-gradient</span>
+      <span class="pill">conic-gradient</span>
+      <span class="pill">background-blend-mode</span>
+      <span class="pill">mix-blend-mode</span>
+      <span class="pill">filter: blur()</span>
+      <span class="pill">hsla()</span>
+    </p>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p>Gradient Mesh — Advanced UI/UX Design Research</p>
+</footer>
+
+<script>
+  // Render the same blob set under several blend modes — all live CSS
+  const modes = ['screen','multiply','overlay','soft-light','color-dodge','lighten','darken','difference'];
+  const base = `
+    radial-gradient(circle at 28% 32%, #ff006e, transparent 58%),
+    radial-gradient(circle at 72% 38%, #3a86ff, transparent 58%),
+    radial-gradient(circle at 50% 82%, #ffbe0b, transparent 58%)`;
+  const row = document.getElementById('blendRow');
+  modes.forEach(m => {
+    const chip = document.createElement('div');
+    chip.className = 'blend-chip';
+    chip.style.backgroundImage = base;
+    chip.style.backgroundColor = '#0a0a12';
+    chip.style.backgroundBlendMode = m;
+    chip.innerHTML = `<span>${m}</span>`;
+    row.appendChild(chip);
+  });
+</script>
+</body>
+</html>

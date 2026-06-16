@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parallax Scrolling — Advanced UI/UX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+    --border: #2e3346; --text: #e4e6f0; --text-dim: #8b8fa3;
+    --accent: #6c5ce7; --accent2: #00cec9; --code-bg: #111128;
+  }
+  body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, .mono { font-family: 'Fira Code', monospace; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; position: relative; z-index: 10; }
+  .back-link::before { content: '←'; }
+
+  header { text-align: center; padding: 60px 24px 40px; background: linear-gradient(135deg, #1a1d27 0%, #2d1f4e 50%, #1a1d27 100%); border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, #6c5ce7, #a29bfe, #00cec9); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  header p { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1.1rem; }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  h3 { font-size: 1.15rem; font-weight: 600; margin: 20px 0 8px; color: #ddd; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1rem; max-width: 760px; }
+  p { margin-bottom: 14px; }
+  ul { padding-left: 22px; margin: 12px 0; }
+  li { margin-bottom: 8px; }
+  strong { color: #fff; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px; margin: 16px 0; overflow-x: auto;
+    font-family: 'Fira Code', monospace; font-size: 0.8rem; line-height: 1.65; color: var(--text);
+  }
+  .code-block .c { color: #6a6aaa; }
+  .code-block .p { color: #6ec6ff; }
+  .code-block .v { color: #ff8fab; }
+  .code-block .k { color: #c792ea; }
+
+  .callout { border-left: 4px solid var(--accent); background: var(--surface2); padding: 16px 20px; border-radius: 0 10px 10px 0; margin: 18px 0; }
+  .callout.warn { border-left-color: #e17056; }
+  .callout.warn strong { color: #e8826b; }
+  .pill { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; font-size: 0.78rem; margin: 2px; color: var(--text-dim); }
+
+  /* =========================================================
+     DEMO A — Pure-CSS parallax via perspective scroll container
+     ========================================================= */
+  .parallax-css {
+    height: 420px; overflow-x: hidden; overflow-y: auto;
+    perspective: 8px;            /* the depth lens */
+    perspective-origin: 0 0;
+    border-radius: 16px; border: 1px solid var(--border);
+    position: relative;
+  }
+  .px-group { position: relative; height: 460px; transform-style: preserve-3d; }
+  .px-layer {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 2rem; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  }
+  /* Pushed "back" in Z then scaled up → moves slower while scrolling */
+  .px-back  { transform: translateZ(-12px) scale(2.5);
+    background:
+      radial-gradient(at 20% 30%, hsla(265,90%,62%,0.9), transparent 55%),
+      radial-gradient(at 80% 70%, hsla(186,95%,55%,0.8), transparent 55%),
+      #14122e;
+  }
+  .px-mid   { transform: translateZ(-6px) scale(1.75);
+    background: radial-gradient(circle at 50% 40%, rgba(253,121,168,0.5), transparent 60%);
+  }
+  .px-front { transform: translateZ(0); }
+  .px-content {
+    position: relative; background: var(--surface);
+    padding: 40px; border-radius: 16px 16px 0 0; margin-top: 440px;
+  }
+
+  /* =========================================================
+     DEMO B — background-attachment: fixed
+     ========================================================= */
+  .bg-fixed {
+    height: 320px; border-radius: 16px; overflow: hidden;
+    background-image:
+      radial-gradient(at 15% 20%, hsla(265,95%,60%,0.85), transparent 50%),
+      radial-gradient(at 85% 80%, hsla(186,95%,55%,0.8), transparent 50%),
+      linear-gradient(135deg, #1a1d27, #2d1f4e);
+    background-attachment: fixed;     /* stays put while content scrolls over it */
+    background-size: cover;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 1.6rem; text-shadow: 0 2px 14px rgba(0,0,0,0.6);
+    border: 1px solid var(--border);
+  }
+
+  /* =========================================================
+     DEMO C — JS scroll-driven parallax
+     ========================================================= */
+  .js-stage { height: 360px; border-radius: 16px; position: relative; overflow: hidden; border: 1px solid var(--border); background: #0a0b14; }
+  .js-layer { position: absolute; will-change: transform; }
+  .js-star { width: 4px; height: 4px; border-radius: 50%; background: #fff; opacity: 0.8; }
+  .js-moon { width: 120px; height: 120px; border-radius: 50%; right: 40px; top: 40px;
+    background: radial-gradient(circle at 35% 35%, #fff, #c9c9e0 60%, #8a8aa8); box-shadow: 0 0 60px rgba(200,200,255,0.4); }
+  .js-mtn { bottom: 0; left: 0; right: 0; height: 0; border-bottom: 140px solid; }
+  .js-mtn.far  { border-bottom-color: #2a2150; clip-path: polygon(0 100%, 15% 30%, 40% 100%, 60% 45%, 85% 100%, 100% 55%, 100% 100%); }
+  .js-mtn.near { border-bottom-color: #1a1430; height: 0; border-bottom-width: 180px; clip-path: polygon(0 100%, 25% 50%, 50% 100%, 70% 60%, 100% 100%); }
+  .js-caption { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; color: #fff; font-weight: 700; text-shadow: 0 2px 10px #000; z-index: 5; }
+
+  .scroll-hint { text-align: center; color: var(--text-dim); font-size: 0.85rem; margin-top: 8px; }
+
+  footer { text-align: center; padding: 40px 24px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+<header>
+  <h1>Parallax Scrolling</h1>
+  <p>Creating depth from motion — when background and foreground scroll at different speeds, flat pixels gain a third dimension. Pure-CSS, background-attachment, and JS approaches, with the performance and accessibility caveats that matter.</p>
+</header>
+
+<div class="container">
+
+<!-- 1. Concept -->
+<section>
+  <h2>The Idea: Differential Scroll Speed</h2>
+  <p class="subtitle">Parallax is a depth cue borrowed from the real world: look out a moving car window and nearby fence posts whip past while distant mountains drift slowly. Move things at different speeds and the brain infers distance.</p>
+  <div class="card">
+    <p>On the web we exploit this by making background layers travel <strong>slower</strong> than foreground content as the user scrolls. There are three practical techniques, each with trade-offs:</p>
+    <ul>
+      <li><strong>CSS 3D transform</strong> — <code>perspective</code> + <code>translateZ</code> on a scroll container. Smooth, GPU-driven, no JS, but constrains layout.</li>
+      <li><strong>background-attachment: fixed</strong> — the simplest "the background holds still" effect. One line of CSS; limited and janky on mobile.</li>
+      <li><strong>JS scroll listener</strong> — read scroll position, transform layers. Total control, but you must guard performance and reduced-motion.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 2. CSS-only parallax -->
+<section>
+  <h2>Technique 1 — Pure-CSS Parallax (perspective)</h2>
+  <p class="subtitle">Scroll <em>inside</em> the framed demo below. The purple/cyan field is pushed back in Z so it scrolls slowly; the foreground card scrolls at normal speed. No JavaScript runs this — it's all <code>perspective</code> and <code>translateZ</code>.</p>
+  <div class="card">
+    <div class="parallax-css">
+      <div class="px-group">
+        <div class="px-layer px-back">DISTANT</div>
+        <div class="px-layer px-mid">MIDGROUND</div>
+        <div class="px-layer px-front" style="align-items:flex-end;padding-bottom:24px;font-size:1rem;color:#cdd0e6;">↑ background moves slower as you scroll</div>
+      </div>
+      <div class="px-content">
+        <h3 style="margin-top:0;">Foreground content</h3>
+        <p>This panel scrolls at full speed while the gradient field behind it lags, creating depth. The depth amount is set purely by how far back each layer is pushed in Z and how much it's scaled to compensate.</p>
+        <p>Because the browser composites the 3D transform on the GPU, this stays smooth even on long pages — there's no scroll event handler firing per frame.</p>
+        <p style="margin-bottom:0;color:var(--text-dim);">Keep scrolling — there's nothing below this; the effect lives entirely within the framed scroll container.</p>
+      </div>
+    </div>
+    <p class="scroll-hint">↕ scroll inside the frame above</p>
+    <div class="code-block">
+<span class="c">/* The scroll container becomes a depth "lens" */</span>
+<span class="v">.viewport</span> {
+  <span class="p">height</span>: 100vh; <span class="p">overflow-y</span>: auto;
+  <span class="p">perspective</span>: <span class="v">8px</span>;          <span class="c">/* smaller = stronger depth */</span>
+  <span class="p">perspective-origin</span>: 0 0;
+}
+<span class="v">.group</span> { <span class="p">transform-style</span>: <span class="v">preserve-3d</span>; <span class="p">position</span>: relative; }
+
+<span class="c">/* Push back in Z, then scale up so it still fills the frame.
+   Farther layers move slower relative to the scroll. */</span>
+<span class="v">.layer-back</span>  { <span class="p">transform</span>: <span class="k">translateZ</span>(-12px) <span class="k">scale</span>(2.5); }
+<span class="v">.layer-front</span> { <span class="p">transform</span>: <span class="k">translateZ</span>(0); }
+    </div>
+    <div class="callout">
+      <strong>The scale compensation rule:</strong> a layer at <code>translateZ(-n * perspective)</code> appears <code>(perspective + n*perspective)/perspective</code> times smaller, so multiply its scale by <code>1 + n</code> to refill the frame. Here perspective is <code>8px</code>; a layer at <code>-12px</code> scales by <code>~2.5</code>.
+    </div>
+  </div>
+</section>
+
+<!-- 3. background-attachment -->
+<section>
+  <h2>Technique 2 — background-attachment: fixed</h2>
+  <p class="subtitle">The quickest parallax-ish effect: pin a background to the viewport so page content scrolls <em>over</em> a stationary image. Scroll the whole page and watch the band below hold its gradient still.</p>
+  <div class="card">
+    <div class="bg-fixed">background-attachment: fixed</div>
+    <div class="code-block">
+<span class="v">.hero</span> {
+  <span class="p">background-image</span>: <span class="k">url</span>(scene.jpg);
+  <span class="p">background-attachment</span>: <span class="v">fixed</span>;   <span class="c">/* viewport-locked */</span>
+  <span class="p">background-size</span>: cover;
+  <span class="p">background-position</span>: center;
+}
+    </div>
+    <p>It's one property, well supported on desktop, and needs zero JS. But it has real limits:</p>
+    <ul>
+      <li><strong>Mobile is rough.</strong> iOS Safari and many Android browsers don't repaint a fixed background per frame, so it stutters or simply ignores <code>fixed</code> (falling back to <code>scroll</code>).</li>
+      <li><strong>It's not true multi-speed parallax</strong> — the background is fully static (speed 0), not "slower". You get a single fixed plane, not layered depth.</li>
+      <li><strong>Repaint cost</strong> on large images can hurt scroll performance even on desktop.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4. JS parallax -->
+<section>
+  <h2>Technique 3 — JS Scroll-Driven Parallax</h2>
+  <p class="subtitle">For arbitrary, multi-speed depth, drive layer transforms from scroll position. Scroll the whole page — the moon, stars, and two mountain ranges below move at different rates as this section passes through the viewport.</p>
+  <div class="card">
+    <div class="js-stage" id="jsStage">
+      <div class="js-layer" id="starLayer" style="inset:0;"></div>
+      <div class="js-layer js-moon" id="moonLayer"></div>
+      <div class="js-layer js-mtn far"  id="mtnFar"></div>
+      <div class="js-layer js-mtn near" id="mtnNear"></div>
+      <div class="js-caption">JS-driven multi-layer parallax</div>
+    </div>
+    <div class="code-block">
+<span class="c">/* Read scroll once per frame via requestAnimationFrame — never
+   transform directly inside the scroll event (causes jank). */</span>
+<span class="k">const</span> layers = [
+  { el: stars, speed: 0.15 },
+  { el: moon,  speed: 0.30 },
+  { el: mtnFar,  speed: 0.45 },
+  { el: mtnNear, speed: 0.70 },
+];
+<span class="k">let</span> ticking = <span class="v">false</span>;
+<span class="k">function</span> onScroll() {
+  <span class="k">if</span> (ticking) <span class="k">return</span>;
+  ticking = <span class="v">true</span>;
+  <span class="k">requestAnimationFrame</span>(() =&gt; {
+    <span class="k">const</span> rect = stage.getBoundingClientRect();
+    <span class="k">const</span> progress = -rect.top;        <span class="c">// px scrolled past the stage top</span>
+    <span class="k">for</span> (<span class="k">const</span> { el, speed } of layers) {
+      el.style.transform = <span class="v">`translate3d(0, ${progress * speed}px, 0)`</span>;
+    }
+    ticking = <span class="v">false</span>;
+  });
+}
+window.addEventListener(<span class="v">'scroll'</span>, onScroll, { passive: <span class="v">true</span> });
+    </div>
+    <div class="callout">
+      <strong>Always use <code>translate3d</code> / <code>translateZ</code></strong> (not <code>top</code>/<code>margin</code>) so the browser promotes layers to their own GPU composite layer and skips layout/paint on every frame.
+    </div>
+  </div>
+</section>
+
+<!-- 5. Performance -->
+<section>
+  <h2>Performance Caveats</h2>
+  <p class="subtitle">Parallax is one of the easiest ways to wreck scroll performance. A janky 30fps hero feels worse than no effect at all.</p>
+  <div class="card">
+    <ul>
+      <li><strong>Never transform inside the scroll event directly.</strong> Throttle through <code>requestAnimationFrame</code> and a <code>ticking</code> flag so you do at most one update per frame.</li>
+      <li><strong>Mark scroll listeners <code>{ passive: true }</code></strong> so the browser doesn't wait to see if you'll <code>preventDefault</code> — this keeps scrolling on the compositor thread.</li>
+      <li><strong>Animate only <code>transform</code> and <code>opacity</code>.</strong> These are compositor-only properties; animating <code>top</code>, <code>left</code>, or <code>background-position</code> forces layout/paint each frame.</li>
+      <li><strong>Use <code>will-change: transform</code> sparingly</strong> on moving layers — it hints the browser to pre-promote them, but over-using it wastes GPU memory.</li>
+      <li><strong>Watch <code>filter: blur()</code> and huge images.</strong> Blurred or oversized parallax layers are expensive to recomposite; keep them small.</li>
+      <li><strong>Prefer the CSS perspective technique</strong> when the layout allows — it has no JS and runs entirely on the compositor.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6. Accessibility -->
+<section>
+  <h2>Accessibility: prefers-reduced-motion</h2>
+  <p class="subtitle">Parallax can trigger motion sickness, dizziness, and vestibular disorders. Respecting the OS "reduce motion" setting isn't optional — it's a core accessibility requirement.</p>
+  <div class="card">
+    <p>Honor it in <strong>both</strong> CSS and JS:</p>
+    <div class="code-block">
+<span class="c">/* CSS: neutralise the effect for users who asked for less motion */</span>
+<span class="v">@media (prefers-reduced-motion: reduce)</span> {
+  <span class="v">.layer-back, .layer-mid</span> { <span class="p">transform</span>: none !important; }
+  <span class="v">.bg-fixed</span>             { <span class="p">background-attachment</span>: scroll; }
+}
+    </div>
+    <div class="code-block">
+<span class="c">// JS: skip the scroll handler entirely when reduced motion is on</span>
+<span class="k">const</span> reduce = window.matchMedia(<span class="v">'(prefers-reduced-motion: reduce)'</span>);
+<span class="k">if</span> (!reduce.matches) {
+  window.addEventListener(<span class="v">'scroll'</span>, onScroll, { passive: <span class="v">true</span> });
+}
+<span class="c">// And re-check if the user changes the setting at runtime</span>
+reduce.addEventListener(<span class="v">'change'</span>, syncMotionPreference);
+    </div>
+    <div class="callout warn">
+      <strong>Note:</strong> the JS demo above already checks <code>prefers-reduced-motion</code> — if your system has "reduce motion" enabled, those layers are held still on purpose.
+    </div>
+    <p style="margin-top:14px;">
+      <span class="pill">perspective</span>
+      <span class="pill">translateZ / translate3d</span>
+      <span class="pill">transform-style: preserve-3d</span>
+      <span class="pill">background-attachment</span>
+      <span class="pill">requestAnimationFrame</span>
+      <span class="pill">prefers-reduced-motion</span>
+    </p>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p>Parallax Scrolling — Advanced UI/UX Design Research</p>
+</footer>
+
+<script>
+  // ---- Build a star field for the JS demo ----
+  const starLayer = document.getElementById('starLayer');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'js-star';
+    s.style.position = 'absolute';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 70 + '%';
+    s.style.opacity = (0.3 + Math.random() * 0.6).toFixed(2);
+    s.style.transform = `scale(${(0.6 + Math.random() * 1.2).toFixed(2)})`;
+    starLayer.appendChild(s);
+  }
+
+  // ---- JS scroll-driven parallax (rAF-throttled, passive) ----
+  const stage = document.getElementById('jsStage');
+  const layers = [
+    { el: document.getElementById('starLayer'), speed: 0.12 },
+    { el: document.getElementById('moonLayer'), speed: 0.28 },
+    { el: document.getElementById('mtnFar'),    speed: 0.42 },
+    { el: document.getElementById('mtnNear'),   speed: 0.65 },
+  ];
+
+  let ticking = false;
+  function render() {
+    const rect = stage.getBoundingClientRect();
+    // progress: how far the stage center is from viewport center
+    const progress = (window.innerHeight / 2) - (rect.top + rect.height / 2);
+    for (const { el, speed } of layers) {
+      el.style.transform = `translate3d(0, ${(progress * speed).toFixed(1)}px, 0)`;
+    }
+    ticking = false;
+  }
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(render); }
+  }
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function syncMotionPreference() {
+    if (reduce.matches) {
+      window.removeEventListener('scroll', onScroll);
+      // reset layers to neutral
+      layers.forEach(({ el }) => el.style.transform = 'translate3d(0,0,0)');
+    } else {
+      window.addEventListener('scroll', onScroll, { passive: true });
+      render();
+    }
+  }
+  syncMotionPreference();
+  // React if the user toggles the OS setting live
+  if (reduce.addEventListener) reduce.addEventListener('change', syncMotionPreference);
+</script>
+</body>
+</html>

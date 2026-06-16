@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaders &amp; WebGL — Advanced UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #07090f; --surface: #11141d; --surface2: #1a1e2b;
+    --border: #262b3c; --text: #e6e9f2; --text-dim: #88909f;
+    --accent: #ff5d8f; --accent2: #4dd6ff; --green: #5cf0a5; --warn: #ffcf6c;
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header {
+    text-align: center; padding: 70px 24px 50px;
+    background: radial-gradient(1000px 380px at 50% -10%, rgba(255,93,143,0.18), transparent),
+                radial-gradient(900px 380px at 75% 20%, rgba(77,214,255,0.14), transparent),
+                linear-gradient(135deg, #11141d, #160f1c 50%, #11141d);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    font-size: 3.1rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff, #ffd0e0 35%, #b6ecff 80%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  header p { color: var(--text-dim); max-width: 660px; margin: 0 auto; font-size: 1.1rem; }
+  .pill { display: inline-block; margin-top: 18px; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent2); border: 1px solid var(--border); padding: 6px 14px; border-radius: 999px; background: rgba(77,214,255,0.06); }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 58px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.85rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  .subtitle { color: var(--text-dim); margin-bottom: 30px; font-size: 1.02rem; max-width: 780px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+
+  /* canvas demo */
+  .demo-wrap { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: #000; }
+  #glcanvas { display: block; width: 100%; height: 420px; }
+  .demo-fallback { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; color: var(--warn); padding: 30px; font-size: 0.95rem; }
+  .picker { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 6px; }
+  .pbtn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 9px 18px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; font-family: inherit; }
+  .pbtn:hover { border-color: var(--accent2); }
+  .pbtn.active { background: var(--accent2); border-color: var(--accent2); color: #07090f; font-weight: 600; }
+  .ctrl-row { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 18px; }
+  .ctrl { flex: 1; min-width: 200px; }
+  .ctrl label { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-dim); margin-bottom: 6px; }
+  .ctrl label span { color: var(--green); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  input[type="range"] { width: 100%; height: 6px; border-radius: 4px; -webkit-appearance: none; background: var(--surface2); outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); cursor: pointer; }
+
+  .pipeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 14px; margin-top: 18px; }
+  .stage-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 18px; position: relative; }
+  .stage-box .n { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent); margin-bottom: 6px; }
+  .stage-box h4 { font-size: 0.98rem; margin-bottom: 6px; }
+  .stage-box p { font-size: 0.8rem; color: var(--text-dim); }
+
+  .code-block {
+    background: #04060c; border: 1px solid var(--border); border-radius: 12px; padding: 22px;
+    margin: 18px 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.7; color: #c8cee8; white-space: pre;
+  }
+  .code-block .c { color: #5f6a8a; }
+  .code-block .k { color: var(--accent); }
+  .code-block .ty { color: var(--accent2); }
+  .code-block .f { color: var(--green); }
+  .code-block .n { color: var(--warn); }
+
+  table.cmp { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
+  table.cmp th, table.cmp td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.cmp th { color: var(--accent2); font-weight: 600; }
+  table.cmp td:first-child { color: var(--text); font-weight: 500; width: 30%; }
+  table.cmp td { color: var(--text-dim); }
+
+  .note { background: rgba(255,207,108,0.08); border-left: 3px solid var(--warn); padding: 16px 20px; margin: 18px 0; border-radius: 0 10px 10px 0; color: var(--text-dim); font-size: 0.92rem; }
+  .note strong { color: var(--text); }
+  ul { padding-left: 22px; margin: 14px 0; }
+  li { margin-bottom: 8px; color: var(--text-dim); }
+  li strong { color: var(--text); }
+  code.inline { background: var(--surface2); padding: 2px 7px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; color: var(--accent2); }
+
+  footer { text-align: center; padding: 44px 24px; color: var(--text-dim); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <h1>Shaders &amp; WebGL</h1>
+  <p>GPU-driven graphics for the web. Tiny programs that run thousands of times in parallel — once per vertex, once per pixel — to draw things CSS never could.</p>
+  <span class="pill">Advanced · GPU &amp; GLSL</span>
+</header>
+
+<div class="container">
+
+<!-- ===== LIVE DEMO ===== -->
+<section>
+  <h2>Live Fragment Shader</h2>
+  <p class="subtitle">This is a real, running WebGL program — not a video, not a GIF. A single fragment shader colors every pixel of the canvas in parallel on your GPU, each frame. Switch the effect and drag the sliders.</p>
+
+  <div class="card">
+    <div class="demo-wrap">
+      <canvas id="glcanvas"></canvas>
+      <div class="demo-fallback" id="fallback">WebGL is not available in this browser. The shader below is what <em>would</em> run.</div>
+    </div>
+
+    <div class="picker">
+      <button class="pbtn active" data-shader="plasma">Plasma</button>
+      <button class="pbtn" data-shader="gradient">Animated Gradient</button>
+      <button class="pbtn" data-shader="rings">Rings</button>
+    </div>
+
+    <div class="ctrl-row">
+      <div class="ctrl">
+        <label>Speed <span id="speedVal">1.0</span></label>
+        <input type="range" id="speed" min="0" max="3" step="0.1" value="1">
+      </div>
+      <div class="ctrl">
+        <label>Scale <span id="scaleVal">3.0</span></label>
+        <input type="range" id="scale" min="1" max="10" step="0.5" value="3">
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>What's happening:</strong> WebGL draws two triangles that cover the whole canvas. For every pixel inside them the GPU runs the fragment shader, passing in the pixel's coordinate and a clock (<code class="inline">u_time</code>). The shader returns one RGBA color. With millions of pixels computed simultaneously, animated math like plasma costs almost nothing.
+  </div>
+</section>
+
+<!-- ===== WHAT IS A SHADER ===== -->
+<section>
+  <h2>What Is a Shader?</h2>
+  <p class="subtitle">A shader is a small program that runs on the GPU instead of the CPU. The two you'll meet first are the vertex shader and the fragment shader.</p>
+
+  <div class="card">
+    <ul>
+      <li><strong>Vertex shader</strong> — runs once per <em>vertex</em> (corner point). Its job is to decide where each point lands on screen (its <code class="inline">gl_Position</code>). Handles geometry, 3D transforms, perspective.</li>
+      <li><strong>Fragment (pixel) shader</strong> — runs once per <em>pixel</em> the geometry covers. Its job is to output a color (<code class="inline">gl_FragColor</code>). This is where lighting, textures, gradients, plasma, and post-processing live.</li>
+    </ul>
+    <p style="margin-top:14px;color:var(--text-dim);font-size:0.95rem;">They're written in <strong>GLSL</strong> (OpenGL Shading Language) — a C-like language with built-in vector types (<code class="inline">vec2</code>, <code class="inline">vec3</code>, <code class="inline">vec4</code>) and math (<code class="inline">sin</code>, <code class="inline">mix</code>, <code class="inline">dot</code>, <code class="inline">length</code>). The GPU runs the same shader on thousands of pixels at once — that parallelism is why it's so fast.</p>
+  </div>
+
+  <div class="code-block"><span class="c">// GLSL basics — the vocabulary</span>
+<span class="ty">float</span> a = <span class="n">1.0</span>;              <span class="c">// always write floats with a decimal!</span>
+<span class="ty">vec2</span>  uv = <span class="ty">vec2</span>(x, y);     <span class="c">// 2 components — great for coords</span>
+<span class="ty">vec3</span>  rgb = <span class="ty">vec3</span>(<span class="n">1.0</span>, <span class="n">0.0</span>, <span class="n">0.5</span>); <span class="c">// a color</span>
+<span class="ty">vec4</span>  rgba = <span class="ty">vec4</span>(rgb, <span class="n">1.0</span>);   <span class="c">// rgb + alpha</span>
+
+<span class="c">// swizzling: pull components in any order</span>
+<span class="ty">vec2</span> flipped = uv.<span class="f">yx</span>;
+<span class="ty">vec3</span> grey    = color.<span class="f">rgb</span> * <span class="n">0.5</span>;
+
+<span class="c">// built-ins do vector math for free</span>
+<span class="ty">float</span> d = <span class="f">length</span>(uv);          <span class="c">// distance from origin</span>
+<span class="ty">vec3</span>  c = <span class="f">mix</span>(red, blue, d);     <span class="c">// blend by amount d</span>
+<span class="ty">float</span> w = <span class="f">sin</span>(u_time + d * <span class="n">10.0</span>); <span class="c">// animate with the clock</span></div>
+</section>
+
+<!-- ===== THE PIPELINE ===== -->
+<section>
+  <h2>The WebGL Pipeline</h2>
+  <p class="subtitle">Geometry goes in one end, pixels come out the other. Your two shaders plug into two specific stages.</p>
+
+  <div class="card">
+    <div class="pipeline">
+      <div class="stage-box"><div class="n">01</div><h4>Buffers</h4><p>Vertex data (positions, UVs) uploaded from JS to GPU memory.</p></div>
+      <div class="stage-box"><div class="n">02 — you</div><h4>Vertex Shader</h4><p>Runs per vertex. Outputs <code class="inline">gl_Position</code>.</p></div>
+      <div class="stage-box"><div class="n">03</div><h4>Rasterizer</h4><p>Turns triangles into the pixels they cover. Interpolates varyings.</p></div>
+      <div class="stage-box"><div class="n">04 — you</div><h4>Fragment Shader</h4><p>Runs per pixel. Outputs <code class="inline">gl_FragColor</code>.</p></div>
+      <div class="stage-box"><div class="n">05</div><h4>Framebuffer</h4><p>Depth test, blend, and write the final pixel to the screen.</p></div>
+    </div>
+  </div>
+
+  <div class="code-block"><span class="c">// Data you feed shaders from JavaScript:</span>
+<span class="k">attribute</span>  <span class="c">// per-vertex input  (e.g. position)        -&gt; vertex shader</span>
+<span class="k">uniform</span>    <span class="c">// global constant for the draw (time, mouse) -&gt; both shaders</span>
+<span class="k">varying</span>    <span class="c">// vertex output, interpolated across the face -&gt; fragment shader</span></div>
+</section>
+
+<!-- ===== THE ACTUAL SHADER ===== -->
+<section>
+  <h2>The Shader Running Above</h2>
+  <p class="subtitle">This is the exact plasma fragment shader powering the demo. Read it top to bottom — it's only math on a coordinate and a clock.</p>
+
+  <div class="code-block"><span class="k">precision</span> <span class="ty">mediump</span> <span class="ty">float</span>;
+
+<span class="k">uniform</span> <span class="ty">vec2</span>  u_resolution;  <span class="c">// canvas size in pixels</span>
+<span class="k">uniform</span> <span class="ty">float</span> u_time;        <span class="c">// seconds since start</span>
+<span class="k">uniform</span> <span class="ty">float</span> u_scale;       <span class="c">// zoom from the slider</span>
+
+<span class="ty">void</span> <span class="f">main</span>() {
+  <span class="c">// normalize pixel coords to roughly -1..1, keep aspect square</span>
+  <span class="ty">vec2</span> uv = (gl_FragCoord.xy / u_resolution) * <span class="n">2.0</span> - <span class="n">1.0</span>;
+  uv.x *= u_resolution.x / u_resolution.y;
+  uv *= u_scale;
+
+  <span class="ty">float</span> t = u_time;
+  <span class="c">// classic plasma: sum of moving sine waves</span>
+  <span class="ty">float</span> v = <span class="f">sin</span>(uv.x + t);
+  v += <span class="f">sin</span>(uv.y + t);
+  v += <span class="f">sin</span>(uv.x + uv.y + t);
+  <span class="ty">float</span> cx = uv.x + <span class="n">0.5</span> * <span class="f">sin</span>(t / <span class="n">2.0</span>);
+  <span class="ty">float</span> cy = uv.y + <span class="n">0.5</span> * <span class="f">cos</span>(t / <span class="n">3.0</span>);
+  v += <span class="f">sin</span>(<span class="f">sqrt</span>(cx*cx + cy*cy) * <span class="n">4.0</span> + t);
+
+  <span class="c">// map the wave value into an RGB rainbow</span>
+  <span class="ty">vec3</span> col = <span class="ty">vec3</span>(
+    <span class="f">sin</span>(v),
+    <span class="f">sin</span>(v + <span class="n">2.094</span>),   <span class="c">// +120 degrees</span>
+    <span class="f">sin</span>(v + <span class="n">4.188</span>)    <span class="c">// +240 degrees</span>
+  ) * <span class="n">0.5</span> + <span class="n">0.5</span>;
+
+  gl_FragColor = <span class="ty">vec4</span>(col, <span class="n">1.0</span>);
+}</div>
+
+  <div class="note">
+    <strong>That's the whole effect.</strong> No textures, no models — just <code class="inline">sin()</code> on the pixel coordinate plus time. Because the GPU runs it on every pixel in parallel, it animates smoothly at 60fps even on a phone.
+  </div>
+</section>
+
+<!-- ===== SHADERS VS CSS ===== -->
+<section>
+  <h2>Shaders vs. CSS — When to Use Which</h2>
+  <p class="subtitle">Shaders are powerful but heavier to ship and maintain. Most UI should stay in CSS. Reach for WebGL only when CSS genuinely can't do it.</p>
+
+  <div class="card">
+    <table class="cmp">
+      <tr><th>Need</th><th>Reach for</th></tr>
+      <tr><td>Hover, transitions, simple animation</td><td>CSS — cheaper, accessible, no canvas, degrades gracefully.</td></tr>
+      <tr><td>Blur, drop-shadow, simple color filters</td><td>CSS <code class="inline">filter</code> / <code class="inline">backdrop-filter</code>.</td></tr>
+      <tr><td>Per-pixel generative visuals (plasma, noise, fluid)</td><td>WebGL fragment shader — CSS can't compute per-pixel math.</td></tr>
+      <tr><td>Real-time refraction / distortion of live content</td><td>WebGL — true ray-bending (see the Liquid Glass page's honesty note).</td></tr>
+      <tr><td>3D scenes, particles, lighting, models</td><td>WebGL / WebGPU (often via three.js).</td></tr>
+      <tr><td>Image post-processing, video effects, data viz at scale</td><td>WebGL — process thousands of points/pixels per frame.</td></tr>
+    </table>
+  </div>
+
+  <div class="note">
+    <strong>Trade-offs of shaders:</strong> a <code class="inline">&lt;canvas&gt;</code> is opaque to the accessibility tree and to text selection/SEO, it consumes GPU/battery, and it adds JS weight. Always provide a CSS or static fallback, respect <code class="inline">prefers-reduced-motion</code>, and pause rendering when the canvas is off-screen.
+  </div>
+</section>
+
+<!-- ===== ECOSYSTEM ===== -->
+<section>
+  <h2>Tools &amp; Next Steps</h2>
+  <div class="card">
+    <ul>
+      <li><strong>three.js</strong> — the standard 3D library; abstracts the boilerplate while still letting you write GLSL.</li>
+      <li><strong>OGL / regl</strong> — thin, low-level helpers for when you want close-to-raw WebGL.</li>
+      <li><strong>Shadertoy</strong> — a huge gallery of fragment shaders you can read and remix; the plasma above is in the Shadertoy tradition.</li>
+      <li><strong>The Book of Shaders</strong> (Patricio Gonzalez Vivo &amp; Jen Lowe) — the canonical free GLSL tutorial.</li>
+      <li><strong>WebGPU</strong> — the successor API (WGSL shaders, compute shaders). Shipping in modern Chrome/Edge, rolling out elsewhere.</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<footer>Shaders &amp; WebGL — Advanced UI Research · the demo above is a live, editable fragment shader</footer>
+
+<script>
+// ============================================================
+//  Minimal but REAL WebGL fragment-shader engine.
+//  Two triangles cover the canvas; a fragment shader colors
+//  every pixel each frame. Vanilla JS, no libraries.
+// ============================================================
+(function () {
+  const canvas = document.getElementById('glcanvas');
+  const fallback = document.getElementById('fallback');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+  if (!gl) { fallback.style.display = 'flex'; return; }
+
+  // ---- Vertex shader: just pass a fullscreen quad through ----
+  const VERT = `
+    attribute vec2 a_position;
+    void main() {
+      gl_Position = vec4(a_position, 0.0, 1.0);
+    }`;
+
+  // ---- Three selectable fragment shaders ----
+  const COMMON_HEAD = `
+    precision mediump float;
+    uniform vec2  u_resolution;
+    uniform float u_time;
+    uniform float u_scale;
+  `;
+
+  const SHADERS = {
+    plasma: COMMON_HEAD + `
+      void main() {
+        vec2 uv = (gl_FragCoord.xy / u_resolution) * 2.0 - 1.0;
+        uv.x *= u_resolution.x / u_resolution.y;
+        uv *= u_scale;
+        float t = u_time;
+        float v = sin(uv.x + t);
+        v += sin(uv.y + t);
+        v += sin(uv.x + uv.y + t);
+        float cx = uv.x + 0.5 * sin(t / 2.0);
+        float cy = uv.y + 0.5 * cos(t / 3.0);
+        v += sin(sqrt(cx*cx + cy*cy) * 4.0 + t);
+        vec3 col = vec3(sin(v), sin(v + 2.094), sin(v + 4.188)) * 0.5 + 0.5;
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+
+    gradient: COMMON_HEAD + `
+      void main() {
+        vec2 uv = gl_FragCoord.xy / u_resolution;
+        float t = u_time * 0.5;
+        vec3 a = vec3(0.10, 0.05, 0.30);
+        vec3 b = vec3(0.95, 0.30, 0.55);
+        vec3 c = vec3(0.20, 0.85, 0.95);
+        float m = 0.5 + 0.5 * sin(t + uv.x * u_scale);
+        float n = 0.5 + 0.5 * cos(t + uv.y * u_scale);
+        vec3 col = mix(mix(a, b, m), c, n * 0.6);
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+
+    rings: COMMON_HEAD + `
+      void main() {
+        vec2 uv = (gl_FragCoord.xy / u_resolution) * 2.0 - 1.0;
+        uv.x *= u_resolution.x / u_resolution.y;
+        float d = length(uv) * u_scale;
+        float ring = sin(d - u_time * 3.0);
+        float glow = smoothstep(0.0, 1.0, ring);
+        vec3 col = mix(vec3(0.05, 0.02, 0.15), vec3(1.0, 0.36, 0.56), glow);
+        col += vec3(0.0, 0.4, 0.6) * (1.0 - smoothstep(0.0, 1.5, d));
+        gl_FragColor = vec4(col, 1.0);
+      }`
+  };
+
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error('Shader error:', gl.getShaderInfoLog(s));
+      return null;
+    }
+    return s;
+  }
+
+  function buildProgram(fragSrc) {
+    const vs = compile(gl.VERTEX_SHADER, VERT);
+    const fs = compile(gl.FRAGMENT_SHADER, fragSrc);
+    const p = gl.createProgram();
+    gl.attachShader(p, vs);
+    gl.attachShader(p, fs);
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+      console.error('Link error:', gl.getProgramInfoLog(p));
+      return null;
+    }
+    return p;
+  }
+
+  // Fullscreen quad (two triangles) in clip space.
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -1, -1,  1, -1,  -1, 1,
+    -1,  1,  1, -1,   1, 1
+  ]), gl.STATIC_DRAW);
+
+  let program, loc = {};
+  function useShader(name) {
+    program = buildProgram(SHADERS[name]);
+    gl.useProgram(program);
+    const posLoc = gl.getAttribLocation(program, 'a_position');
+    gl.enableVertexAttribArray(posLoc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+    loc.resolution = gl.getUniformLocation(program, 'u_resolution');
+    loc.time = gl.getUniformLocation(program, 'u_time');
+    loc.scale = gl.getUniformLocation(program, 'u_scale');
+  }
+  useShader('plasma');
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = canvas.clientWidth * dpr, h = canvas.clientHeight * dpr;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+    }
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  window.addEventListener('resize', resize);
+
+  // ---- Controls ----
+  let speed = 1, scale = 3;
+  const speedEl = document.getElementById('speed');
+  const scaleEl = document.getElementById('scale');
+  speedEl.oninput = () => { speed = +speedEl.value; document.getElementById('speedVal').textContent = speed.toFixed(1); };
+  scaleEl.oninput = () => { scale = +scaleEl.value; document.getElementById('scaleVal').textContent = scale.toFixed(1); };
+
+  document.querySelectorAll('.pbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pbtn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      useShader(btn.dataset.shader);
+    });
+  });
+
+  // ---- Render loop ----
+  let start = performance.now(), clock = 0, last = start;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function frame(now) {
+    resize();
+    const dt = (now - last) / 1000; last = now;
+    if (!reduce) clock += dt * speed;   // advance our own clock so speed slider works
+    gl.uniform2f(loc.resolution, canvas.width, canvas.height);
+    gl.uniform1f(loc.time, clock);
+    gl.uniform1f(loc.scale, scale);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

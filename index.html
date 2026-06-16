@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI/UX Design Research Hub</title>
+<style>
+/* RESET AND BASE */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-hover: rgba(255, 255, 255, 0.1);
+  --border-card: rgba(255, 255, 255, 0.1);
+  --border-card-hover: rgba(255, 255, 255, 0.25);
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a0b8;
+  --text-muted: #6a6a82;
+  --accent-blue: #6c8aff;
+  --accent-purple: #a855f7;
+  --accent-pink: #ec4899;
+  --accent-teal: #2dd4bf;
+  --accent-orange: #f97316;
+  --radius: 16px;
+  --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ANIMATED BACKGROUND */
+.bg-gradient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(108, 138, 255, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 20%, rgba(168, 85, 247, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 90%, rgba(236, 72, 153, 0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 10% 60%, rgba(45, 212, 191, 0.08) 0%, transparent 50%),
+    var(--bg-primary);
+  animation: bgShift 20s ease-in-out infinite alternate;
+}
+
+@keyframes bgShift {
+  0%   { filter: hue-rotate(0deg); }
+  50%  { filter: hue-rotate(15deg); }
+  100% { filter: hue-rotate(-10deg); }
+}
+
+/* NOISE OVERLAY */
+.noise {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px;
+  pointer-events: none;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* HEADER */
+.hero {
+  text-align: center;
+  padding: 4rem 0 3rem;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  background: rgba(108, 138, 255, 0.12);
+  border: 1px solid rgba(108, 138, 255, 0.25);
+  color: var(--accent-blue);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #f0f0f5 0%, #a0a0b8 50%, #6c8aff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+/* SECTION HEADINGS */
+.section {
+  margin-top: 3.5rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.section-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.section-icon.fundamentals { background: rgba(108, 138, 255, 0.15); }
+.section-icon.trends       { background: rgba(168, 85, 247, 0.15); }
+.section-icon.advanced     { background: rgba(236, 72, 153, 0.15); }
+.section-icon.comparison   { background: rgba(45, 212, 191, 0.15); }
+
+.section-header h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.section-header span.count {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+/* CARD GRID */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+/* GLASSMORPHIC CARD */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.4rem;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition);
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity var(--transition);
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  background: var(--bg-card-hover);
+  border-color: var(--border-card-hover);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.card:hover::before { opacity: 1; }
+
+.card-emoji {
+  font-size: 1.6rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 650;
+  margin-bottom: 0.4rem;
+  transition: color var(--transition);
+}
+
+.card:hover .card-title.fundamentals { color: var(--accent-blue); }
+.card:hover .card-title.trends       { color: var(--accent-purple); }
+.card:hover .card-title.advanced     { color: var(--accent-pink); }
+.card:hover .card-title.comparison   { color: var(--accent-teal); }
+
+.card-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.card-arrow {
+  margin-top: 1rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all var(--transition);
+}
+
+.card:hover .card-arrow {
+  color: var(--text-secondary);
+  gap: 0.6rem;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  margin-top: 5rem;
+  padding: 2rem 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.footer a {
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+
+.footer a:hover { text-decoration: underline; }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .container { padding: 1rem; }
+  .hero { padding: 2.5rem 0 2rem; }
+  .card-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .card { padding: 1rem; }
+}
+
+@media (max-width: 400px) {
+  .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="bg-gradient"></div>
+<div class="noise"></div>
+
+<div class="container">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-badge">Open-Source Research</div>
+    <h1>UI/UX Design Research</h1>
+    <p>A curated collection of interactive guides exploring the principles, history, and cutting-edge trends of interface design — from color theory fundamentals to liquid glass effects.</p>
+  </header>
+
+  <!-- FUNDAMENTALS -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-icon fundamentals">📐</div>
+      <h2>Fundamentals</h2>
+      <span class="count">5 guides</span>
+    </div>
+    <div class="card-grid">
+      <a href="fundamentals/color-theory.html" class="card">
+        <span class="card-emoji">🎨</span>
+        <div class="card-title fundamentals">Color Theory</div>
+        <div class="card-desc">Color wheels, harmony rules, psychology of color, and building accessible palettes.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="fundamentals/typography.html" class="card">
+        <span class="card-emoji">🔤</span>
+        <div class="card-title fundamentals">Typography</div>
+        <div class="card-desc">Type scales, font pairing, readability metrics, and variable fonts.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="fundamentals/layout-grid.html" class="card">
+        <span class="card-emoji">📏</span>
+        <div class="card-title fundamentals">Layout &amp; Grid</div>
+        <div class="card-desc">CSS Grid, Flexbox, 12-column systems, and responsive breakpoints.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="fundamentals/spacing-rhythm.html" class="card">
+        <span class="card-emoji">📐</span>
+        <div class="card-title fundamentals">Spacing &amp; Rhythm</div>
+        <div class="card-desc">Vertical rhythm, whitespace strategy, and the 8-point spacing system.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="fundamentals/accessibility.html" class="card">
+        <span class="card-emoji">♿</span>
+        <div class="card-title fundamentals">Accessibility</div>
+        <div class="card-desc">WCAG guidelines, ARIA roles, contrast ratios, and inclusive design patterns.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- DESIGN TRENDS -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-icon trends">🌊</div>
+      <h2>Design Trends</h2>
+      <span class="count">9 guides</span>
+    </div>
+    <div class="card-grid">
+      <a href="trends/skeuomorphism.html" class="card">
+        <span class="card-emoji">🏛️</span>
+        <div class="card-title trends">Skeuomorphism</div>
+        <div class="card-desc">Real-world metaphors, textures, and the digital interfaces that taught us touch.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="trends/flat-design.html" class="card">
+        <span class="card-emoji">◻️</span>
+        <div class="card-title trends">Flat Design</div>
+        <div class="card-desc">The minimalist revolution — bold color, zero shadows, pure geometry.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="trends/material-design.html" class="card">
+        <span class="card-emoji">📐</span>
+        <div class="card-title trends">Material Design</div>
+        <div class="card-desc">Google's systematic elevation, motion, and digital paper metaphor.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="trends/minimalism.html" class="card">
+        <span class="card-emoji">⬜</span>
+        <div class="card-title trends">Minimalism</div>
+        <div class="card-desc">Extreme reduction, intentional whitespace, and content-first design.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="trends/brutalism.html" class="card">
+        <span class="card-emoji">🔩</span>
+        <div class="card-title trends">Brutalism</div>
+        <div class="card-desc">Raw aesthetics, system fonts, and punk-rock rebellion against polish.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="trends/glassmorphism.html" class="card">
+        <span class="card-emoji">🫧</span>
+        <div class="card-title trends">Glassmorphism</div>
+        <div class="card-desc">Frosted glass panels, backdrop blur, and translucent layering.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="trends/neumorphism.html" class="card">
+        <span class="card-emoji">🔘</span>
+        <div class="card-title trends">Neumorphism</div>
+        <div class="card-desc">Soft extruded UI with dual shadows on monochrome backgrounds.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="trends/claymorphism.html" class="card">
+        <span class="card-emoji">🟤</span>
+        <div class="card-title trends">Claymorphism</div>
+        <div class="card-desc">Inflated 3D clay-like shapes with bold shadows and pastel palettes.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="trends/aurora-ui.html" class="card">
+        <span class="card-emoji">🌌</span>
+        <div class="card-title trends">Aurora UI</div>
+        <div class="card-desc">Gradient aurora backgrounds, ambient color, and ethereal atmosphere.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ADVANCED -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-icon advanced">⚡</div>
+      <h2>Advanced Topics</h2>
+      <span class="count">6 guides</span>
+    </div>
+    <div class="card-grid">
+      <a href="advanced/liquid-glass.html" class="card">
+        <span class="card-emoji">🌊</span>
+        <div class="card-title advanced">Liquid Glass</div>
+        <div class="card-desc">Apple's refractive, physically-based glass UI language from WWDC 2025.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="advanced/shaders-webgl.html" class="card">
+        <span class="card-emoji">🎮</span>
+        <div class="card-title advanced">Shaders &amp; WebGL</div>
+        <div class="card-desc">GPU-driven visual effects, fragment shaders, and Three.js on the web.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="advanced/micro-interactions.html" class="card">
+        <span class="card-emoji">✨</span>
+        <div class="card-title advanced">Micro-interactions</div>
+        <div class="card-desc">Meaningful animation, haptic feedback, and delightful UI moments.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="advanced/dark-mode.html" class="card">
+        <span class="card-emoji">🌙</span>
+        <div class="card-title advanced">Dark Mode</div>
+        <div class="card-desc">Designing for dual contexts — light surfaces, dark surfaces, and auto-switching.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="advanced/gradient-mesh.html" class="card">
+        <span class="card-emoji">🌈</span>
+        <div class="card-title advanced">Gradient Mesh</div>
+        <div class="card-desc">Complex multi-point gradients, mesh tools, and CSS techniques.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+      <a href="advanced/parallax-scrolling.html" class="card">
+        <span class="card-emoji">🏔️</span>
+        <div class="card-title advanced">Parallax Scrolling</div>
+        <div class="card-desc">Creating depth through differential scroll speeds and layered content.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-icon comparison">🔬</div>
+      <h2>Comparisons</h2>
+      <span class="count">1 guide</span>
+    </div>
+    <div class="card-grid">
+      <a href="comparison/morphism-comparison.html" class="card">
+        <span class="card-emoji">⚖️</span>
+        <div class="card-title comparison">Morphism Comparison</div>
+        <div class="card-desc">Side-by-side analysis of skeuomorphism, flat, material, glass, neu, clay, and liquid glass — with live interactive demos.</div>
+        <div class="card-arrow">Explore <span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>UI/UX Design Research — An open-source learning resource</p>
+    <p style="margin-top:0.5rem;">View the <a href="https://github.com" target="_blank">source on GitHub</a> · Built with HTML &amp; CSS — no frameworks, no dependencies</p>
+  </footer>
+
+</div>
+</body>
+</html>

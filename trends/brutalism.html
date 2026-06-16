@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Brutalism — UI Design Trends</title>
+<style>
+  /* Brutalism: system fonts on purpose, raw HTML aesthetics */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.4;
+    font-size: 18px;
+  }
+
+  /* Raw, unstyled-looking link */
+  .back-link {
+    display: inline-block;
+    position: fixed; top: 0; left: 0; z-index: 1000;
+    color: #0000ee; text-decoration: underline; font-size: 16px;
+    background: #ffff00;
+    padding: 6px 12px;
+    border: 4px solid #000;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+  }
+  .back-link:hover { background: #00ffff; }
+  .back-link:visited { color: #551a8b; }
+
+  header {
+    padding: 80px 20px 40px;
+    border-bottom: 8px solid #000;
+    background: #ff00ff;
+  }
+  header h1 {
+    font-family: 'Courier New', monospace;
+    font-size: 5rem;
+    font-weight: 900;
+    color: #000;
+    text-transform: uppercase;
+    line-height: 0.9;
+    letter-spacing: -3px;
+    word-break: break-word;
+  }
+  header p {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    margin-top: 16px;
+    background: #000;
+    color: #0f0;
+    display: inline-block;
+    padding: 4px 8px;
+  }
+
+  .container { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+
+  .section-title {
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #000;
+    margin: 60px 0 20px;
+    text-transform: uppercase;
+    background: #000;
+    color: #fff;
+    padding: 8px 12px;
+    display: inline-block;
+    border: 4px solid #000;
+  }
+
+  p { margin-bottom: 16px; }
+  p.body { font-family: 'Times New Roman', serif; }
+  a { color: #0000ee; }
+  a:visited { color: #551a8b; }
+
+  /* ===== EXPOSED GRID ===== */
+  .raw-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 4px solid #000;
+    margin: 30px 0;
+  }
+  .raw-cell {
+    border: 4px solid #000;
+    padding: 24px;
+    font-family: 'Courier New', monospace;
+    min-height: 120px;
+  }
+  .raw-cell:nth-child(1) { background: #ff0; }
+  .raw-cell:nth-child(2) { background: #0ff; }
+  .raw-cell:nth-child(3) { background: #f0f; }
+  .raw-cell:nth-child(4) { background: #fff; }
+  .raw-cell:nth-child(5) { background: #000; color: #0f0; }
+  .raw-cell:nth-child(6) { background: #f00; color: #fff; }
+  .raw-cell:nth-child(7) { background: #00f; color: #fff; }
+  .raw-cell:nth-child(8) { background: #0f0; }
+  .raw-cell:nth-child(9) { background: #ffa500; }
+  .raw-cell h3 { font-size: 1.4rem; text-transform: uppercase; margin-bottom: 8px; }
+
+  /* ===== UNSTYLED FORM ===== */
+  .raw-form {
+    border: 4px solid #000;
+    padding: 24px;
+    margin: 30px 0;
+    background: #c0c0c0;
+    font-family: 'Courier New', monospace;
+  }
+  .raw-form label { display: block; font-weight: bold; margin: 12px 0 4px; }
+  .raw-form input, .raw-form textarea, .raw-form select {
+    width: 100%;
+    border: 3px solid #000;
+    padding: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    background: #fff;
+  }
+  .raw-form button {
+    margin-top: 16px;
+    border: 4px solid #000;
+    background: #ff0;
+    padding: 12px 24px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 6px 6px 0 #000;
+  }
+  .raw-form button:active { box-shadow: 0 0 0 #000; transform: translate(6px,6px); }
+
+  /* ===== CLASHING BUTTONS ===== */
+  .btn-row { margin: 30px 0; display: flex; flex-wrap: wrap; gap: 16px; }
+  .brutal-btn {
+    border: 4px solid #000;
+    padding: 14px 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 8px 8px 0 #000;
+    transition: none;
+  }
+  .brutal-btn:hover { transform: translate(-2px,-2px); box-shadow: 10px 10px 0 #000; }
+  .brutal-btn:active { transform: translate(8px,8px); box-shadow: 0 0 0 #000; }
+  .b1 { background: #ff0; color: #f0f; }
+  .b2 { background: #0f0; color: #00f; }
+  .b3 { background: #f00; color: #0ff; }
+  .b4 { background: #000; color: #0f0; }
+  .b5 { background: #fff; color: #000; }
+
+  /* ===== MARQUEE-STYLE TICKER ===== */
+  .ticker {
+    border: 4px solid #000;
+    background: #000;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 30px 0;
+    padding: 10px 0;
+  }
+  .ticker span { display: inline-block; animation: scroll 18s linear infinite; }
+  @keyframes scroll {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+  }
+
+  /* ===== SYSTEM FONT STACK SHOWCASE ===== */
+  .font-stack { border: 4px solid #000; margin: 30px 0; }
+  .font-stack div { padding: 16px 20px; border-bottom: 4px solid #000; font-size: 1.4rem; }
+  .font-stack div:last-child { border-bottom: none; }
+  .font-stack .meta { font-family: 'Courier New', monospace; font-size: 0.8rem; color: #555; }
+
+  .code-block {
+    background: #000;
+    color: #0f0;
+    padding: 20px;
+    margin: 24px 0;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    border: 4px solid #000;
+  }
+  .code-block .comment { color: #888; }
+  .code-block .prop { color: #ff0; }
+  .code-block .val { color: #0ff; }
+
+  .theory {
+    border: 4px solid #000;
+    padding: 32px;
+    margin: 50px 0;
+    background: #fff;
+    box-shadow: 12px 12px 0 #000;
+  }
+  .theory h2 {
+    font-family: 'Courier New', monospace;
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    background: #ff0;
+    display: inline-block;
+    padding: 4px 8px;
+    border: 4px solid #000;
+  }
+  .theory p { margin-bottom: 16px; }
+  .theory strong { background: #ff0; padding: 0 3px; }
+  .theory ul { padding-left: 24px; margin: 16px 0; }
+  .theory li { margin-bottom: 10px; }
+
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 30px 0; }
+  .pros-cons > div { border: 4px solid #000; padding: 24px; font-family: 'Courier New', monospace; }
+  .pros-cons .yes { background: #0f0; }
+  .pros-cons .no { background: #f99; }
+  .pros-cons h3 { text-transform: uppercase; margin-bottom: 16px; border-bottom: 3px solid #000; }
+  .pros-cons li { margin-bottom: 10px; }
+
+  footer {
+    border-top: 8px solid #000;
+    padding: 40px 20px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    text-transform: uppercase;
+    background: #ff00ff;
+    margin-top: 60px;
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 2.5rem; }
+    .raw-grid { grid-template-columns: 1fr; }
+    .pros-cons { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<a class="back-link" href="../index.html">&lt;&lt; BACK TO HUB</a>
+
+<header>
+  <h1>WEB<br>BRUTALISM</h1>
+  <p>&gt; raw HTML. exposed grids. no apologies.</p>
+</header>
+
+<div class="container">
+
+  <p class="body" style="margin-top:30px;font-size:1.2rem;">Brutalism is design that refuses to seduce you. It throws out the rounded corners, the soft shadows, the polite whitespace, and the friendly gradients — and gives you the raw skeleton of the web instead: system fonts, default blue links, hard borders, and colors that clash on purpose. It is <strong>anti-design as a statement.</strong></p>
+
+  <!-- EXPOSED GRID -->
+  <h2 class="section-title">Exposed Grid</h2>
+  <p class="body">Brutalist layouts flaunt their structure. Borders are thick and black; the grid is not hidden behind padding and soft fills — it is the whole aesthetic.</p>
+  <div class="raw-grid">
+    <div class="raw-cell"><h3>01</h3>RAW</div>
+    <div class="raw-cell"><h3>02</h3>GRID</div>
+    <div class="raw-cell"><h3>03</h3>VISIBLE</div>
+    <div class="raw-cell"><h3>04</h3>NO</div>
+    <div class="raw-cell"><h3>05</h3>SOFT</div>
+    <div class="raw-cell"><h3>06</h3>EDGES</div>
+    <div class="raw-cell"><h3>07</h3>JUST</div>
+    <div class="raw-cell"><h3>08</h3>HARD</div>
+    <div class="raw-cell"><h3>09</h3>LINES</div>
+  </div>
+
+  <!-- CLASHING BUTTONS -->
+  <h2 class="section-title">Clashing Colors</h2>
+  <p class="body">High-contrast, deliberately uncomfortable color pairings — yellow on magenta, green on blue — reject the harmonized palettes of corporate design. The hard offset shadow (no blur) is a signature move.</p>
+  <div class="btn-row">
+    <button class="brutal-btn b1">CLICK ME</button>
+    <button class="brutal-btn b2">OR ME</button>
+    <button class="brutal-btn b3">DANGER</button>
+    <button class="brutal-btn b4">SUBMIT</button>
+    <button class="brutal-btn b5">CANCEL</button>
+  </div>
+  <div class="code-block">
+<span class="comment">/* The signature hard-offset shadow — zero blur */</span>
+<span class="val">.brutal-btn</span> {
+  <span class="prop">border</span>: <span class="val">4px solid #000</span>;
+  <span class="prop">box-shadow</span>: <span class="val">8px 8px 0 #000</span>;  <span class="comment">/* solid block, no softness */</span>
+  <span class="prop">font-family</span>: <span class="val">'Courier New', monospace</span>;
+  <span class="prop">text-transform</span>: <span class="val">uppercase</span>;
+}
+<span class="val">.brutal-btn</span>:active {
+  <span class="prop">transform</span>: <span class="val">translate(8px, 8px)</span>; <span class="comment">/* button "presses" into the page */</span>
+  <span class="prop">box-shadow</span>: <span class="val">0 0 0 #000</span>;
+}
+  </div>
+
+  <!-- TICKER -->
+  <h2 class="section-title">Motion Without Polish</h2>
+  <p class="body">Brutalism revives unfashionable web relics — the scrolling ticker, blinking text, visible cursors — as ironic, knowing references to the early web.</p>
+  <div class="ticker"><span>★ THIS SITE WAS NOT DESIGNED — IT WAS BUILT ★ DEFAULT FONTS ARE A CHOICE ★ YOUR BROWSER IS THE DESIGN SYSTEM ★ MORE IS MORE ★</span></div>
+
+  <!-- SYSTEM FONTS -->
+  <h2 class="section-title">System Fonts On Purpose</h2>
+  <p class="body">Brutalist sites embrace the browser's default fonts — Times New Roman, Courier, Arial — rather than loading a curated typeface. The "unstyled" look is the style.</p>
+  <div class="font-stack">
+    <div>The quick brown fox jumps. <span class="meta">— Times New Roman (serif default)</span></div>
+    <div style="font-family:'Courier New',monospace;">The quick brown fox jumps. <span class="meta">— Courier New (mono)</span></div>
+    <div style="font-family:Arial,sans-serif;">The quick brown fox jumps. <span class="meta">— Arial / Helvetica</span></div>
+    <div style="font-family:Georgia,serif;">The quick brown fox jumps. <span class="meta">— Georgia</span></div>
+  </div>
+
+  <!-- RAW FORM -->
+  <h2 class="section-title">Raw, Unstyled Form</h2>
+  <p class="body">Inputs keep their hard 3D borders. Nothing is rounded, nothing is hinted. This is what HTML looks like before a design system gets to it.</p>
+  <form class="raw-form" onsubmit="return false;">
+    <label for="n">NAME:</label>
+    <input id="n" type="text" placeholder="TYPE HERE">
+    <label for="e">EMAIL:</label>
+    <input id="e" type="email" placeholder="YOU@EXAMPLE.COM">
+    <label for="m">MESSAGE:</label>
+    <textarea id="m" rows="3" placeholder="SHOUT INTO THE VOID"></textarea>
+    <button type="submit">>> SEND IT</button>
+  </form>
+
+  <!-- WHEN -->
+  <h2 class="section-title">When To Use / Avoid</h2>
+  <div class="pros-cons">
+    <div class="yes">
+      <h3>USE IT FOR</h3>
+      <ul>
+        <li>Portfolios for designers/developers who want to stand out</li>
+        <li>Art, music, fashion, and counterculture brands</li>
+        <li>Landing pages that want to feel raw, urgent, anti-corporate</li>
+        <li>Projects making a deliberate statement about the web itself</li>
+      </ul>
+    </div>
+    <div class="no">
+      <h3>AVOID FOR</h3>
+      <ul>
+        <li>E-commerce, banking, healthcare, government services</li>
+        <li>Any audience that values trust and predictability</li>
+        <li>High-volume conversion funnels (friction kills conversions)</li>
+        <li>Users with accessibility needs unless done very carefully</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- THEORY -->
+  <div class="theory">
+    <h2>History & Theory</h2>
+    <p>The name borrows from <strong>Brutalist architecture</strong> — the raw, exposed-concrete buildings of the mid-20th century, from the French <em>béton brut</em> ("raw concrete"). Architects like <strong>Le Corbusier</strong> celebrated honesty of materials: showing the structure rather than cladding it. Web brutalism applies the same ethic to interfaces — show the HTML, don't dress it up.</p>
+    <p>Web brutalism emerged around <strong>2014–2016</strong> as a reaction against the homogenized, template-driven sameness of corporate web design — the era when every site looked like the same Bootstrap landing page. Designer <strong>Pascal Deville</strong> popularized the movement with the curated gallery <strong>brutalistwebsites.com</strong>, which collected and celebrated raw, defiant sites.</p>
+    <p><strong>Notable real-world examples:</strong></p>
+    <ul>
+      <li><strong>brutalistwebsites.com</strong> — Pascal Deville's defining gallery of the movement.</li>
+      <li><strong>Bloomberg Businessweek</strong> — its editorial features have repeatedly used clashing, "ugly," maximalist brutalist layouts for impact.</li>
+      <li><strong>Craigslist</strong> & the original <strong>Hacker News</strong> — accidental brutalism: function-first, unstyled, and beloved for it.</li>
+      <li><strong>Gumroad</strong> and <strong>Balenciaga's</strong> web experiments — brands adopting raw, high-contrast aesthetics deliberately.</li>
+      <li><strong>Yale School of Art</strong> website — a famously chaotic, wiki-edited brutalist site.</li>
+    </ul>
+    <p><strong>Defining characteristics:</strong></p>
+    <ul>
+      <li>System / default fonts (Times, Courier, Arial) used unironically as the type system</li>
+      <li>Default blue/purple hyperlinks, visible underlines</li>
+      <li>Thick black borders and exposed grid structure</li>
+      <li>Hard, blur-free offset shadows</li>
+      <li>Clashing, high-saturation colors with no harmonized palette</li>
+      <li>Raw HTML elements left near their browser defaults</li>
+      <li>A knowing, sometimes confrontational tone — "anti-design"</li>
+    </ul>
+    <p><strong>The point:</strong> brutalism is not laziness — the best brutalist sites are meticulously crafted to <em>look</em> raw. It is a critique of frictionless, sanitized corporate UX and a reassertion of personality, honesty, and the weird, hand-built spirit of the early web.</p>
+  </div>
+
+  <!-- ACCESSIBILITY -->
+  <div class="theory">
+    <h2>Accessibility Notes</h2>
+    <p>Brutalism and accessibility can conflict — but they don't have to. Raw doesn't mean inaccessible.</p>
+    <ul>
+      <li><strong>Color contrast</strong> is the biggest risk. Yellow-on-magenta and cyan-on-yellow often fail WCAG contrast ratios. Test every clashing pair — keep body text on combinations that still pass AA (4.5:1).</li>
+      <li><strong>Keep semantic HTML.</strong> Brutalism actually favors plain HTML, which is good for screen readers — as long as you use real headings, buttons, and labels rather than styled divs.</li>
+      <li><strong>Focus states</strong> must remain visible. Don't strip outlines just to look raw.</li>
+      <li><strong>Motion</strong> (tickers, blinking) should respect <code>prefers-reduced-motion</code> and never be the only way to access content.</li>
+      <li><strong>Default links</strong> are an accessibility win — underlined, color-distinct links are easy to identify.</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>WEB BRUTALISM // UI DESIGN TRENDS RESEARCH // BUILT NOT DESIGNED</footer>
+
+</body>
+</html>

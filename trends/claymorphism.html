@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claymorphism — UI Design Trends</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fira+Code&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #e9e6ff;
+    --text: #4b3f72;
+    --accent: #7c5cff;
+  }
+
+  body {
+    background: radial-gradient(circle at 20% 20%, #f3e9ff, #e6ecff 60%, #ffe9f6);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.7;
+  }
+
+  .back-link {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    color: #fff; text-decoration: none; font-size: 14px; font-weight: 800;
+    background: #7c5cff;
+    padding: 10px 18px; border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(124,92,255,0.4),
+                inset 0 -4px 6px rgba(80,40,180,0.4),
+                inset 0 4px 6px rgba(255,255,255,0.5);
+    transition: transform 0.15s;
+  }
+  .back-link:hover { transform: translateY(-2px); }
+
+  header {
+    text-align: center;
+    padding: 100px 20px 50px;
+  }
+  header h1 {
+    font-size: 3.6rem;
+    font-weight: 900;
+    color: #5b3fb0;
+    letter-spacing: -1px;
+  }
+  header p { color: #7a6ca8; font-weight: 600; font-size: 1.15rem; margin-top: 14px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+  .section-title {
+    font-size: 1.9rem;
+    font-weight: 900;
+    color: #5b3fb0;
+    margin: 70px 0 30px;
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+
+  /* ===== THE CLAY RECIPE =====
+     1. Big border-radius (the "inflated" look)
+     2. A soft drop shadow underneath (it floats)
+     3. TWO inset shadows: a dark one bottom + a light highlight top */
+  .clay {
+    border-radius: 38px;
+    box-shadow:
+      0 18px 40px rgba(120,90,200,0.35),                /* soft drop shadow      */
+      inset 0 -10px 16px rgba(150,110,255,0.45),        /* inner bottom shade    */
+      inset 0 12px 18px rgba(255,255,255,0.85);         /* inner top highlight   */
+  }
+
+  /* ===== CLAY BLOBS / SHAPES ===== */
+  .blob-grid {
+    display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; margin: 30px 0;
+  }
+  .clay-blob {
+    width: 150px; height: 150px;
+    border-radius: 42px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    cursor: pointer;
+    transition: transform 0.25s;
+  }
+  .clay-blob:hover { transform: translateY(-8px) rotate(-3deg); }
+  .clay-blob.b1 {
+    background: #ff9ec7;
+    box-shadow: 0 18px 36px rgba(255,120,180,0.4),
+      inset 0 -10px 16px rgba(220,70,140,0.55), inset 0 12px 18px rgba(255,255,255,0.85);
+  }
+  .clay-blob.b2 {
+    background: #9be7c4; border-radius: 50% 42px 50% 42px;
+    box-shadow: 0 18px 36px rgba(70,200,140,0.4),
+      inset 0 -10px 16px rgba(40,170,110,0.55), inset 0 12px 18px rgba(255,255,255,0.85);
+  }
+  .clay-blob.b3 {
+    background: #ffd479; border-radius: 42px 50% 42px 50%;
+    box-shadow: 0 18px 36px rgba(230,180,60,0.4),
+      inset 0 -10px 16px rgba(210,150,30,0.55), inset 0 12px 18px rgba(255,255,255,0.85);
+  }
+  .clay-blob.b4 {
+    background: #9ec5ff; border-radius: 50%;
+    box-shadow: 0 18px 36px rgba(90,140,240,0.4),
+      inset 0 -10px 16px rgba(60,110,220,0.55), inset 0 12px 18px rgba(255,255,255,0.85);
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn-row { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
+  .clay-btn {
+    border: none;
+    border-radius: 24px;
+    padding: 18px 40px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .clay-btn:hover { transform: translateY(-3px); }
+  .clay-btn:active { transform: translateY(2px); }
+  .clay-btn.purple {
+    background: #7c5cff;
+    box-shadow: 0 14px 28px rgba(124,92,255,0.45),
+      inset 0 -8px 12px rgba(80,40,180,0.5), inset 0 8px 12px rgba(255,255,255,0.45);
+  }
+  .clay-btn.pink {
+    background: #ff7eb6;
+    box-shadow: 0 14px 28px rgba(255,120,180,0.45),
+      inset 0 -8px 12px rgba(220,70,140,0.5), inset 0 8px 12px rgba(255,255,255,0.5);
+  }
+  .clay-btn.mint {
+    background: #45d39e;
+    box-shadow: 0 14px 28px rgba(70,200,140,0.45),
+      inset 0 -8px 12px rgba(40,170,110,0.5), inset 0 8px 12px rgba(255,255,255,0.5);
+  }
+
+  /* ===== CARDS ===== */
+  .card-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 36px; margin: 30px 0;
+  }
+  .clay-card {
+    background: #fff;
+    border-radius: 36px;
+    padding: 34px;
+    box-shadow: 0 20px 44px rgba(120,90,200,0.28),
+      inset 0 -8px 14px rgba(180,160,255,0.25), inset 0 10px 16px rgba(255,255,255,0.9);
+    transition: transform 0.25s;
+  }
+  .clay-card:hover { transform: translateY(-6px); }
+  .clay-card .icon-pill {
+    width: 70px; height: 70px; border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin-bottom: 20px;
+  }
+  .clay-card h3 { color: #5b3fb0; font-weight: 900; margin-bottom: 10px; font-size: 1.3rem; }
+  .clay-card p { color: #7a6ca8; font-weight: 600; font-size: 0.92rem; }
+
+  /* ===== TOGGLE ===== */
+  .toggle-row { display: flex; gap: 40px; justify-content: center; align-items: center; flex-wrap: wrap; margin: 30px 0; }
+  .clay-toggle {
+    width: 100px; height: 52px; border-radius: 26px;
+    background: #d9d2ff;
+    box-shadow: inset 0 6px 12px rgba(120,90,200,0.4), inset 0 -4px 8px rgba(255,255,255,0.7);
+    position: relative; cursor: pointer; transition: background 0.25s;
+  }
+  .clay-toggle .knob {
+    position: absolute; top: 6px; left: 6px; width: 40px; height: 40px; border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 8px 14px rgba(120,90,200,0.4),
+      inset 0 -4px 6px rgba(180,160,255,0.4), inset 0 4px 6px rgba(255,255,255,0.9);
+    transition: left 0.25s;
+  }
+  .clay-toggle.on { background: #7c5cff; }
+  .clay-toggle.on .knob { left: 54px; }
+
+  /* ===== ICON PILLS PALETTE ===== */
+  .pill-row { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
+  .icon-pill-demo {
+    width: 80px; height: 80px; border-radius: 28px;
+    display: flex; align-items: center; justify-content: center; font-size: 2rem;
+    cursor: pointer; transition: transform 0.2s;
+  }
+  .icon-pill-demo:hover { transform: scale(1.1) rotate(8deg); }
+
+  .code-block {
+    background: #2d2356;
+    border-radius: 24px;
+    padding: 26px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #e2dcff;
+    box-shadow: 0 14px 30px rgba(80,50,160,0.3);
+  }
+  .code-block .comment { color: #9a8fd0; }
+  .code-block .prop { color: #c4b0ff; }
+  .code-block .val { color: #7ee0c0; }
+
+  .theory {
+    background: #fff;
+    border-radius: 30px;
+    padding: 44px;
+    margin: 40px 0;
+    box-shadow: 0 20px 44px rgba(120,90,200,0.25), inset 0 8px 14px rgba(255,255,255,0.9);
+  }
+  .theory h2 { color: var(--accent); font-weight: 900; font-size: 1.7rem; margin-bottom: 20px; }
+  .theory p { margin-bottom: 15px; color: #6a5e92; font-weight: 600; }
+  .theory strong { color: #5b3fb0; font-weight: 800; }
+  .theory ul { padding-left: 20px; margin: 15px 0; }
+  .theory li { margin-bottom: 8px; color: #6a5e92; font-weight: 600; }
+
+  .callout {
+    background: #fff8fc; border-radius: 24px; padding: 30px; margin: 30px 0;
+    box-shadow: 0 14px 30px rgba(255,150,200,0.2);
+    border: 2px solid #ffd0e8;
+  }
+  .callout h3 { color: #c2477f; font-weight: 800; margin-bottom: 12px; }
+  .callout p { color: #8a5a72; font-weight: 600; }
+  .callout strong { color: #7a2f52; }
+
+  footer {
+    text-align: center; padding: 50px; color: #9a8fc8; font-size: 0.85rem; font-weight: 700;
+  }
+
+  @media (max-width: 600px) { header h1 { font-size: 2.5rem; } }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">← Back to Hub</a>
+
+<header>
+  <h1>Claymorphism</h1>
+  <p>Soft, puffy, 3D clay-like objects — playful inflated UI with big radii and squishy depth</p>
+</header>
+
+<div class="container">
+
+  <!-- BLOBS -->
+  <h2 class="section-title">Squishy Clay Shapes (hover them)</h2>
+  <div class="blob-grid">
+    <div class="clay-blob b1">🍬</div>
+    <div class="clay-blob b2">🌿</div>
+    <div class="clay-blob b3">⭐</div>
+    <div class="clay-blob b4">💧</div>
+  </div>
+  <div class="code-block">
+<span class="comment">/* The claymorphism recipe — three shadows do all the work */</span>
+<span class="val">.clay</span> {
+  <span class="prop">border-radius</span>: <span class="val">38px</span>;                              <span class="comment">/* big, inflated corners   */</span>
+  <span class="prop">box-shadow</span>:
+    <span class="val">0 18px 40px rgba(120,90,200,0.35)</span>,         <span class="comment">/* soft drop = it floats   */</span>
+    <span class="val">inset 0 -10px 16px rgba(150,110,255,0.45)</span>, <span class="comment">/* inner bottom = volume   */</span>
+    <span class="val">inset 0 12px 18px rgba(255,255,255,0.85)</span>;  <span class="comment">/* inner top = glossy edge */</span>
+}
+  </div>
+
+  <!-- BUTTONS -->
+  <h2 class="section-title">Clay Buttons</h2>
+  <div class="btn-row">
+    <button class="clay-btn purple">Get Started</button>
+    <button class="clay-btn pink">Say Hi 👋</button>
+    <button class="clay-btn mint">Download</button>
+  </div>
+
+  <!-- TOGGLE -->
+  <h2 class="section-title">Puffy Toggles (click to switch)</h2>
+  <div class="toggle-row">
+    <div class="clay-toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+    <div class="clay-toggle" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+    <div class="clay-toggle on" onclick="this.classList.toggle('on')"><div class="knob"></div></div>
+  </div>
+
+  <!-- ICON PILLS -->
+  <h2 class="section-title">Pastel Icon Pills</h2>
+  <div class="pill-row">
+    <div class="icon-pill-demo" style="background:#ff9ec7;box-shadow:0 12px 24px rgba(255,120,180,0.4),inset 0 -6px 10px rgba(220,70,140,0.5),inset 0 8px 12px rgba(255,255,255,0.8);">🎨</div>
+    <div class="icon-pill-demo" style="background:#9be7c4;box-shadow:0 12px 24px rgba(70,200,140,0.4),inset 0 -6px 10px rgba(40,170,110,0.5),inset 0 8px 12px rgba(255,255,255,0.8);">🎧</div>
+    <div class="icon-pill-demo" style="background:#ffd479;box-shadow:0 12px 24px rgba(230,180,60,0.4),inset 0 -6px 10px rgba(210,150,30,0.5),inset 0 8px 12px rgba(255,255,255,0.8);">📷</div>
+    <div class="icon-pill-demo" style="background:#9ec5ff;box-shadow:0 12px 24px rgba(90,140,240,0.4),inset 0 -6px 10px rgba(60,110,220,0.5),inset 0 8px 12px rgba(255,255,255,0.8);">💬</div>
+    <div class="icon-pill-demo" style="background:#c9a7ff;box-shadow:0 12px 24px rgba(160,110,250,0.4),inset 0 -6px 10px rgba(120,70,220,0.5),inset 0 8px 12px rgba(255,255,255,0.8);">🚀</div>
+  </div>
+
+  <!-- CARDS -->
+  <h2 class="section-title">Clay Cards</h2>
+  <div class="card-grid">
+    <div class="clay-card">
+      <div class="icon-pill" style="background:#ff9ec7;box-shadow:inset 0 -6px 10px rgba(220,70,140,0.5),inset 0 8px 12px rgba(255,255,255,0.8);">🍭</div>
+      <h3>Playful</h3>
+      <p>Bright pastels and inflated shapes make interfaces feel friendly, approachable, and toy-like.</p>
+    </div>
+    <div class="clay-card">
+      <div class="icon-pill" style="background:#9be7c4;box-shadow:inset 0 -6px 10px rgba(40,170,110,0.5),inset 0 8px 12px rgba(255,255,255,0.8);">🧸</div>
+      <h3>Tactile</h3>
+      <p>The dual inner shadows give every object real volume — it looks like you could squeeze it.</p>
+    </div>
+    <div class="clay-card">
+      <div class="icon-pill" style="background:#9ec5ff;box-shadow:inset 0 -6px 10px rgba(60,110,220,0.5),inset 0 8px 12px rgba(255,255,255,0.8);">🎈</div>
+      <h3>Light</h3>
+      <p>Big drop shadows lift each element off the page, so the whole layout feels airy and buoyant.</p>
+    </div>
+  </div>
+
+  <!-- ACCESSIBILITY -->
+  <h2 class="section-title">Accessibility Notes</h2>
+  <div class="callout">
+    <h3>Better than neumorphism — but mind the pastels</h3>
+    <p>Claymorphism is far friendlier to accessibility than neumorphism because clay objects use <strong>their own fill color, distinct from the background</strong>, plus a real drop shadow. Boundaries are visible, so it can satisfy <strong>WCAG 1.4.11 Non-text Contrast (3:1)</strong> for component edges.</p>
+    <p>The real risk is <strong>text contrast</strong>: soft pastel fills make white or light text fail <strong>WCAG 1.4.3 (4.5:1)</strong>. Always check label/background pairs — use a darker text tone on light clay, and reserve white text for sufficiently saturated fills. Don't let the inner highlight wash out small text, and keep a visible focus ring on interactive clay elements.</p>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Keep clay accessible: distinct fill + checked text contrast */</span>
+<span class="val">.clay-btn</span> {
+  <span class="prop">background</span>: <span class="val">#7c5cff</span>;     <span class="comment">/* saturated enough for white text (AA) */</span>
+  <span class="prop">color</span>: <span class="val">#ffffff</span>;
+}
+<span class="val">.clay-card</span> {                  <span class="comment">/* light fill -> dark text, never white */</span>
+  <span class="prop">background</span>: <span class="val">#ffffff</span>;
+  <span class="prop">color</span>: <span class="val">#5b3fb0</span>;
+}
+<span class="val">.clay-btn:focus-visible</span> {
+  <span class="prop">outline</span>: <span class="val">3px solid #2d2356</span>;
+  <span class="prop">outline-offset</span>: <span class="val">3px</span>;
+}
+  </div>
+
+  <!-- THEORY -->
+  <div class="theory">
+    <h2>History &amp; Theory</h2>
+    <p><strong>Claymorphism</strong> emerged around 2021 as a warmer, more usable cousin of neumorphism. The term was popularized by designer <strong>Michal Malewicz</strong> (who also helped name neumorphism), describing a style of <strong>"inflated", clay-like 3D objects</strong> with rounded everything and a candy-soft palette.</p>
+
+    <p>It rode the same wave as the friendly 3D illustration trend seen in big-tech rebrands and product art around 2020–2022 — think the puffy, rounded icons in the era's marketing pages and emoji-like graphics. Claymorphism brings that bubbly aesthetic into actual UI components.</p>
+
+    <p><strong>The three-shadow formula:</strong></p>
+    <ul>
+      <li><strong>One large outer drop shadow</strong> — soft and offset downward, so the object clearly floats above the page</li>
+      <li><strong>One inner bottom shadow</strong> — a darker tint of the fill, giving the underside curvature</li>
+      <li><strong>One inner top highlight</strong> — a bright white inset, suggesting a glossy, rounded top edge catching light</li>
+      <li><strong>Generous border-radius</strong> — often 30–50px, sometimes asymmetric, for that pinched-clay silhouette</li>
+      <li><strong>Pastel, candy-like colors</strong> — soft pinks, mints, lilacs and butter yellows</li>
+    </ul>
+
+    <p><strong>Why it works better than neumorphism:</strong> Because each clay object has its own color and a real drop shadow, affordances are obvious — you can tell what's a button. It keeps the soft, tactile charm without the contrast catastrophe.</p>
+
+    <p><strong>When to use:</strong> Playful, consumer-facing products — kids' apps, education, wellness, fintech onboarding, landing pages, illustration-led marketing — where a friendly, approachable personality is the goal. <strong>When to avoid:</strong> dense data tools, enterprise dashboards, or any serious/utilitarian context where the bubbly look reads as unprofessional. As always, verify text contrast on those tempting pastel fills.</p>
+  </div>
+
+</div>
+
+<footer>Claymorphism — UI Design Trends Research</footer>
+
+<script>
+  // Gentle idle squish on the blobs for extra life
+  document.querySelectorAll('.clay-blob').forEach((blob, i) => {
+    blob.style.animation = `float${i} ${3 + i*0.4}s ease-in-out infinite`;
+  });
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes float0 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+    @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes float3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  `;
+  document.head.appendChild(style);
+</script>
+</body>
+</html>

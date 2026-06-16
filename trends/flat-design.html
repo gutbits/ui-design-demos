@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flat Design — UI Design Trends</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&family=Fira+Code&family=Inter:wght@300;400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1b1b2f;
+    color: #e0e0e0;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    line-height: 1.7;
+  }
+
+  .back-link {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    color: #00d2ff; text-decoration: none; font-size: 14px; font-weight: 600;
+    background: #2a2a4a;
+    padding: 8px 16px; border-radius: 0;
+    transition: background 0.15s;
+  }
+  .back-link:hover { background: #3a3a6a; }
+
+  header {
+    text-align: center;
+    padding: 100px 20px 50px;
+    background: #1b1b2f;
+  }
+  header h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -2px;
+    margin-bottom: 10px;
+  }
+  header p { color: #8888aa; font-weight: 300; font-size: 1.2rem; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 60px 0 30px;
+    text-align: center;
+    letter-spacing: -1px;
+  }
+
+  /* ===== METRO TILES ===== */
+  .tile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 140px;
+    gap: 4px;
+    margin: 30px 0;
+  }
+  .tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile:hover { opacity: 0.85; }
+  .tile .tile-icon {
+    font-size: 2.5rem;
+    position: absolute;
+    top: 16px; left: 16px;
+    opacity: 0.9;
+  }
+  .tile .tile-label { font-size: 0.85rem; font-weight: 400; opacity: 0.9; }
+  .tile .tile-count { font-size: 2rem; font-weight: 700; }
+  .tile.wide { grid-column: span 2; }
+  .tile.tall { grid-row: span 2; }
+
+  /* ===== FLAT ICONS ===== */
+  .icon-row {
+    display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;
+    margin: 30px 0;
+  }
+  .flat-icon {
+    width: 80px; height: 80px;
+    border-radius: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .flat-icon:hover { transform: scale(1.05); }
+  .flat-icon-label {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: #8888aa;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ===== FLAT BUTTONS ===== */
+  .btn-row {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    margin: 30px 0;
+  }
+  .flat-btn {
+    padding: 12px 28px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: opacity 0.15s;
+    color: #fff;
+  }
+  .flat-btn:hover { opacity: 0.85; }
+  .flat-btn.outline {
+    background: transparent;
+    border: 3px solid;
+  }
+
+  /* ===== FLAT CARDS ===== */
+  .card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 4px;
+    margin: 30px 0;
+  }
+  .flat-card {
+    padding: 30px;
+    color: #fff;
+  }
+  .flat-card h3 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .flat-card p {
+    font-weight: 300;
+    opacity: 0.9;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .flat-card .card-num {
+    font-size: 4rem;
+    font-weight: 900;
+    opacity: 0.3;
+    position: absolute;
+    top: 10px; right: 20px;
+  }
+
+  /* ===== GEOMETRIC SHAPES ===== */
+  .shapes-area {
+    height: 300px;
+    position: relative;
+    margin: 30px 0;
+    overflow: hidden;
+    background: #161628;
+  }
+  .shape {
+    position: absolute;
+    transition: transform 0.4s;
+    cursor: pointer;
+  }
+  .shape:hover { transform: scale(1.15) rotate(15deg); }
+
+  /* ===== TYPOGRAPHY ===== */
+  .typo-section {
+    margin: 30px 0;
+    padding: 40px;
+    background: #161628;
+  }
+  .typo-row {
+    display: flex; align-items: baseline; gap: 20px; margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .typo-sample {
+    color: #fff;
+  }
+  .typo-meta {
+    font-size: 0.75rem;
+    color: #6666aa;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ===== COLOR PALETTE ===== */
+  .palette {
+    display: flex; flex-wrap: wrap; gap: 0; margin: 30px 0;
+  }
+  .color-swatch {
+    flex: 1; min-width: 100px; height: 120px;
+    display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 12px;
+    color: #fff; font-size: 0.75rem; font-weight: 700;
+    font-family: 'Fira Code', monospace;
+  }
+
+  .code-block {
+    background: #111128;
+    border: 2px solid #2a2a4a;
+    padding: 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #c8c8e8;
+  }
+  .code-block .comment { color: #6a6aaa; }
+  .code-block .prop { color: #6ec6ff; }
+  .code-block .val { color: #ff6e8e; }
+
+  .theory {
+    background: #161628;
+    border-left: 6px solid #00d2ff;
+    padding: 40px;
+    margin: 40px 0;
+  }
+  .theory h2 { color: #00d2ff; font-size: 1.8rem; font-weight: 900; margin-bottom: 20px; letter-spacing: -1px; }
+  .theory p { margin-bottom: 15px; color: #aaaacc; font-weight: 300; }
+  .theory strong { color: #fff; font-weight: 700; }
+  .theory ul { padding-left: 20px; margin: 15px 0; }
+  .theory li { margin-bottom: 8px; color: #aaaacc; font-weight: 300; }
+
+  footer {
+    text-align: center;
+    padding: 40px;
+    color: #444;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .tile-grid { grid-template-columns: repeat(2, 1fr); }
+    header h1 { font-size: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">← BACK</a>
+
+<header>
+  <h1>FLAT DESIGN</h1>
+  <p>No shadows. No gradients. No textures. Just pure, honest geometry.</p>
+</header>
+
+<div class="container">
+
+  <!-- METRO TILES -->
+  <h2 class="section-title">METRO / WINDOWS 8 TILES</h2>
+  <div class="tile-grid">
+    <div class="tile wide" style="background:#0078d7;">
+      <div class="tile-icon">📧</div>
+      <div class="tile-count">12</div>
+      <div class="tile-label">Mail — 12 unread</div>
+    </div>
+    <div class="tile" style="background:#107c10;">
+      <div class="tile-icon">📅</div>
+      <div class="tile-label">Calendar</div>
+    </div>
+    <div class="tile" style="background:#e81123;">
+      <div class="tile-icon">🎵</div>
+      <div class="tile-label">Music</div>
+    </div>
+    <div class="tile" style="background:#ff8c00;">
+      <div class="tile-icon">☀️</div>
+      <div class="tile-count">72°</div>
+      <div class="tile-label">Weather</div>
+    </div>
+    <div class="tile" style="background:#8e44ad;">
+      <div class="tile-icon">📷</div>
+      <div class="tile-label">Photos</div>
+    </div>
+    <div class="tile wide" style="background:#2d7d9a;">
+      <div class="tile-icon">📰</div>
+      <div class="tile-count">NEWS</div>
+      <div class="tile-label">Breaking stories</div>
+    </div>
+    <div class="tile" style="background:#567714;">
+      <div class="tile-icon">💰</div>
+      <div class="tile-label">Finance</div>
+    </div>
+    <div class="tile" style="background:#b91d47;">
+      <div class="tile-icon">🗺️</div>
+      <div class="tile-label">Maps</div>
+    </div>
+    <div class="tile" style="background:#00aba9;">
+      <div class="tile-icon">👤</div>
+      <div class="tile-label">People</div>
+    </div>
+    <div class="tile" style="background:#e3a21a;">
+      <div class="tile-icon">⚙️</div>
+      <div class="tile-label">Settings</div>
+    </div>
+  </div>
+
+  <!-- FLAT ICONS -->
+  <h2 class="section-title">FLAT ICON DESIGN</h2>
+  <div class="icon-row">
+    <div>
+      <div class="flat-icon" style="background:#e74c3c;">🏠</div>
+      <div class="flat-icon-label">Home</div>
+    </div>
+    <div>
+      <div class="flat-icon" style="background:#3498db;">🔍</div>
+      <div class="flat-icon-label">Search</div>
+    </div>
+    <div>
+      <div class="flat-icon" style="background:#2ecc71;">👤</div>
+      <div class="flat-icon-label">Profile</div>
+    </div>
+    <div>
+      <div class="flat-icon" style="background:#f39c12;">⚙️</div>
+      <div class="flat-icon-label">Settings</div>
+    </div>
+    <div>
+      <div class="flat-icon" style="background:#9b59b6;">💬</div>
+      <div class="flat-icon-label">Chat</div>
+    </div>
+    <div>
+      <div class="flat-icon" style="background:#1abc9c;">📊</div>
+      <div class="flat-icon-label">Stats</div>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <h2 class="section-title">FLAT BUTTONS</h2>
+  <div class="btn-row">
+    <button class="flat-btn" style="background:#0078d7;">Primary Action</button>
+    <button class="flat-btn" style="background:#e81123;">Delete</button>
+    <button class="flat-btn" style="background:#107c10;">Confirm</button>
+    <button class="flat-btn outline" style="border-color:#0078d7;color:#0078d7;">Outline</button>
+    <button class="flat-btn outline" style="border-color:#fff;color:#fff;">Ghost</button>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Flat button — zero decoration */</span>
+<span class="val">.flat-btn</span> {
+  <span class="prop">background</span>: <span class="val">#0078d7</span>;
+  <span class="prop">color</span>: <span class="val">#fff</span>;
+  <span class="prop">border</span>: <span class="val">none</span>;
+  <span class="prop">padding</span>: <span class="val">12px 28px</span>;
+  <span class="prop">font-weight</span>: <span class="val">700</span>;
+  <span class="prop">text-transform</span>: <span class="val">uppercase</span>;
+  <span class="prop">letter-spacing</span>: <span class="val">1px</span>;
+  <span class="comment">/* No shadow. No gradient. No border-radius. */</span>
+}
+  </div>
+
+  <!-- COLOR PALETTE -->
+  <h2 class="section-title">FLAT COLOR SYSTEM</h2>
+  <div class="palette">
+    <div class="color-swatch" style="background:#1abc9c;">Turquoise<br>#1ABC9C</div>
+    <div class="color-swatch" style="background:#2ecc71;">Emerald<br>#2ECC71</div>
+    <div class="color-swatch" style="background:#3498db;">Peter River<br>#3498DB</div>
+    <div class="color-swatch" style="background:#9b59b6;">Amethyst<br>#9B59B6</div>
+    <div class="color-swatch" style="background:#34495e;">Wet Asphalt<br>#34495E</div>
+    <div class="color-swatch" style="background:#e74c3c;">Alizarin<br>#E74C3C</div>
+    <div class="color-swatch" style="background:#e67e22;">Carrot<br>#E67E22</div>
+    <div class="color-swatch" style="background:#f1c40f;color:#333;">Sun Flower<br>#F1C40F</div>
+    <div class="color-swatch" style="background:#ecf0f1;color:#333;">Clouds<br>#ECF0F1</div>
+    <div class="color-swatch" style="background:#95a5a6;">Concrete<br>#95A5A6</div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <h2 class="section-title">BOLD TYPOGRAPHY</h2>
+  <div class="typo-section">
+    <div class="typo-row">
+      <span class="typo-sample" style="font-size:3.5rem;font-weight:900;">Aa</span>
+      <span class="typo-meta">Black / 900 / 56px</span>
+    </div>
+    <div class="typo-row">
+      <span class="typo-sample" style="font-size:2.5rem;font-weight:700;">Headlines are bold</span>
+      <span class="typo-meta">Bold / 700 / 40px</span>
+    </div>
+    <div class="typo-row">
+      <span class="typo-sample" style="font-size:1.5rem;font-weight:400;">Body text is clean and readable</span>
+      <span class="typo-meta">Regular / 400 / 24px</span>
+    </div>
+    <div class="typo-row">
+      <span class="typo-sample" style="font-size:1rem;font-weight:300;color:#8888aa;">Light weight for secondary information</span>
+      <span class="typo-meta">Light / 300 / 16px</span>
+    </div>
+  </div>
+
+  <!-- GEOMETRIC SHAPES -->
+  <h2 class="section-title">GEOMETRIC COMPOSITION</h2>
+  <div class="shapes-area" id="shapesArea"></div>
+
+  <!-- THEORY -->
+  <div class="theory">
+    <h2>HISTORY & THEORY</h2>
+    <p><strong>Flat Design</strong> emerged as a direct rebellion against skeuomorphism. It strips away all decorative elements — shadows, gradients, textures, 3D effects — leaving only essential shapes and colors.</p>
+
+    <p><strong>Microsoft's Metro Design (2010–2012)</strong> was the catalyst. With Windows Phone 7 and later Windows 8, Microsoft introduced a tile-based interface inspired by Swiss/International typographic style and transportation signage. The emphasis was on <strong>content over chrome</strong> — clean typography, solid colors, and geometric layouts.</p>
+
+    <p><strong>Apple's iOS 7 (2013)</strong> brought flat design mainstream when Jony Ive stripped away all skeuomorphic elements overnight. The design world was split — some praised the clarity, others mourned the loss of personality.</p>
+
+    <p><strong>Key principles:</strong></p>
+    <ul>
+      <li><strong>No shadows</strong> — elements exist on a single plane</li>
+      <li><strong>No gradients</strong> — solid, uniform colors only</li>
+      <li><strong>No textures</strong> — smooth, clean surfaces</li>
+      <li><strong>Bold typography</strong> — text does the heavy lifting</li>
+      <li><strong>Geometric shapes</strong> — circles, squares, triangles</li>
+      <li><strong>Bright color palettes</strong> — FlatUIColors.com became a phenomenon</li>
+    </ul>
+
+    <p><strong>Criticism:</strong> Pure flat design often sacrificed usability. Without shadows or depth cues, users couldn't tell what was clickable. This led to <strong>"Flat 2.0"</strong> — flat design with subtle shadows and depth, which is essentially what Material Design codified.</p>
+
+    <p><strong>When to use:</strong> Flat design works brilliantly for dashboards, data-heavy interfaces, content platforms, and any UI where clarity and information density matter more than personality. Most modern web design is some variation of Flat 2.0.</p>
+  </div>
+
+</div>
+
+<footer>FLAT DESIGN — UI DESIGN TRENDS RESEARCH</footer>
+
+<script>
+  // Generate geometric shapes
+  const area = document.getElementById('shapesArea');
+  const flatColors = ['#1abc9c','#2ecc71','#3498db','#9b59b6','#e74c3c','#e67e22','#f1c40f'];
+  for (let i = 0; i < 20; i++) {
+    const shape = document.createElement('div');
+    shape.className = 'shape';
+    const size = 30 + Math.random() * 80;
+    const color = flatColors[Math.floor(Math.random()*flatColors.length)];
+    const type = Math.floor(Math.random()*3);
+    shape.style.width = size + 'px';
+    shape.style.height = size + 'px';
+    shape.style.left = Math.random() * 90 + '%';
+    shape.style.top = Math.random() * 80 + '%';
+    shape.style.opacity = 0.15 + Math.random() * 0.5;
+    if (type === 0) {
+      shape.style.background = color;
+    } else if (type === 1) {
+      shape.style.background = color;
+      shape.style.borderRadius = '50%';
+    } else {
+      shape.style.width = '0';
+      shape.style.height = '0';
+      shape.style.borderLeft = size/2 + 'px solid transparent';
+      shape.style.borderRight = size/2 + 'px solid transparent';
+      shape.style.borderBottom = size + 'px solid ' + color;
+    }
+    area.appendChild(shape);
+  }
+</script>
+</body>
+</html>

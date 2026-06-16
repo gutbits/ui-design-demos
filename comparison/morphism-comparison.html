@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Morphisms — UI Style Comparison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Fira+Code&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #15151f;
+    --bg-panel: #1c1c2a;
+    --bg-elevated: #23233a;
+    --ink: #e0e0ec;
+    --ink-dim: #9494b0;
+    --ink-faint: #66667e;
+    --accent: #00d2ff;
+    --accent-2: #bb86fc;
+    --line: #2c2c44;
+    --radius: 14px;
+
+    /* per-style accent hues, used by the gallery + legend */
+    --skeuo: #c8a96e;
+    --flat: #e74c3c;
+    --material: #bb86fc;
+    --glass: #6ec6ff;
+    --neu: #8e9bcc;
+    --clay: #ff8fab;
+    --brutal: #f5f50a;
+    --minimal: #cfcfd8;
+    --liquid: #7afcff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .back-link {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 600;
+    background: var(--bg-elevated);
+    padding: 8px 16px; border-radius: 8px;
+    border: 1px solid var(--line);
+    transition: background 0.2s;
+  }
+  .back-link:hover { background: #303052; }
+
+  header {
+    text-align: center;
+    padding: 110px 20px 40px;
+    background: radial-gradient(ellipse at top, #20203a 0%, var(--bg) 70%);
+  }
+  header h1 {
+    font-size: 3.6rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    margin-bottom: 14px;
+  }
+  header h1 .grad {
+    background: linear-gradient(90deg, var(--skeuo), var(--flat), var(--material), var(--glass), var(--clay));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header p { color: var(--ink-dim); font-weight: 300; font-size: 1.15rem; max-width: 640px; margin: 0 auto; }
+
+  .container { max-width: 1180px; margin: 0 auto; padding: 30px 20px; }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 70px 0 10px;
+    text-align: center;
+    letter-spacing: -1px;
+  }
+  .section-sub {
+    text-align: center; color: var(--ink-dim); font-weight: 300;
+    max-width: 700px; margin: 0 auto 36px; font-size: 1rem;
+  }
+
+  /* ============================================================
+     LIVE GALLERY — the same button + card rendered in each style
+     ============================================================ */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 22px;
+    margin: 30px 0;
+  }
+  .demo-cell {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 0;
+    overflow: hidden;
+    background: var(--bg-panel);
+    display: flex;
+    flex-direction: column;
+  }
+  .demo-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .demo-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .demo-head h3 { font-size: 1.05rem; font-weight: 700; color: #fff; }
+  .demo-head .yr { margin-left: auto; font-family: 'Fira Code', monospace; font-size: 0.72rem; color: var(--ink-faint); }
+
+  /* the stage gives each style its own appropriate background canvas */
+  .demo-stage {
+    flex: 1;
+    padding: 28px 22px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    min-height: 280px;
+    justify-content: center;
+  }
+  .stage-note {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    font-family: 'Fira Code', monospace;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* ---- shared demo card skeleton (each style restyles it) ---- */
+  .ui-card { width: 100%; max-width: 220px; }
+  .ui-card .ttl { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .ui-card .txt { font-size: 0.78rem; line-height: 1.5; }
+  .ui-btn {
+    border: none; cursor: pointer; font-family: inherit;
+    font-size: 0.82rem; font-weight: 600; padding: 11px 22px;
+  }
+
+  /* ===== 1. SKEUOMORPHISM ===== */
+  .s-skeuo { background: linear-gradient(135deg, #3a2c18, #241a0e); }
+  .s-skeuo .ui-card {
+    background: linear-gradient(180deg, #f4ecd8, #e6dabb);
+    border-radius: 10px; padding: 16px;
+    border: 1px solid #b8a578;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -3px 6px rgba(120,90,40,0.25);
+    color: #4a3a1a;
+  }
+  .s-skeuo .ui-card .ttl { color: #3a2c10; text-shadow: 0 1px 0 rgba(255,255,255,0.6); }
+  .s-skeuo .ui-btn {
+    color: #fff; border-radius: 9px;
+    background: linear-gradient(180deg, #5a96e2, #2a5ab0);
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.4);
+    border-bottom: 3px solid #1a3a70;
+    box-shadow: 0 4px 10px rgba(20,60,140,0.5), inset 0 1px 0 rgba(255,255,255,0.45);
+    position: relative; overflow: hidden;
+  }
+  .s-skeuo .ui-btn::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0.05));
+  }
+  .s-skeuo .ui-btn:active { transform: translateY(2px); }
+
+  /* ===== 2. FLAT ===== */
+  .s-flat { background: #1b1b2f; }
+  .s-flat .ui-card {
+    background: #e74c3c; color: #fff; padding: 18px; border-radius: 0;
+  }
+  .s-flat .ui-card .ttl { text-transform: uppercase; letter-spacing: 1px; font-weight: 900; }
+  .s-flat .ui-card .txt { opacity: 0.9; font-weight: 300; }
+  .s-flat .ui-btn {
+    background: #3498db; color: #fff; border-radius: 0;
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 700;
+    transition: opacity 0.15s;
+  }
+  .s-flat .ui-btn:hover { opacity: 0.85; }
+
+  /* ===== 3. MATERIAL ===== */
+  .s-material { background: #121212; }
+  .s-material .ui-card {
+    background: #1e1e1e; color: #e0e0e0; border-radius: 12px; padding: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 1px 10px rgba(0,0,0,0.12);
+    transition: box-shadow 0.3s, transform 0.3s;
+  }
+  .s-material .ui-card:hover { box-shadow: 0 8px 16px rgba(0,0,0,0.5); transform: translateY(-3px); }
+  .s-material .ui-card .ttl { font-weight: 500; }
+  .s-material .ui-card .txt { color: #aaa; font-weight: 300; }
+  .s-material .ui-btn {
+    background: #bb86fc; color: #000; border-radius: 6px;
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    transition: box-shadow 0.3s, background 0.2s;
+  }
+  .s-material .ui-btn:hover { background: #c99dfc; box-shadow: 0 6px 12px rgba(187,134,252,0.35); }
+
+  /* ===== 4. GLASSMORPHISM ===== */
+  .s-glass {
+    background:
+      radial-gradient(circle at 20% 20%, #ff5e9c 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, #4d6bff 0%, transparent 45%),
+      radial-gradient(circle at 60% 30%, #00e0c0 0%, transparent 40%),
+      #20143a;
+  }
+  .s-glass .ui-card {
+    background: rgba(255,255,255,0.12);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 16px; padding: 16px; color: #fff;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .s-glass .ui-card .txt { color: rgba(255,255,255,0.85); }
+  .s-glass .ui-btn {
+    background: rgba(255,255,255,0.18);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.45);
+    border-radius: 12px; color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    transition: background 0.2s;
+  }
+  .s-glass .ui-btn:hover { background: rgba(255,255,255,0.3); }
+
+  /* ===== 5. NEUMORPHISM ===== */
+  .s-neu { background: #2b2f3a; }
+  .s-neu .ui-card {
+    background: #2b2f3a; border-radius: 18px; padding: 16px; color: #c4cbe0;
+    box-shadow: 8px 8px 16px #20232c, -8px -8px 16px #363b48;
+  }
+  .s-neu .ui-card .ttl { color: #e0e6f5; }
+  .s-neu .ui-btn {
+    background: #2b2f3a; color: #aeb6d0; border-radius: 14px;
+    box-shadow: 6px 6px 12px #20232c, -6px -6px 12px #363b48;
+    transition: box-shadow 0.15s;
+  }
+  .s-neu .ui-btn:active {
+    box-shadow: inset 5px 5px 10px #20232c, inset -5px -5px 10px #363b48;
+    color: #8e9bcc;
+  }
+
+  /* ===== 6. CLAYMORPHISM ===== */
+  .s-clay { background: linear-gradient(135deg, #2d2150, #1f1640); }
+  .s-clay .ui-card {
+    background: #b69cff; border-radius: 26px; padding: 18px; color: #2a1a55;
+    box-shadow:
+      8px 8px 18px rgba(0,0,0,0.28),
+      inset -6px -6px 12px rgba(120,90,200,0.55),
+      inset 6px 6px 12px rgba(255,255,255,0.55);
+  }
+  .s-clay .ui-card .ttl { color: #2a1a55; font-weight: 700; }
+  .s-clay .ui-card .txt { color: #4a3585; }
+  .s-clay .ui-btn {
+    background: #ff8fab; color: #5a1a32; border-radius: 22px; font-weight: 700;
+    box-shadow:
+      6px 6px 14px rgba(0,0,0,0.25),
+      inset -4px -4px 8px rgba(200,80,120,0.55),
+      inset 4px 4px 8px rgba(255,255,255,0.6);
+    transition: transform 0.12s;
+  }
+  .s-clay .ui-btn:active { transform: scale(0.96); }
+
+  /* ===== 7. BRUTALISM ===== */
+  .s-brutal { background: #e9e9d8; }
+  .s-brutal .ui-card {
+    background: #fff; border: 3px solid #000; border-radius: 0; padding: 16px;
+    color: #000; box-shadow: 8px 8px 0 #000;
+    font-family: 'Fira Code', monospace;
+  }
+  .s-brutal .ui-card .ttl { text-transform: uppercase; }
+  .s-brutal .ui-btn {
+    background: #f5f50a; color: #000; border: 3px solid #000; border-radius: 0;
+    font-family: 'Fira Code', monospace; font-weight: 700; text-transform: uppercase;
+    box-shadow: 5px 5px 0 #000; transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .s-brutal .ui-btn:active { transform: translate(5px,5px); box-shadow: 0 0 0 #000; }
+
+  /* ===== 8. MINIMALISM ===== */
+  .s-minimal { background: #fbfbfb; }
+  .s-minimal .ui-card {
+    background: #fff; border: 1px solid #ececec; border-radius: 6px; padding: 18px;
+    color: #1a1a1a;
+  }
+  .s-minimal .ui-card .ttl { font-weight: 600; }
+  .s-minimal .ui-card .txt { color: #888; font-weight: 300; }
+  .s-minimal .ui-btn {
+    background: #111; color: #fff; border-radius: 6px; font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  .s-minimal .ui-btn:hover { opacity: 0.8; }
+
+  /* ===== 9. LIQUID GLASS ===== */
+  .s-liquid {
+    background:
+      radial-gradient(circle at 30% 30%, #1a6cff 0%, transparent 50%),
+      radial-gradient(circle at 75% 70%, #00ffc8 0%, transparent 45%),
+      #0a0f24;
+  }
+  .s-liquid .ui-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06));
+    -webkit-backdrop-filter: blur(16px) saturate(180%); backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 24px; padding: 16px; color: #fff;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -10px 24px rgba(120,200,255,0.18);
+  }
+  .s-liquid .ui-card .txt { color: rgba(255,255,255,0.85); }
+  .s-liquid .ui-btn {
+    background: linear-gradient(135deg, rgba(255,255,255,0.32), rgba(255,255,255,0.12));
+    -webkit-backdrop-filter: blur(14px) saturate(180%); backdrop-filter: blur(14px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.5); border-radius: 999px; color: #fff;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 4px 16px rgba(0,120,255,0.25);
+    transition: transform 0.2s;
+  }
+  .s-liquid .ui-btn:hover { transform: translateY(-2px); }
+
+  /* ============================================================
+     COMPARISON TABLE
+     ============================================================ */
+  .table-wrap { overflow-x: auto; margin: 30px 0; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; min-width: 880px; font-size: 0.86rem; }
+  thead th {
+    background: var(--bg-elevated); color: #fff; font-weight: 700;
+    text-align: left; padding: 14px 16px; border-bottom: 2px solid var(--line);
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.6px;
+    position: sticky; top: 0;
+  }
+  tbody td { padding: 13px 16px; border-bottom: 1px solid var(--line); color: var(--ink-dim); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  td.style-name { color: #fff; font-weight: 700; white-space: nowrap; }
+  td.style-name .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+  .risk-high { color: #ff6e8e; font-weight: 600; }
+  .risk-med { color: #f0b54a; font-weight: 600; }
+  .risk-low { color: #4ad991; font-weight: 600; }
+  td .mono { font-family: 'Fira Code', monospace; font-size: 0.78rem; color: var(--ink); }
+
+  /* ============================================================
+     PENDULUM
+     ============================================================ */
+  .pendulum {
+    margin: 30px 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-panel);
+    padding: 34px 30px;
+  }
+  .pendulum-bar {
+    position: relative;
+    height: 64px;
+    margin: 30px 0 14px;
+  }
+  .pendulum-axis {
+    position: absolute; top: 50%; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--skeuo), var(--material), var(--flat));
+    transform: translateY(-50%);
+  }
+  .pendulum-pole {
+    position: absolute; top: 0; bottom: 0; width: 1px; background: var(--line);
+  }
+  .pole-label {
+    position: absolute; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; top: -22px; transform: translateX(-50%); color: var(--ink-faint);
+  }
+  .pen-node {
+    position: absolute; top: 50%; transform: translate(-50%,-50%);
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+  .pen-node .tag {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    white-space: nowrap; font-size: 0.68rem; color: var(--ink-dim); font-weight: 600;
+  }
+  .pen-node .tag.up { bottom: 16px; }
+  .pen-node .tag.down { top: 16px; }
+  .pendulum-legend { display: flex; justify-content: space-between; color: var(--ink-faint); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 26px; }
+
+  /* ============================================================
+     THEORY / PROSE
+     ============================================================ */
+  .theory {
+    background: var(--bg-panel);
+    border-left: 6px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 36px 40px;
+    margin: 40px 0;
+  }
+  .theory h2 { color: var(--accent); font-size: 1.7rem; font-weight: 900; margin-bottom: 18px; letter-spacing: -1px; }
+  .theory p { margin-bottom: 15px; color: var(--ink-dim); font-weight: 300; }
+  .theory strong { color: #fff; font-weight: 700; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px 22px; justify-content: center;
+    margin: 0 auto 8px; max-width: 900px;
+  }
+  .legend span { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; color: var(--ink-dim); }
+  .legend i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+
+  .deep-links {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 24px 0 0;
+  }
+  .deep-links a {
+    color: var(--accent); text-decoration: none; font-size: 0.85rem; font-weight: 600;
+    border: 1px solid var(--line); padding: 8px 16px; border-radius: 999px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .deep-links a:hover { background: var(--bg-elevated); border-color: var(--accent); }
+
+  footer {
+    text-align: center;
+    padding: 50px 20px;
+    color: #444;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-top: 1px solid var(--line);
+    margin-top: 60px;
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 2.4rem; }
+    .theory { padding: 26px 22px; }
+  }
+</style>
+</head>
+<body>
+<a class="back-link" href="../index.html">← Back to Hub</a>
+
+<header>
+  <h1>The <span class="grad">Morphisms</span></h1>
+  <p>One button. One card. Nine design languages. A side-by-side field guide to how UI style has swung between realism and abstraction for two decades.</p>
+</header>
+
+<div class="container">
+
+  <!-- ============ LIVE GALLERY ============ -->
+  <h2 class="section-title">The Same Component, Every Style</h2>
+  <p class="section-sub">
+    Every cell below renders the <strong style="color:var(--ink)">identical</strong> markup — one card and one button — restyled only with CSS.
+    These are real, live components (hover and click them), not screenshots. Watch how each language signals "this is a surface" and "this is clickable."
+  </p>
+
+  <div class="legend">
+    <span><i style="background:var(--skeuo)"></i>Skeuomorphism</span>
+    <span><i style="background:var(--flat)"></i>Flat</span>
+    <span><i style="background:var(--material)"></i>Material</span>
+    <span><i style="background:var(--glass)"></i>Glassmorphism</span>
+    <span><i style="background:var(--neu)"></i>Neumorphism</span>
+    <span><i style="background:var(--clay)"></i>Claymorphism</span>
+    <span><i style="background:var(--brutal)"></i>Brutalism</span>
+    <span><i style="background:var(--minimal)"></i>Minimalism</span>
+    <span><i style="background:var(--liquid)"></i>Liquid Glass</span>
+  </div>
+
+  <div class="gallery">
+
+    <!-- 1. SKEUOMORPHISM -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--skeuo)"></span><h3>Skeuomorphism</h3><span class="yr">2007–2013</span></div>
+      <div class="demo-stage s-skeuo">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Real paper, stitched leather, a glossy bevelled button. Depth is literal.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">gradients · inset+drop shadow · gloss</div>
+      </div>
+    </div>
+
+    <!-- 2. FLAT -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--flat)"></span><h3>Flat Design</h3><span class="yr">2012–2014</span></div>
+      <div class="demo-stage s-flat">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Solid color, hard edges, zero shadow. Color and type do all the work.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">solid fill · no shadow · no radius</div>
+      </div>
+    </div>
+
+    <!-- 3. MATERIAL -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--material)"></span><h3>Material</h3><span class="yr">2014–now</span></div>
+      <div class="demo-stage s-material">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Paper-like sheets at measured elevation. Shadow = hierarchy.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">elevation shadow · 4–8dp · ripple</div>
+      </div>
+    </div>
+
+    <!-- 4. GLASSMORPHISM -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--glass)"></span><h3>Glassmorphism</h3><span class="yr">2013 · 2020</span></div>
+      <div class="demo-stage s-glass">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Frosted, translucent panes that float over a colourful blurred backdrop.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">backdrop-filter: blur · 1px hairline</div>
+      </div>
+    </div>
+
+    <!-- 5. NEUMORPHISM -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--neu)"></span><h3>Neumorphism</h3><span class="yr">2019–2020</span></div>
+      <div class="demo-stage s-neu">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Soft UI — shapes extrude from the same surface. Press the button.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">dual shadow · light+dark · same hue</div>
+      </div>
+    </div>
+
+    <!-- 6. CLAYMORPHISM -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--clay)"></span><h3>Claymorphism</h3><span class="yr">2021–2022</span></div>
+      <div class="demo-stage s-clay">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Puffy, inflated 3D clay. Big radius, double inner shadow, playful pastels.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">inner highlight+shadow · fat radius</div>
+      </div>
+    </div>
+
+    <!-- 7. BRUTALISM -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--brutal)"></span><h3>Neo-Brutalism</h3><span class="yr">2020–now</span></div>
+      <div class="demo-stage s-brutal">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Raw HTML energy. Hard black borders, harsh offset shadow, mono type.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">solid border · hard offset · no blur</div>
+      </div>
+    </div>
+
+    <!-- 8. MINIMALISM -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--minimal)"></span><h3>Minimalism</h3><span class="yr">timeless</span></div>
+      <div class="demo-stage s-minimal">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Whitespace, restraint, one hairline. Content is the interface.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">whitespace · 1px line · one accent</div>
+      </div>
+    </div>
+
+    <!-- 9. LIQUID GLASS -->
+    <div class="demo-cell">
+      <div class="demo-head"><span class="demo-dot" style="background:var(--liquid)"></span><h3>Liquid Glass</h3><span class="yr">2025–</span></div>
+      <div class="demo-stage s-liquid">
+        <div class="ui-card">
+          <div class="ttl">Field Notes</div>
+          <div class="txt">Apple's 2025 language: refractive, saturated glass with rounded "pill" controls.</div>
+        </div>
+        <button class="ui-btn">Download</button>
+        <div class="stage-note">blur+saturate · specular edge · pill</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ COMPARISON TABLE ============ -->
+  <h2 class="section-title">The Comparison Table</h2>
+  <p class="section-sub">The defining trade-offs at a glance — era, the one CSS trick that makes it work, how it implies depth, where it tends to break accessibility, and what it is actually good for.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Style</th>
+          <th>Era</th>
+          <th>Key technique</th>
+          <th>Depth cue</th>
+          <th>Accessibility risk</th>
+          <th>Best use case</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--skeuo)"></span>Skeuomorphism</td>
+          <td>2007–2013</td>
+          <td>Photoreal textures, gradients, gloss &amp; bevels</td>
+          <td>Literal — mimics real objects &amp; lighting</td>
+          <td class="risk-med">Medium — busy textures hurt contrast &amp; legibility</td>
+          <td>Audio/DAW plugins, games, luxury &amp; nostalgia brands</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--flat)"></span>Flat Design</td>
+          <td>2012–2014</td>
+          <td>Solid fills, bold type, geometric shapes</td>
+          <td class="mono">None</td>
+          <td class="risk-high">High — no signifier for what is clickable</td>
+          <td>Dashboards, data-dense UIs, content platforms</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--material)"></span>Material</td>
+          <td>2014–now</td>
+          <td>Elevation shadow system (0–24dp) + ripple</td>
+          <td>Layered shadow = z-height hierarchy</td>
+          <td class="risk-low">Low — system bakes in contrast &amp; touch targets</td>
+          <td>Android &amp; cross-platform apps, large design systems</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--glass)"></span>Glassmorphism</td>
+          <td>2013 · 2020</td>
+          <td><span class="mono">backdrop-filter: blur()</span> + hairline border</td>
+          <td>Translucent layering over a blurred backdrop</td>
+          <td class="risk-high">High — text-on-blur contrast is fragile</td>
+          <td>Hero panels, overlays, login cards, marketing</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--neu)"></span>Neumorphism</td>
+          <td>2019–2020</td>
+          <td>Twin light/dark shadows on one base color</td>
+          <td>Soft extrude/inset from a single surface</td>
+          <td class="risk-high">High — near-zero contrast; state is ambiguous</td>
+          <td>Toggles, single-control widgets, concept work</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--clay)"></span>Claymorphism</td>
+          <td>2021–2022</td>
+          <td>Big radius + inner highlight &amp; inner shadow</td>
+          <td>Inflated, puffy 3D "clay" volume</td>
+          <td class="risk-med">Medium — pastel-on-pastel can fail contrast</td>
+          <td>Playful apps, 3D illustration, kids &amp; onboarding</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--brutal)"></span>Neo-Brutalism</td>
+          <td>2020–now</td>
+          <td>Hard borders, solid offset shadow, mono type</td>
+          <td>Flat offset block shadow (no blur)</td>
+          <td class="risk-med">Medium — high contrast helps, vibration tires eyes</td>
+          <td>Portfolios, indie SaaS, editorial &amp; statement sites</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--minimal)"></span>Minimalism</td>
+          <td>timeless</td>
+          <td>Whitespace, restraint, a single accent</td>
+          <td>Implied by spacing &amp; one hairline</td>
+          <td class="risk-low">Low — when contrast &amp; targets are respected</td>
+          <td>Reading, portfolios, premium &amp; editorial brands</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="swatch" style="background:var(--liquid)"></span>Liquid Glass</td>
+          <td>2025–</td>
+          <td>Blur + saturate refraction, specular edges, pills</td>
+          <td>Refractive translucent depth &amp; lensing</td>
+          <td class="risk-high">High — same contrast traps as glass, at scale</td>
+          <td>Apple OS chrome, modern OS-grade interfaces</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ PENDULUM ============ -->
+  <h2 class="section-title">The Realism ⇄ Abstraction Pendulum</h2>
+  <p class="section-sub">Plotted left-to-right by time, top-to-bottom by how literally each style depicts depth. Notice the swing: every reaction overcorrects, and the field keeps rediscovering that <em>some</em> depth aids usability.</p>
+
+  <div class="pendulum">
+    <div class="pendulum-bar" id="penBar"></div>
+    <div class="pendulum-legend">
+      <span>← 2007 · more realistic</span>
+      <span>more abstract · 2025 →</span>
+    </div>
+  </div>
+
+  <!-- ============ PROSE ============ -->
+  <div class="theory">
+    <h2>How The Pendulum Swings</h2>
+    <p>UI style does not progress in a straight line — it <strong>oscillates</strong>. Each era is a reaction against the excesses of the one before it, and each reaction eventually overcorrects, inviting the next swing back.</p>
+
+    <p><strong>Realism (2007–2012).</strong> When touchscreens were new, <strong>skeuomorphism</strong> taught people what to do. A switch that looked like a real switch needed no instructions. But photoreal leather, felt and wood grain were inconsistent app-to-app, heavy to render, and increasingly dated for users who had never seen a Rolodex.</p>
+
+    <p><strong>The hard swing to abstraction (2012–2014).</strong> Microsoft's Metro and Apple's iOS 7 stripped <em>everything</em> — shadows, gradients, texture — into pure <strong>flat design</strong>. Honest and fast, but it overcorrected: with no depth cues, people couldn't tell what was tappable. Usability suffered.</p>
+
+    <p><strong>The compromise (2014).</strong> Google's <strong>Material Design</strong> asked "what lives between skeuomorphism and flat?" and answered with a single, systematic abstraction: paper-like sheets that cast measured shadows. Just enough realism to signal hierarchy, none of the literal mimicry. It became the durable middle ground.</p>
+
+    <p><strong>The decorative micro-swings (2019–2022).</strong> Designers, bored of flat-ish sameness, chased novelty. <strong>Neumorphism</strong> brought soft monochrome extrusion back — beautiful, but its near-zero contrast was an accessibility dead end. <strong>Glassmorphism</strong> revived translucency and frosted blur (a line traceable to Aero and iOS control centres). <strong>Claymorphism</strong> inflated everything into friendly 3D clay. Each is essentially "depth, but make it tasteful," and each reintroduces the contrast problems flat design was trying to escape.</p>
+
+    <p><strong>The counter-cultures.</strong> Running alongside, <strong>neo-brutalism</strong> rejected the whole polish race — raw borders, clashing color, visible structure — while <strong>minimalism</strong> sat the cycle out entirely, betting that whitespace and restraint never go out of style.</p>
+
+    <p><strong>The newest swing back toward realism (2025).</strong> Apple's <strong>Liquid Glass</strong> pushes translucency and real-time refraction further than ever — depth, lensing and specular highlights rendered live. It is, in a sense, skeuomorphism's revenge: realism returning with the GPU budget the 2007 era never had. The pendulum has come most of the way back around — and the same old question returns with it: <em>will the contrast hold?</em></p>
+
+    <p>The lesson across two decades is consistent: <strong>depth is a usability tool, not just decoration.</strong> Pure realism is heavy and dated; pure flatness is ambiguous and cold. The styles that endure — Material, disciplined minimalism — are the ones that use <em>just enough</em> depth to communicate, and no more.</p>
+  </div>
+
+  <p class="section-sub" style="margin-top:40px">Go deeper on each style:</p>
+  <div class="deep-links">
+    <a href="../trends/skeuomorphism.html">Skeuomorphism →</a>
+    <a href="../trends/flat-design.html">Flat Design →</a>
+    <a href="../trends/material-design.html">Material Design →</a>
+    <a href="../trends/neumorphism.html">Neumorphism →</a>
+    <a href="../trends/claymorphism.html">Claymorphism →</a>
+    <a href="../trends/brutalism.html">Brutalism →</a>
+    <a href="../trends/minimalism.html">Minimalism →</a>
+  </div>
+
+</div>
+
+<footer>The Morphisms — UI Design Trends Research</footer>
+
+<script>
+  // Build the pendulum scatter from data so it stays in sync.
+  // x = time position (0..1), y = realism (0 = realistic/top, 1 = abstract/bottom)
+  const nodes = [
+    { name: 'Skeuomorphism', x: 0.02, y: 0.04, c: 'var(--skeuo)',   tag: 'up'   },
+    { name: 'Flat',          x: 0.30, y: 0.98, c: 'var(--flat)',     tag: 'down' },
+    { name: 'Material',      x: 0.40, y: 0.55, c: 'var(--material)', tag: 'up'   },
+    { name: 'Glassmorphism', x: 0.62, y: 0.34, c: 'var(--glass)',    tag: 'down' },
+    { name: 'Neumorphism',   x: 0.58, y: 0.20, c: 'var(--neu)',      tag: 'up'   },
+    { name: 'Claymorphism',  x: 0.70, y: 0.14, c: 'var(--clay)',     tag: 'down' },
+    { name: 'Brutalism',     x: 0.74, y: 0.86, c: 'var(--brutal)',   tag: 'up'   },
+    { name: 'Minimalism',    x: 0.84, y: 0.92, c: 'var(--minimal)',  tag: 'down' },
+    { name: 'Liquid Glass',  x: 0.97, y: 0.10, c: 'var(--liquid)',   tag: 'up'   }
+  ];
+
+  const bar = document.getElementById('penBar');
+
+  // axis + realism/abstraction poles
+  const axis = document.createElement('div');
+  axis.className = 'pendulum-axis';
+  bar.appendChild(axis);
+
+  nodes.forEach(n => {
+    const node = document.createElement('div');
+    node.className = 'pen-node';
+    node.style.left = (n.x * 100) + '%';
+    // map realism (0 top .. 1 bottom) onto the 64px bar
+    node.style.top = (10 + n.y * 80) + '%';
+    node.style.background = n.c;
+    node.style.boxShadow = '0 0 10px ' + n.c;
+
+    const tag = document.createElement('span');
+    tag.className = 'tag ' + n.tag;
+    tag.textContent = n.name;
+    node.appendChild(tag);
+    bar.appendChild(node);
+  });
+</script>
+</body>
+</html>

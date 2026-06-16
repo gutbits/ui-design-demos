@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout & Grids — UI/UX Fundamentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+    --border: #2e3346; --text: #e4e6f0; --text-dim: #8b8fa3;
+    --accent: #6c5ce7; --accent2: #00cec9;
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header { text-align: center; padding: 60px 24px 40px; background: linear-gradient(135deg, #1a1d27 0%, #1f2a3e 50%, #1a1d27 100%); border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 2.8rem; font-weight: 900; background: linear-gradient(135deg, #6c5ce7, #00cec9, #74b9ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+  header p { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1.1rem; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  h3 { font-size: 1.2rem; font-weight: 600; margin: 8px 0; color: #ddd; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  p.prose { color: var(--text-dim); margin-bottom: 16px; }
+  code { font-family: 'JetBrains Mono', monospace; background: var(--surface2); padding: 2px 7px; border-radius: 5px; font-size: 0.85em; color: var(--accent2); }
+  .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 14px; font-weight: 700; }
+
+  .tip { background: #6c5ce715; border-left: 3px solid var(--accent); padding: 16px 20px; margin: 16px 0; border-radius: 0 10px 10px 0; color: var(--text-dim); font-size: 0.9rem; }
+  .tip strong { color: var(--text); }
+
+  /* Demo boxes shared */
+  .box { background: var(--accent); color: #fff; border-radius: 10px; padding: 18px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; }
+  .box.alt { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); }
+  .box.accent2 { background: var(--accent2); color: #06322f; }
+
+  /* Flexbox demo */
+  .flex-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  .flex-controls .group { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .flex-controls .group span { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 6px; }
+  .seg { display: flex; gap: 4px; flex-wrap: wrap; }
+  .seg button { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 5px 11px; border-radius: 7px; cursor: pointer; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; transition: all 0.15s; }
+  .seg button:hover { border-color: var(--accent); }
+  .seg button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #flexStage { display: flex; gap: 12px; min-height: 200px; background: var(--bg); border: 1px dashed var(--border); border-radius: 12px; padding: 16px; transition: all 0.25s; }
+  #flexStage .box { padding: 16px 20px; }
+
+  /* Grid demo */
+  .grid-basic { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .span-demo { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .span-demo .box { padding: 14px; }
+  .s2 { grid-column: span 2; } .s3 { grid-column: span 3; } .s4 { grid-column: span 4; } .s6 { grid-column: span 6; }
+
+  /* 8pt grid */
+  .eight-row { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+  .eight-bar { background: linear-gradient(180deg, var(--accent), var(--accent2)); border-radius: 6px 6px 0 0; width: 56px; display: flex; align-items: flex-start; justify-content: center; color: #fff; font-size: 0.7rem; font-weight: 700; padding-top: 6px; }
+  .eight-bar small { display: block; text-align: center; color: var(--text-dim); margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+
+  /* Holy grail */
+  .hg { display: grid; grid-template-columns: 140px 1fr 140px; grid-template-rows: auto 1fr auto; gap: 10px; min-height: 280px;
+        grid-template-areas: "head head head" "nav main aside" "foot foot foot"; }
+  .hg .head { grid-area: head; } .hg .nav { grid-area: nav; } .hg .main { grid-area: main; }
+  .hg .aside { grid-area: aside; } .hg .foot { grid-area: foot; }
+  @media(max-width:640px){ .hg { grid-template-columns: 1fr; grid-template-areas: "head" "nav" "main" "aside" "foot"; } }
+
+  /* Sidebar layout */
+  .sidebar-layout { display: grid; grid-template-columns: 200px 1fr; gap: 12px; min-height: 220px; }
+  @media(max-width:640px){ .sidebar-layout { grid-template-columns: 1fr; } }
+
+  /* Card grid (auto-fill) */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  .card-grid .box { flex-direction: column; gap: 6px; padding: 24px 16px; }
+  .card-grid .box small { font-weight: 400; opacity: 0.85; font-size: 0.78rem; }
+
+  /* Breakpoints */
+  .bp-table { width: 100%; border-collapse: collapse; }
+  .bp-table th, .bp-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .bp-table th { color: var(--accent2); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; }
+  .bp-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--text); }
+  .bp-table .dim { color: var(--text-dim); }
+
+  .responsive-demo { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); }
+  @media(max-width:820px){ .responsive-demo { grid-template-columns: repeat(2, 1fr); } }
+  @media(max-width:520px){ .responsive-demo { grid-template-columns: 1fr; } }
+
+  footer { text-align: center; padding: 40px 24px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<a class="back-link" href="../index.html">Back to Hub</a>
+<header>
+  <h1>Layout & Grids</h1>
+  <p>Structure is the skeleton of every interface. Master Flexbox, CSS Grid, the 8-point system, and responsive breakpoints to build layouts that hold together at any size.</p>
+</header>
+
+<div class="container">
+
+<!-- Section 1: Flexbox -->
+<section>
+  <h2>Flexbox — One-Dimensional Layout</h2>
+  <p class="subtitle">Flexbox lays items out along a single axis (a row or a column) and excels at distributing space and aligning content. Toggle the properties below and watch the live container respond.</p>
+
+  <div class="card">
+    <div class="flex-controls">
+      <div class="group">
+        <span>flex-direction</span>
+        <div class="seg" data-prop="flexDirection">
+          <button class="active">row</button>
+          <button>row-reverse</button>
+          <button>column</button>
+        </div>
+      </div>
+      <div class="group">
+        <span>justify-content</span>
+        <div class="seg" data-prop="justifyContent">
+          <button class="active">flex-start</button>
+          <button>center</button>
+          <button>space-between</button>
+          <button>space-around</button>
+        </div>
+      </div>
+      <div class="group">
+        <span>align-items</span>
+        <div class="seg" data-prop="alignItems">
+          <button>flex-start</button>
+          <button class="active">stretch</button>
+          <button>center</button>
+          <button>flex-end</button>
+        </div>
+      </div>
+    </div>
+    <div id="flexStage">
+      <div class="box">1</div>
+      <div class="box accent2">2</div>
+      <div class="box">3</div>
+      <div class="box accent2">4</div>
+    </div>
+  </div>
+  <div class="tip"><strong>When to reach for Flexbox:</strong> navigation bars, button rows, centering a single element, toolbars, and any group of items that flows along one line. Use <code>gap</code> for spacing rather than margins on children.</div>
+</section>
+
+<!-- Section 2: CSS Grid -->
+<section>
+  <h2>CSS Grid — Two-Dimensional Layout</h2>
+  <p class="subtitle">Grid controls rows <em>and</em> columns at once. Define tracks with <code>grid-template-columns</code> and let items span multiple cells. The <code>fr</code> unit divides leftover space into fractions.</p>
+
+  <div class="card">
+    <div class="label">repeat(4, 1fr) — four equal columns</div>
+    <div class="grid-basic">
+      <div class="box">1fr</div><div class="box">1fr</div><div class="box">1fr</div><div class="box">1fr</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">Column spanning on a 6-column grid</div>
+    <div class="span-demo">
+      <div class="box s6">span 6 (full width)</div>
+      <div class="box alt s4">span 4</div>
+      <div class="box accent2 s2">span 2</div>
+      <div class="box accent2 s2">span 2</div>
+      <div class="box alt s2">span 2</div>
+      <div class="box s2">span 2</div>
+      <div class="box s3">span 3</div>
+      <div class="box alt s3">span 3</div>
+    </div>
+  </div>
+  <div class="tip"><strong>Grid vs Flexbox:</strong> use Grid when you need alignment in two directions (a page scaffold, an image gallery, a dashboard). Use Flexbox for content that flows in one direction. They compose well — Grid for the page, Flexbox inside each cell.</div>
+</section>
+
+<!-- Section 3: 8-point grid -->
+<section>
+  <h2>The 8-Point Grid System</h2>
+  <p class="subtitle">Restrict every size, margin, and padding to multiples of 8 (with 4 as an occasional half-step). This keeps spacing consistent, scales cleanly across screen densities, and removes hundreds of arbitrary decisions.</p>
+
+  <div class="card">
+    <div class="eight-row">
+      <div><div class="eight-bar" style="height:8px;"></div><small>4</small></div>
+      <div><div class="eight-bar" style="height:16px;"></div><small>8</small></div>
+      <div><div class="eight-bar" style="height:32px;"></div><small>16</small></div>
+      <div><div class="eight-bar" style="height:48px;"></div><small>24</small></div>
+      <div><div class="eight-bar" style="height:64px;"></div><small>32</small></div>
+      <div><div class="eight-bar" style="height:80px;"></div><small>40</small></div>
+      <div><div class="eight-bar" style="height:96px;"></div><small>48</small></div>
+      <div><div class="eight-bar" style="height:128px;"></div><small>64</small></div>
+    </div>
+  </div>
+  <div class="tip"><strong>Why 8?</strong> Most screen sizes are divisible by 8, so layouts snap to whole pixels at 1x, 1.5x, 2x, and 3x densities. Google's <a href="https://m3.material.io/foundations/layout/understanding-layout/spacing" target="_blank">Material Design</a> and most major design systems are built on it.</div>
+</section>
+
+<!-- Section 4: Layout patterns -->
+<section>
+  <h2>Common Layout Patterns</h2>
+  <p class="subtitle">A handful of grid scaffolds cover the vast majority of application screens. Resize the window to see them collapse responsively.</p>
+
+  <div class="card">
+    <div class="label">Holy Grail — header, footer, fluid center, two fixed rails</div>
+    <div class="hg">
+      <div class="box head">Header</div>
+      <div class="box alt nav">Nav</div>
+      <div class="box accent2 main">Main Content</div>
+      <div class="box alt aside">Aside</div>
+      <div class="box foot">Footer</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">Sidebar — fixed rail + fluid content</div>
+    <div class="sidebar-layout">
+      <div class="box alt">Sidebar<br>200px</div>
+      <div class="box accent2">Main Content (1fr)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">Card Grid — auto-fill, minmax(160px, 1fr)</div>
+    <div class="card-grid">
+      <div class="box">Card<small>auto-fits</small></div>
+      <div class="box accent2">Card<small>auto-fits</small></div>
+      <div class="box">Card<small>auto-fits</small></div>
+      <div class="box accent2">Card<small>auto-fits</small></div>
+      <div class="box">Card<small>auto-fits</small></div>
+      <div class="box accent2">Card<small>auto-fits</small></div>
+    </div>
+    <p class="prose" style="margin-top:16px;margin-bottom:0;"><code>repeat(auto-fill, minmax(160px, 1fr))</code> lets the grid decide how many columns fit — no media queries needed for a responsive gallery.</p>
+  </div>
+</section>
+
+<!-- Section 5: Breakpoints -->
+<section>
+  <h2>Responsive Breakpoints</h2>
+  <p class="subtitle">Breakpoints are the widths where your layout changes. Design mobile-first (smallest screen as the base) and add complexity upward with <code>min-width</code> media queries.</p>
+
+  <div class="card">
+    <table class="bp-table">
+      <thead><tr><th>Breakpoint</th><th>Typical Width</th><th>Targets</th></tr></thead>
+      <tbody>
+        <tr><td>Base / xs</td><td>&lt; 576px</td><td class="dim">Phones (portrait)</td></tr>
+        <tr><td>sm</td><td>≥ 576px</td><td class="dim">Phones (landscape)</td></tr>
+        <tr><td>md</td><td>≥ 768px</td><td class="dim">Tablets</td></tr>
+        <tr><td>lg</td><td>≥ 992px</td><td class="dim">Small laptops</td></tr>
+        <tr><td>xl</td><td>≥ 1200px</td><td class="dim">Desktops</td></tr>
+        <tr><td>xxl</td><td>≥ 1400px</td><td class="dim">Large / wide displays</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="label">Live: this grid is 3 → 2 → 1 columns as the viewport narrows</div>
+    <div class="responsive-demo">
+      <div class="box">A</div>
+      <div class="box accent2">B</div>
+      <div class="box">C</div>
+      <div class="box accent2">D</div>
+      <div class="box">E</div>
+      <div class="box accent2">F</div>
+    </div>
+  </div>
+  <div class="tip"><strong>Tip:</strong> don't chase specific devices. Add a breakpoint wherever the <em>content</em> starts to look cramped or stretched. Container queries (<code>@container</code>) now let components respond to their own width instead of the viewport's — see <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" target="_blank">MDN</a>.</div>
+</section>
+
+</div>
+
+<footer>
+  <p>Layout & Grids — UI/UX Design Fundamentals</p>
+</footer>
+
+<script>
+// Flexbox playground
+const stage = document.getElementById('flexStage');
+document.querySelectorAll('.flex-controls .seg').forEach(seg => {
+  const prop = seg.dataset.prop;
+  seg.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      stage.style[prop] = btn.textContent;
+    });
+  });
+});
+</script>
+</body>
+</html>

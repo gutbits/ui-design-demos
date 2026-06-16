@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Mode — Advanced UI/UX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* === THEME TOKENS (the heart of light/dark switching) === */
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+    --border: #2e3346; --text: #e4e6f0; --text-dim: #8b8fa3;
+    --accent: #6c5ce7; --accent2: #00cec9;
+    --code-bg: #111128; --shadow: rgba(0,0,0,0.5);
+  }
+  /* Page-level theme override for the article shell itself */
+  html[data-page-theme="light"] {
+    --bg: #f4f5fa; --surface: #ffffff; --surface2: #eceef5;
+    --border: #d9dce6; --text: #1b1e28; --text-dim: #5a5f73;
+    --accent: #6c5ce7; --accent2: #00a39e;
+    --code-bg: #f0f1f8; --shadow: rgba(0,0,0,0.12);
+  }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7;
+    transition: background 0.35s ease, color 0.35s ease;
+  }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, .mono { font-family: 'Fira Code', monospace; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header {
+    text-align: center; padding: 64px 24px 40px;
+    background: linear-gradient(135deg, var(--surface) 0%, color-mix(in srgb, var(--accent) 35%, var(--surface)) 50%, var(--surface) 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    font-size: 2.8rem; font-weight: 800; margin-bottom: 12px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe, #00cec9);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  header p { color: var(--text-dim); max-width: 640px; margin: 0 auto; font-size: 1.1rem; }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; }
+  h3 { font-size: 1.15rem; font-weight: 600; margin: 20px 0 8px; }
+  .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1rem; max-width: 760px; }
+  p { margin-bottom: 14px; }
+  ul { padding-left: 22px; margin: 12px 0; }
+  li { margin-bottom: 8px; }
+  strong { color: var(--text); font-weight: 700; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; margin-bottom: 24px;
+    box-shadow: 0 8px 30px var(--shadow);
+    transition: background 0.35s ease, border-color 0.35s ease;
+  }
+
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin: 18px 0; overflow-x: auto;
+    font-family: 'Fira Code', monospace; font-size: 0.82rem; line-height: 1.65;
+    color: var(--text);
+  }
+  .code-block .c { color: #6a6aaa; }
+  .code-block .p { color: #6ec6ff; }
+  .code-block .v { color: #ff8fab; }
+  .code-block .k { color: #c792ea; }
+
+  /* === LIVE TOGGLE DEMO === */
+  .demo-frame {
+    border-radius: 16px; padding: 30px; border: 1px solid var(--border);
+    transition: background 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+  }
+  .demo-frame[data-theme="dark"] {
+    background: #15161c; color: #e8e9f2;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  }
+  .demo-frame[data-theme="light"] {
+    background: #ffffff; color: #16181f;
+    box-shadow: 0 12px 40px rgba(20,30,60,0.12);
+  }
+  .toggle-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+  .switch { position: relative; width: 64px; height: 34px; cursor: pointer; }
+  .switch input { display: none; }
+  .slider {
+    position: absolute; inset: 0; border-radius: 34px; transition: 0.3s;
+    background: #3a3f55; display: flex; align-items: center;
+  }
+  .slider::before {
+    content: '🌙'; position: absolute; height: 26px; width: 26px; left: 4px; top: 4px;
+    background: #fff; border-radius: 50%; transition: 0.3s; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .switch input:checked + .slider { background: #f0b429; }
+  .switch input:checked + .slider::before { transform: translateX(30px); content: '☀️'; }
+
+  .demo-surfaces { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-top: 10px; }
+  .elev {
+    border-radius: 12px; padding: 18px; font-size: 0.85rem; font-weight: 600;
+    border: 1px solid transparent;
+  }
+  .demo-frame[data-theme="dark"] .elev-0 { background: #15161c; border-color: #262833; }
+  .demo-frame[data-theme="dark"] .elev-1 { background: #1d1f29; }
+  .demo-frame[data-theme="dark"] .elev-2 { background: #262936; }
+  .demo-frame[data-theme="dark"] .elev-3 { background: #313548; }
+  .demo-frame[data-theme="light"] .elev-0 { background: #ffffff; border-color: #e6e8f0; }
+  .demo-frame[data-theme="light"] .elev-1 { background: #f7f8fc; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .demo-frame[data-theme="light"] .elev-2 { background: #f1f2f9; box-shadow: 0 3px 8px rgba(0,0,0,0.10); }
+  .demo-frame[data-theme="light"] .elev-3 { background: #eaecf5; box-shadow: 0 8px 20px rgba(0,0,0,0.14); }
+  .demo-frame .muted { opacity: 0.65; font-weight: 400; }
+
+  .swatch-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+  .sw { width: 120px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); font-size: 0.72rem; }
+  .sw .chip { height: 56px; }
+  .sw .lbl { padding: 6px 8px; font-family: 'Fira Code', monospace; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-dim); font-weight: 600; }
+
+  .callout { border-left: 4px solid var(--accent); background: var(--surface2); padding: 16px 20px; border-radius: 0 10px 10px 0; margin: 18px 0; }
+  .callout.warn { border-left-color: #e17056; }
+  .callout.warn strong { color: #e8826b; }
+
+  .pill { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; font-size: 0.78rem; margin: 2px; color: var(--text-dim); }
+
+  footer { text-align: center; padding: 40px 24px; color: var(--text-dim); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+<header>
+  <h1>🌓 Dark Mode</h1>
+  <p>Designing for light <em>and</em> dark — why a good dark theme is engineered, not inverted. Elevation, desaturation, contrast pitfalls, and the CSS that ties it together.</p>
+</header>
+
+<div class="container">
+
+<!-- 1. Why dark mode -->
+<section>
+  <h2>Why Dark Mode Is Not "Just Inverted"</h2>
+  <p class="subtitle">Flipping <code>#fff</code> ↔ <code>#000</code> produces a harsh, vibrating, unusable theme. A real dark mode is a separately designed system with its own rules for contrast, color, and depth.</p>
+  <div class="card">
+    <h3>The naive approach (don't do this)</h3>
+    <div class="code-block">
+<span class="c">/* ❌ Pure inversion — high glare, halation, eye strain */</span>
+<span class="v">body</span> { <span class="p">filter</span>: <span class="v">invert(1)</span>; }
+<span class="c">/* or */</span>
+<span class="v">body</span> { <span class="p">background</span>: <span class="v">#000</span>; <span class="p">color</span>: <span class="v">#fff</span>; }
+    </div>
+    <p>Problems with naive dark mode:</p>
+    <ul>
+      <li><strong>Pure black + pure white</strong> creates the maximum 21:1 contrast ratio. On OLED this causes <em>halation</em> — text appears to bleed and smear, especially for people with astigmatism.</li>
+      <li><strong>Saturated brand colors</strong> that looked fine on white "vibrate" against dark backgrounds and feel neon.</li>
+      <li><strong>Shadows disappear.</strong> In light mode depth comes from shadows; on a dark surface a shadow is invisible, so the whole depth language breaks.</li>
+      <li><strong>Images and illustrations</strong> with white backgrounds become glaring rectangles.</li>
+    </ul>
+    <div class="callout">
+      <strong>Rule of thumb:</strong> use a very dark gray, not black, for the base (Material recommends <code>#121212</code>), and pull text back from pure white to roughly <code>rgba(255,255,255,0.87)</code> for primary text.
+    </div>
+  </div>
+</section>
+
+<!-- 2. LIVE TOGGLE DEMO -->
+<section>
+  <h2>Live Theme Toggle</h2>
+  <p class="subtitle">A real, working toggle. Flip it to watch surfaces, elevation, and color desaturation respond. The button at the bottom also re-themes this <em>entire page</em>.</p>
+  <div class="card">
+    <div class="demo-frame" data-theme="dark" id="demoFrame">
+      <div class="toggle-bar">
+        <div>
+          <div style="font-weight:700;font-size:1.1rem;">Settings panel</div>
+          <div class="muted" style="font-size:0.85rem;">Current theme: <span id="themeLabel" class="mono">dark</span></div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="demoToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="demo-surfaces">
+        <div class="elev elev-0">Base<br><span class="muted">elevation 0</span></div>
+        <div class="elev elev-1">Card<br><span class="muted">elevation 1</span></div>
+        <div class="elev elev-2">Dialog<br><span class="muted">elevation 2</span></div>
+        <div class="elev elev-3">Menu<br><span class="muted">elevation 3</span></div>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <button id="pageThemeBtn" style="background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:600;font-family:inherit;">Toggle THIS page's theme</button>
+      <span class="muted" style="color:var(--text-dim);font-size:0.85rem;">Page theme: <span id="pageThemeLabel" class="mono">dark</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Elevation -->
+<section>
+  <h2>Elevation: Lighter Surfaces, Not Shadows</h2>
+  <p class="subtitle">In light mode, things closer to the user cast bigger shadows. In dark mode, that cue inverts: the closer a surface is, the <strong>lighter</strong> it gets, as if it catches more ambient light.</p>
+  <div class="card">
+    <p>Material Design models this with semi-transparent white overlays whose opacity grows with elevation. The base is <code>#121212</code>; each elevation level adds a white film:</p>
+    <table>
+      <tr><th>Elevation (dp)</th><th>White overlay</th><th>Resulting surface</th></tr>
+      <tr><td>0</td><td>0%</td><td><code>#121212</code></td></tr>
+      <tr><td>1</td><td>5%</td><td><code>#1e1e1e</code></td></tr>
+      <tr><td>2</td><td>7%</td><td><code>#232323</code></td></tr>
+      <tr><td>4</td><td>9%</td><td><code>#272727</code></td></tr>
+      <tr><td>8</td><td>12%</td><td><code>#2e2e2e</code></td></tr>
+      <tr><td>24</td><td>16%</td><td><code>#383838</code></td></tr>
+    </table>
+    <div class="code-block">
+<span class="c">/* Elevation via a tunable white overlay on the dark base */</span>
+<span class="v">.surface</span> {
+  <span class="p">background-color</span>: <span class="v">#121212</span>;
+  <span class="p">background-image</span>: <span class="k">linear-gradient</span>(
+    <span class="k">rgba</span>(255,255,255,<span class="k">var</span>(--elev, 0)),
+    <span class="k">rgba</span>(255,255,255,<span class="k">var</span>(--elev, 0))
+  );
+}
+<span class="v">.surface.card</span>   { <span class="p">--elev</span>: <span class="v">0.05</span>; }
+<span class="v">.surface.dialog</span> { <span class="p">--elev</span>: <span class="v">0.07</span>; }
+<span class="v">.surface.menu</span>   { <span class="p">--elev</span>: <span class="v">0.12</span>; }
+    </div>
+    <p>You can still add a soft shadow in dark mode, but it does little work — keep it subtle and let the surface lightening carry the hierarchy.</p>
+  </div>
+</section>
+
+<!-- 4. Desaturation -->
+<section>
+  <h2>Desaturate Your Colors</h2>
+  <p class="subtitle">Highly saturated colors against dark backgrounds optically vibrate and fail contrast. Lower the saturation and lift the lightness of accents for dark mode.</p>
+  <div class="card">
+    <div class="swatch-row" id="satSwatches"></div>
+    <p>The left swatch in each pair is the original light-mode brand color; the right is its dark-mode-tuned version (saturation reduced, lightness raised). Notice the right column sits more calmly on the dark surface.</p>
+    <div class="code-block">
+<span class="c">/* Tune an accent for dark mode in HSL space */</span>
+<span class="v">:root</span> { <span class="p">--brand</span>: <span class="v">hsl(248, 85%, 60%)</span>; } <span class="c">/* light mode */</span>
+<span class="v">@media (prefers-color-scheme: dark)</span> {
+  <span class="v">:root</span> { <span class="p">--brand</span>: <span class="v">hsl(248, 60%, 72%)</span>; } <span class="c">/* −sat, +light */</span>
+}
+    </div>
+    <div class="callout">
+      <strong>Why it works:</strong> our eyes adapt to a dark surround by widening the pupil; saturated hues then over-stimulate and "buzz". Reducing chroma and raising lightness restores legibility and calm.
+    </div>
+  </div>
+</section>
+
+<!-- 5. Contrast pitfalls -->
+<section>
+  <h2>Contrast Pitfalls</h2>
+  <p class="subtitle">Dark mode has its own accessibility traps. WCAG still applies — but the failure modes differ from light mode.</p>
+  <div class="card">
+    <ul>
+      <li><strong>Halation from too much contrast.</strong> Pure-white text on pure-black is technically 21:1 but physically uncomfortable. Aim for primary text around <code>rgba(255,255,255,0.87)</code> on a <code>#121212</code>–<code>#1e1e1e</code> base.</li>
+      <li><strong>Disabled / secondary text vanishing.</strong> On dark, low-opacity gray text easily drops below the 4.5:1 AA threshold. Verify every tier (primary, secondary, disabled) against its actual surface — including elevated ones.</li>
+      <li><strong>Elevated surfaces change the math.</strong> Text that passes on the base may fail on a lighter elevated card. Test against the lightest surface the text can land on.</li>
+      <li><strong>Colored text & links.</strong> A blue link that passes on white usually fails on dark. Use the desaturated, lightened variant.</li>
+      <li><strong>Focus rings & borders.</strong> Thin <code>1px</code> borders that read on white disappear on dark; bump opacity or use a subtle inner glow.</li>
+    </ul>
+    <table>
+      <tr><th>Text role</th><th>Suggested dark value</th><th>On #121212</th></tr>
+      <tr><td>High-emphasis</td><td><code>rgba(255,255,255,0.87)</code></td><td>≈ 15.8:1</td></tr>
+      <tr><td>Medium-emphasis</td><td><code>rgba(255,255,255,0.60)</code></td><td>≈ 7.5:1</td></tr>
+      <tr><td>Disabled</td><td><code>rgba(255,255,255,0.38)</code></td><td>≈ 3.7:1 (decorative only)</td></tr>
+    </table>
+    <div class="callout warn">
+      <strong>Watch out:</strong> "Disabled" opacity (0.38) is intentionally below AA — it should never carry information a sighted user must read.
+    </div>
+  </div>
+</section>
+
+<!-- 6. The CSS -->
+<section>
+  <h2>The CSS: prefers-color-scheme + variables + toggle</h2>
+  <p class="subtitle">A production-grade theming setup has three layers: respect the OS preference, store an explicit user override, and theme everything through CSS custom properties.</p>
+  <div class="card">
+    <h3>1. Declare support &amp; respect the OS</h3>
+    <div class="code-block">
+<span class="c">/* Tell the UA both schemes exist → themed form controls, scrollbars */</span>
+<span class="v">:root</span> { <span class="p">color-scheme</span>: <span class="v">light dark</span>; }
+
+<span class="c">/* Default tokens = light; override under the dark media query */</span>
+<span class="v">:root</span> {
+  <span class="p">--bg</span>: <span class="v">#ffffff</span>; <span class="p">--text</span>: <span class="v">#1b1e28</span>;
+  <span class="p">--surface</span>: <span class="v">#f5f6fb</span>; <span class="p">--accent</span>: <span class="v">hsl(248,85%,60%)</span>;
+}
+<span class="v">@media (prefers-color-scheme: dark)</span> {
+  <span class="v">:root</span> {
+    <span class="p">--bg</span>: <span class="v">#121212</span>; <span class="p">--text</span>: <span class="k">rgba</span>(255,255,255,0.87);
+    <span class="p">--surface</span>: <span class="v">#1e1e1e</span>; <span class="p">--accent</span>: <span class="v">hsl(248,60%,72%)</span>;
+  }
+}
+    </div>
+    <h3>2. Let an explicit choice win via a data-attribute</h3>
+    <div class="code-block">
+<span class="c">/* User override on &lt;html data-theme="..."&gt; beats the media query */</span>
+<span class="v">html[data-theme="light"]</span> { <span class="p">--bg</span>: <span class="v">#fff</span>; <span class="p">--text</span>: <span class="v">#1b1e28</span>; }
+<span class="v">html[data-theme="dark"]</span>  { <span class="p">--bg</span>: <span class="v">#121212</span>; <span class="p">--text</span>: <span class="k">rgba</span>(255,255,255,.87); }
+    </div>
+    <h3>3. Wire it up — and persist the choice</h3>
+    <div class="code-block">
+<span class="k">const</span> root = document.documentElement;
+<span class="c">// Restore saved choice on load (falls back to OS preference)</span>
+<span class="k">const</span> saved = localStorage.getItem(<span class="v">'theme'</span>);
+<span class="k">if</span> (saved) root.dataset.theme = saved;
+
+<span class="v">btn</span>.addEventListener(<span class="v">'click'</span>, () =&gt; {
+  <span class="k">const</span> isDark = getComputedStyle(root)
+    .getPropertyValue(<span class="v">'--bg'</span>).trim() === <span class="v">'#121212'</span>;
+  <span class="k">const</span> next = isDark ? <span class="v">'light'</span> : <span class="v">'dark'</span>;
+  root.dataset.theme = next;
+  localStorage.setItem(<span class="v">'theme'</span>, next);
+});
+    </div>
+    <div class="callout">
+      <strong>Avoid the flash (FOUC):</strong> read <code>localStorage</code> and set <code>data-theme</code> in a tiny <em>blocking</em> <code>&lt;script&gt;</code> in the <code>&lt;head&gt;</code>, before the body renders, so the page never paints the wrong theme first.
+    </div>
+    <p style="margin-top:18px;">
+      <span class="pill">color-scheme</span>
+      <span class="pill">prefers-color-scheme</span>
+      <span class="pill">CSS custom properties</span>
+      <span class="pill">localStorage</span>
+      <span class="pill">color-mix()</span>
+    </p>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p>Dark Mode — Advanced UI/UX Design Research</p>
+</footer>
+
+<script>
+  // ---- Local demo toggle (scoped to the demo frame) ----
+  const frame = document.getElementById('demoFrame');
+  const toggle = document.getElementById('demoToggle');
+  const themeLabel = document.getElementById('themeLabel');
+  toggle.addEventListener('change', () => {
+    const theme = toggle.checked ? 'light' : 'dark';
+    frame.dataset.theme = theme;
+    themeLabel.textContent = theme;
+  });
+
+  // ---- Whole-page theme toggle (persisted) ----
+  const root = document.documentElement;
+  const pageBtn = document.getElementById('pageThemeBtn');
+  const pageLabel = document.getElementById('pageThemeLabel');
+  function applyPageTheme(t) {
+    root.dataset.pageTheme = t;
+    pageLabel.textContent = t;
+    try { localStorage.setItem('dm-page-theme', t); } catch (e) {}
+  }
+  // Restore saved preference, else mirror OS preference
+  let saved;
+  try { saved = localStorage.getItem('dm-page-theme'); } catch (e) {}
+  if (saved) {
+    applyPageTheme(saved);
+  } else {
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    applyPageTheme(prefersLight ? 'light' : 'dark');
+  }
+  pageBtn.addEventListener('click', () => {
+    applyPageTheme(root.dataset.pageTheme === 'light' ? 'dark' : 'light');
+  });
+
+  // ---- Desaturation swatch pairs (light brand → dark-tuned) ----
+  const pairs = [
+    { name: 'Indigo', h: 248, s: 85, l: 60 },
+    { name: 'Cyan',   h: 184, s: 90, l: 45 },
+    { name: 'Pink',   h: 340, s: 90, l: 58 },
+    { name: 'Green',  h: 145, s: 75, l: 42 },
+    { name: 'Amber',  h: 38,  s: 95, l: 52 },
+  ];
+  const wrap = document.getElementById('satSwatches');
+  pairs.forEach(p => {
+    const light = `hsl(${p.h}, ${p.s}%, ${p.l}%)`;
+    const dark  = `hsl(${p.h}, ${Math.max(p.s - 28, 20)}%, ${Math.min(p.l + 14, 78)}%)`;
+    const el = document.createElement('div');
+    el.className = 'sw';
+    el.innerHTML =
+      `<div class="chip" style="background:${light}"></div>` +
+      `<div class="chip" style="background:${dark}"></div>` +
+      `<div class="lbl">${p.name}<br>light → dark</div>`;
+    wrap.appendChild(el);
+  });
+</script>
+</body>
+</html>

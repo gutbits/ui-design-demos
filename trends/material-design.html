@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Material Design — UI Design Trends</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Fira+Code&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #121212;
+    color: #e0e0e0;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+  }
+
+  .back-link {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    color: #bb86fc; text-decoration: none; font-size: 14px; font-weight: 500;
+    background: #1e1e2e;
+    padding: 8px 16px; border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .back-link:hover { background: #2a2a3e; }
+
+  header {
+    text-align: center;
+    padding: 100px 20px 50px;
+    background: #121212;
+  }
+  header h1 {
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: -1px;
+  }
+  header p { color: #888; font-weight: 300; font-size: 1.1rem; margin-top: 10px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: #fff;
+    margin: 60px 0 30px;
+    text-align: center;
+  }
+
+  /* ===== ELEVATION SYSTEM ===== */
+  .elevation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 24px;
+    margin: 30px 0;
+  }
+  .elevation-card {
+    background: #1e1e1e;
+    border-radius: 4px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .elevation-card:hover { transform: translateY(-2px); }
+  .dp-label { font-size: 2rem; font-weight: 300; color: #bb86fc; }
+  .dp-meta { font-size: 0.75rem; color: #666; margin-top: 8px; font-family: 'Fira Code', monospace; }
+  .el-0  { box-shadow: none; }
+  .el-1  { box-shadow: 0 1px 1px rgba(0,0,0,0.14), 0 2px 1px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.2); }
+  .el-2  { box-shadow: 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px rgba(0,0,0,0.12), 0 1px 5px rgba(0,0,0,0.2); }
+  .el-4  { box-shadow: 0 4px 5px rgba(0,0,0,0.14), 0 1px 10px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.2); }
+  .el-6  { box-shadow: 0 6px 10px rgba(0,0,0,0.14), 0 1px 18px rgba(0,0,0,0.12), 0 3px 5px rgba(0,0,0,0.2); }
+  .el-8  { box-shadow: 0 8px 10px rgba(0,0,0,0.14), 0 3px 14px rgba(0,0,0,0.12), 0 5px 5px rgba(0,0,0,0.2); }
+  .el-12 { box-shadow: 0 12px 17px rgba(0,0,0,0.14), 0 5px 22px rgba(0,0,0,0.12), 0 7px 8px rgba(0,0,0,0.2); }
+  .el-16 { box-shadow: 0 16px 24px rgba(0,0,0,0.14), 0 6px 30px rgba(0,0,0,0.12), 0 8px 10px rgba(0,0,0,0.2); }
+  .el-24 { box-shadow: 0 24px 38px rgba(0,0,0,0.14), 0 9px 46px rgba(0,0,0,0.12), 0 11px 15px rgba(0,0,0,0.2); }
+
+  /* ===== FAB ===== */
+  .fab-demo {
+    position: relative;
+    height: 200px;
+    background: #1e1e1e;
+    border-radius: 4px;
+    margin: 30px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+  }
+  .fab {
+    width: 56px; height: 56px;
+    border-radius: 28px;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    color: #000;
+    transition: box-shadow 0.3s;
+  }
+  .fab.primary { background: #bb86fc; box-shadow: 0 6px 10px rgba(0,0,0,0.3); }
+  .fab.primary:hover { box-shadow: 0 8px 15px rgba(187,134,252,0.3); }
+  .fab.secondary { background: #03dac6; box-shadow: 0 6px 10px rgba(0,0,0,0.3); }
+  .fab.secondary:hover { box-shadow: 0 8px 15px rgba(3,218,198,0.3); }
+  .fab.extended {
+    width: auto; padding: 0 20px;
+    font-size: 0.9rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .fab-label { font-size: 0.75rem; color: #888; margin-top: 8px; text-align: center; }
+
+  /* ===== RIPPLE EFFECT ===== */
+  .ripple-container {
+    position: relative;
+    overflow: hidden;
+  }
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: scale(0);
+    animation: ripple-anim 0.6s linear;
+    pointer-events: none;
+  }
+  @keyframes ripple-anim {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  .ripple-demo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 30px 0;
+  }
+  .ripple-btn {
+    padding: 16px;
+    background: #1e1e2e;
+    border: none;
+    border-radius: 4px;
+    color: #e0e0e0;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+  .ripple-btn:hover { background: #2a2a3e; }
+  .ripple-btn.filled { background: #bb86fc; color: #000; }
+  .ripple-btn.filled:hover { background: #c99dfc; }
+  .ripple-btn.tonal { background: #332d41; color: #d0bcff; }
+  .ripple-btn.outline { background: transparent; border: 1px solid #444; color: #bb86fc; }
+
+  /* ===== MATERIAL CARDS ===== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin: 30px 0;
+  }
+  .mat-card {
+    background: #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: box-shadow 0.3s, transform 0.3s;
+    cursor: pointer;
+  }
+  .mat-card:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    transform: translateY(-4px);
+  }
+  .mat-card-media {
+    height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+  }
+  .mat-card-body { padding: 16px; }
+  .mat-card-body h3 { font-weight: 500; margin-bottom: 8px; }
+  .mat-card-body p { font-size: 0.85rem; color: #aaa; font-weight: 300; }
+  .mat-card-actions {
+    padding: 8px 16px;
+    display: flex; gap: 8px;
+  }
+  .mat-card-actions button {
+    background: none; border: none;
+    color: #bb86fc; font-family: inherit;
+    font-weight: 500; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 1px;
+    padding: 8px 12px; cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .mat-card-actions button:hover { background: rgba(187,134,252,0.1); }
+
+  /* ===== MATERIAL COLORS ===== */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 4px;
+    margin: 30px 0;
+  }
+  .mat-color {
+    height: 80px;
+    display: flex; align-items: flex-end;
+    padding: 8px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    font-family: 'Fira Code', monospace;
+  }
+
+  /* ===== BOTTOM SHEET ===== */
+  .bottom-sheet-trigger {
+    text-align: center;
+    margin: 30px 0;
+  }
+  .sheet-btn {
+    padding: 14px 32px;
+    background: #bb86fc;
+    color: #000;
+    border: none;
+    border-radius: 24px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .sheet-btn:hover { background: #c99dfc; }
+
+  .bottom-sheet-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .bottom-sheet-overlay.show { display: block; opacity: 1; }
+  .bottom-sheet {
+    position: fixed; bottom: -400px; left: 0; right: 0;
+    background: #2a2a2a;
+    border-radius: 16px 16px 0 0;
+    padding: 20px;
+    z-index: 2001;
+    transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 60vh;
+  }
+  .bottom-sheet.show { bottom: 0; }
+  .sheet-handle {
+    width: 40px; height: 4px;
+    background: #555; border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+  .sheet-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 8px;
+    color: #e0e0e0;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .sheet-item:hover { background: rgba(255,255,255,0.05); }
+  .sheet-item .icon { font-size: 1.3rem; width: 32px; text-align: center; }
+
+  .code-block {
+    background: #0d0d1a;
+    border: 1px solid #2a2a3e;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #c8c8e8;
+  }
+  .code-block .comment { color: #6a6a99; }
+  .code-block .prop { color: #bb86fc; }
+  .code-block .val { color: #03dac6; }
+
+  .theory {
+    background: #1e1e2e;
+    border-radius: 12px;
+    padding: 40px;
+    margin: 40px 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  .theory h2 { color: #bb86fc; font-weight: 300; font-size: 1.8rem; margin-bottom: 20px; }
+  .theory p { margin-bottom: 15px; color: #aaa; font-weight: 300; }
+  .theory strong { color: #e0e0e0; font-weight: 500; }
+  .theory ul { padding-left: 20px; margin: 15px 0; }
+  .theory li { margin-bottom: 8px; color: #aaa; font-weight: 300; }
+
+  footer {
+    text-align: center;
+    padding: 40px;
+    color: #444;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">← Back</a>
+
+<header>
+  <h1>Material Design</h1>
+  <p>A design system built on the metaphor of physical materials — paper and ink in a digital world</p>
+</header>
+
+<div class="container">
+
+  <!-- ELEVATION -->
+  <h2 class="section-title">Elevation System (dp levels)</h2>
+  <div class="elevation-grid">
+    <div class="elevation-card el-0"><div class="dp-label">0dp</div><div class="dp-meta">Flat surface</div></div>
+    <div class="elevation-card el-1"><div class="dp-label">1dp</div><div class="dp-meta">Cards at rest</div></div>
+    <div class="elevation-card el-2"><div class="dp-label">2dp</div><div class="dp-meta">Raised button</div></div>
+    <div class="elevation-card el-4"><div class="dp-label">4dp</div><div class="dp-meta">App bar</div></div>
+    <div class="elevation-card el-6"><div class="dp-label">6dp</div><div class="dp-meta">FAB / Snackbar</div></div>
+    <div class="elevation-card el-8"><div class="dp-label">8dp</div><div class="dp-meta">Menu / Picker</div></div>
+    <div class="elevation-card el-12"><div class="dp-label">12dp</div><div class="dp-meta">Floating action</div></div>
+    <div class="elevation-card el-16"><div class="dp-label">16dp</div><div class="dp-meta">Nav drawer</div></div>
+    <div class="elevation-card el-24"><div class="dp-label">24dp</div><div class="dp-meta">Dialog</div></div>
+  </div>
+  <div class="code-block">
+<span class="comment">/* Material elevation shadow formula — three layers */</span>
+<span class="val">.elevation-6dp</span> {
+  <span class="prop">box-shadow</span>:
+    <span class="val">0 6px 10px rgba(0,0,0,0.14)</span>,   <span class="comment">/* umbra */</span>
+    <span class="val">0 1px 18px rgba(0,0,0,0.12)</span>,   <span class="comment">/* penumbra */</span>
+    <span class="val">0 3px 5px rgba(0,0,0,0.2)</span>;     <span class="comment">/* ambient */</span>
+}
+  </div>
+
+  <!-- FAB -->
+  <h2 class="section-title">Floating Action Buttons</h2>
+  <div class="fab-demo">
+    <div>
+      <button class="fab primary ripple-container" onclick="createRipple(event)">✏️</button>
+      <div class="fab-label">Standard</div>
+    </div>
+    <div>
+      <button class="fab secondary ripple-container" onclick="createRipple(event)">➕</button>
+      <div class="fab-label">Secondary</div>
+    </div>
+    <div>
+      <button class="fab primary extended ripple-container" onclick="createRipple(event)">✏️ Compose</button>
+      <div class="fab-label">Extended</div>
+    </div>
+  </div>
+
+  <!-- RIPPLE BUTTONS -->
+  <h2 class="section-title">Ripple Effect (click any button)</h2>
+  <div class="ripple-demo-grid">
+    <button class="ripple-btn filled ripple-container" onclick="createRipple(event)">Filled</button>
+    <button class="ripple-btn tonal ripple-container" onclick="createRipple(event)">Tonal</button>
+    <button class="ripple-btn outline ripple-container" onclick="createRipple(event)">Outlined</button>
+    <button class="ripple-btn ripple-container" onclick="createRipple(event)">Elevated</button>
+    <button class="ripple-btn filled ripple-container" onclick="createRipple(event)" style="background:#03dac6;">Accent</button>
+    <button class="ripple-btn ripple-container" onclick="createRipple(event)">Text Button</button>
+  </div>
+  <div class="code-block">
+<span class="comment">// Ripple effect — JavaScript implementation</span>
+function <span class="prop">createRipple</span>(event) {
+  const btn = event.currentTarget;
+  const <span class="val">circle</span> = document.createElement('span');
+  const <span class="val">diameter</span> = Math.max(btn.clientWidth, btn.clientHeight);
+  const <span class="val">radius</span> = diameter / 2;
+  circle.style.width = circle.style.height = diameter + 'px';
+  circle.style.left = (event.clientX - btn.getBoundingClientRect().left - radius) + 'px';
+  circle.style.top = (event.clientY - btn.getBoundingClientRect().top - radius) + 'px';
+  circle.classList.add('ripple');
+  btn.appendChild(circle);
+  setTimeout(() => circle.remove(), 600);
+}
+  </div>
+
+  <!-- CARDS -->
+  <h2 class="section-title">Material Cards</h2>
+  <div class="card-grid">
+    <div class="mat-card">
+      <div class="mat-card-media" style="background:linear-gradient(135deg,#bb86fc,#6200ee);">🎨</div>
+      <div class="mat-card-body">
+        <h3>Design Systems</h3>
+        <p>Build consistent, beautiful products with Material's comprehensive design system and component library.</p>
+      </div>
+      <div class="mat-card-actions">
+        <button>Learn More</button>
+        <button>Share</button>
+      </div>
+    </div>
+    <div class="mat-card">
+      <div class="mat-card-media" style="background:linear-gradient(135deg,#03dac6,#018786);">⚡</div>
+      <div class="mat-card-body">
+        <h3>Motion & Animation</h3>
+        <p>Material motion creates meaningful transitions that help users understand and navigate the interface.</p>
+      </div>
+      <div class="mat-card-actions">
+        <button>Explore</button>
+        <button>Bookmark</button>
+      </div>
+    </div>
+    <div class="mat-card">
+      <div class="mat-card-media" style="background:linear-gradient(135deg,#cf6679,#b00020);">📱</div>
+      <div class="mat-card-body">
+        <h3>Adaptive Layouts</h3>
+        <p>Responsive design is built into Material, adapting seamlessly from phones to tablets to desktop.</p>
+      </div>
+      <div class="mat-card-actions">
+        <button>View Docs</button>
+        <button>Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATERIAL COLORS -->
+  <h2 class="section-title">Material Color System</h2>
+  <div class="color-grid">
+    <div class="mat-color" style="background:#6200ee;color:#fff;">Primary<br>#6200EE</div>
+    <div class="mat-color" style="background:#bb86fc;color:#000;">P. Light<br>#BB86FC</div>
+    <div class="mat-color" style="background:#3700b3;color:#fff;">P. Dark<br>#3700B3</div>
+    <div class="mat-color" style="background:#03dac6;color:#000;">Secondary<br>#03DAC6</div>
+    <div class="mat-color" style="background:#018786;color:#fff;">S. Dark<br>#018786</div>
+    <div class="mat-color" style="background:#121212;color:#fff;">Surface<br>#121212</div>
+    <div class="mat-color" style="background:#1e1e1e;color:#fff;">Surface+1<br>#1E1E1E</div>
+    <div class="mat-color" style="background:#cf6679;color:#000;">Error<br>#CF6679</div>
+  </div>
+
+  <!-- BOTTOM SHEET -->
+  <h2 class="section-title">Bottom Sheet</h2>
+  <div class="bottom-sheet-trigger">
+    <button class="sheet-btn" onclick="openSheet()">Open Bottom Sheet</button>
+  </div>
+
+  <div class="bottom-sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+  <div class="bottom-sheet" id="bottomSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-item" onclick="closeSheet()"><span class="icon">📋</span> Copy to clipboard</div>
+    <div class="sheet-item" onclick="closeSheet()"><span class="icon">🔗</span> Share link</div>
+    <div class="sheet-item" onclick="closeSheet()"><span class="icon">📧</span> Send via email</div>
+    <div class="sheet-item" onclick="closeSheet()"><span class="icon">💬</span> Send message</div>
+    <div class="sheet-item" onclick="closeSheet()"><span class="icon">📱</span> Open in app</div>
+    <div class="sheet-item" onclick="closeSheet()"><span class="icon">⬇️</span> Download</div>
+    <div class="sheet-item" onclick="closeSheet()"><span class="icon">🖨️</span> Print</div>
+  </div>
+
+  <!-- THEORY -->
+  <div class="theory">
+    <h2>History & Theory</h2>
+    <p><strong>Material Design</strong> was introduced by Google at I/O 2014, created by Matías Duarte. It was Google's answer to the question: "What lies between skeuomorphism and flat design?"</p>
+
+    <p>The core metaphor is <strong>"material" — a magical paper</strong> that can split, join, resize, and cast shadows. Every surface in Material Design is a sheet of this material at a specific elevation. Higher elevation = bigger shadow = more visual importance.</p>
+
+    <p><strong>Key innovations:</strong></p>
+    <ul>
+      <li><strong>Elevation & shadows</strong> — A systematic shadow model (0–24dp) that conveys hierarchy</li>
+      <li><strong>Bold color</strong> — Primary/secondary color system with automatic contrast checking</li>
+      <li><strong>Meaningful motion</strong> — Transitions that explain spatial relationships</li>
+      <li><strong>Responsive layout grid</strong> — 8dp grid system for consistent spacing</li>
+      <li><strong>Ripple feedback</strong> — Touch feedback that radiates from the point of contact</li>
+    </ul>
+
+    <p><strong>Material 3 (You)</strong> introduced dynamic color theming from wallpapers, updated component shapes, and a more expressive design language while maintaining the core elevation and motion principles.</p>
+
+    <p><strong>When to use:</strong> Material Design is ideal for Android apps (it's the native design language), cross-platform apps needing a consistent system, and any project that benefits from a comprehensive, well-documented design system with extensive component libraries.</p>
+  </div>
+
+</div>
+
+<footer>Material Design — UI Design Trends Research</footer>
+
+<script>
+  function createRipple(event) {
+    const btn = event.currentTarget;
+    const circle = document.createElement('span');
+    const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+    const radius = diameter / 2;
+    circle.style.width = circle.style.height = diameter + 'px';
+    circle.style.left = (event.clientX - btn.getBoundingClientRect().left - radius) + 'px';
+    circle.style.top = (event.clientY - btn.getBoundingClientRect().top - radius) + 'px';
+    circle.classList.add('ripple');
+    btn.appendChild(circle);
+    setTimeout(() => circle.remove(), 600);
+  }
+
+  function openSheet() {
+    document.getElementById('sheetOverlay').classList.add('show');
+    document.getElementById('bottomSheet').classList.add('show');
+  }
+  function closeSheet() {
+    document.getElementById('sheetOverlay').classList.remove('show');
+    document.getElementById('bottomSheet').classList.remove('show');
+  }
+</script>
+</body>
+</html>
