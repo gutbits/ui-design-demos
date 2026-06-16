@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retro Terminal / CRT Aesthetic — UI/UX Design Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ---- Hub dark chrome (matches the rest of the site) ---- */
+    --bg: #0a0a12;
+    --surface: #14141f;
+    --surface2: #1d1d2c;
+    --border: #2a2a3e;
+    --text: #e6e6f0;
+    --text-dim: #8b8fa3;
+    --accent: #7aa2ff;
+    --accent2: #38e1c6;
+    --warn: #ffb86c;
+
+    /* ---- Phosphor demo theme (default: green) ---- */
+    --phosphor: #33ff66;
+    --phosphor-dim: #1f9e3f;
+    --phosphor-glow: rgba(51, 255, 102, 0.65);
+    --phosphor-faint: rgba(51, 255, 102, 0.08);
+    --crt-bg: #050a05;
+  }
+
+  /* Amber phosphor mode */
+  .amber {
+    --phosphor: #ffb000;
+    --phosphor-dim: #b87800;
+    --phosphor-glow: rgba(255, 176, 0, 0.6);
+    --phosphor-faint: rgba(255, 176, 0, 0.08);
+    --crt-bg: #0a0703;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  code, kbd { font-family: 'JetBrains Mono', monospace; }
+
+  /* ---------- Back link ---------- */
+  .back-link {
+    display: inline-block;
+    margin: 20px 0 0 20px;
+    padding: 8px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .back-link:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    transform: translateX(-3px);
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    text-align: center;
+    padding: 64px 20px 50px;
+    position: relative;
+  }
+  header h1 {
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    background: linear-gradient(120deg, #33ff66 0%, #38e1c6 40%, #ffb000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 18px;
+  }
+  header .tagline {
+    color: var(--text-dim);
+    font-size: clamp(1rem, 2.4vw, 1.25rem);
+    max-width: 640px;
+    margin: 0 auto;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  header .blink-block {
+    display: inline-block;
+    width: 0.6em; height: 1.05em;
+    background: #33ff66;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: termBlink 1.1s steps(1) infinite;
+    box-shadow: 0 0 8px rgba(51,255,102,0.8);
+  }
+  @keyframes termBlink { 50% { opacity: 0; } }
+
+  /* ---------- Layout ---------- */
+  .container { max-width: 920px; margin: 0 auto; padding: 0 20px 80px; }
+
+  section { margin-top: 64px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 10px;
+  }
+  h2 {
+    font-size: clamp(1.5rem, 3.6vw, 2.1rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+  h3 { font-size: 1.15rem; font-weight: 600; margin: 22px 0 8px; }
+  p { color: #cfd2e0; margin-bottom: 14px; }
+  p.lead { font-size: 1.12rem; color: var(--text); }
+  .container a { color: var(--accent); }
+
+  ul.clean { list-style: none; margin: 14px 0; }
+  ul.clean li {
+    position: relative; padding-left: 22px; margin-bottom: 9px; color: #cfd2e0;
+  }
+  ul.clean li::before {
+    content: "›"; position: absolute; left: 4px; top: -1px;
+    color: var(--accent2); font-weight: 700;
+  }
+
+  strong { color: #fff; }
+  .kbd {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 1px 7px;
+    font-size: 0.85em;
+    color: var(--accent2);
+  }
+
+  /* ---------- Info cards ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .card h3 { margin-top: 0; }
+  .card p { font-size: 0.95rem; margin-bottom: 0; color: var(--text-dim); }
+  .card .ico { font-size: 1.6rem; margin-bottom: 6px; display: block; }
+
+  /* ---------- Pros / cons ---------- */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+  .split > div {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .split .use { border-top: 3px solid var(--accent2); }
+  .split .avoid { border-top: 3px solid var(--warn); }
+  .split h3 { margin-top: 0; }
+
+  /* ---------- Callout ---------- */
+  .callout {
+    background: linear-gradient(180deg, rgba(255,184,108,0.07), rgba(255,184,108,0.02));
+    border: 1px solid rgba(255,184,108,0.35);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-top: 22px;
+  }
+  .callout h3 { margin-top: 0; color: var(--warn); }
+  .callout p { color: #d7dae6; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ============================================================
+     CRT / TERMINAL DEMO SHELL
+     ============================================================ */
+  .crt {
+    position: relative;
+    background: var(--crt-bg);
+    border-radius: 18px;
+    padding: 26px 28px 30px;
+    margin-top: 22px;
+    font-family: 'VT323', 'JetBrains Mono', monospace;
+    color: var(--phosphor);
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 60px rgba(0,0,0,0.9),
+      inset 0 0 120px var(--phosphor-faint),
+      0 0 0 2px #000,
+      0 16px 40px rgba(0,0,0,0.6);
+    text-shadow: 0 0 4px var(--phosphor-glow), 0 0 11px var(--phosphor-glow);
+    min-height: 220px;
+  }
+  .crt::selection, .crt *::selection { background: var(--phosphor); color: var(--crt-bg); }
+
+  /* Scanlines overlay */
+  .crt .scanlines {
+    pointer-events: none;
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0.28) 3px,
+      rgba(0,0,0,0.28) 4px
+    );
+    z-index: 4;
+    border-radius: 18px;
+  }
+  /* A single bright scan sweep that drifts down */
+  .crt .scanlines::after {
+    content: "";
+    position: absolute; left: 0; right: 0; height: 90px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, var(--phosphor-faint) 50%, rgba(255,255,255,0) 100%);
+    opacity: 0.5;
+    animation: sweep 7s linear infinite;
+  }
+  @keyframes sweep {
+    0% { top: -90px; }
+    100% { top: 100%; }
+  }
+
+  /* Curvature vignette */
+  .crt .vignette {
+    pointer-events: none;
+    position: absolute; inset: 0;
+    border-radius: 18px;
+    background: radial-gradient(120% 130% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%);
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.7);
+    z-index: 5;
+  }
+
+  /* Flicker (toggleable) */
+  .crt.flicker { animation: crtFlicker 0.14s infinite; }
+  @keyframes crtFlicker {
+    0%   { opacity: 1; }
+    92%  { opacity: 1; }
+    93%  { opacity: 0.86; }
+    94%  { opacity: 1; }
+    97%  { opacity: 0.93; }
+    100% { opacity: 1; }
+  }
+
+  /* Toggle off scanlines / vignette */
+  .crt.no-scan .scanlines { display: none; }
+  .crt.no-curve .vignette { display: none; }
+  .crt.no-curve { border-radius: 8px; }
+  .crt.no-curve .scanlines { border-radius: 8px; }
+
+  .crt .term-content {
+    position: relative; z-index: 3;
+    font-size: 1.35rem;
+    line-height: 1.35;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .crt .prompt-symbol { color: var(--phosphor); opacity: 0.85; }
+
+  .term-cursor {
+    display: inline-block;
+    width: 0.55em; height: 1.05em;
+    background: var(--phosphor);
+    vertical-align: text-bottom;
+    box-shadow: 0 0 7px var(--phosphor-glow);
+    animation: termBlink 1.05s steps(1) infinite;
+  }
+
+  /* Interactive command line */
+  .cli-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .cli-input {
+    flex: 1;
+    min-width: 120px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--phosphor);
+    font-family: 'VT323', 'JetBrains Mono', monospace;
+    font-size: 1.35rem;
+    text-shadow: inherit;
+    caret-color: var(--phosphor);
+  }
+  .cli-output { margin-bottom: 4px; }
+  .cli-output .dim { opacity: 0.7; }
+  .cli-output .err { color: #ff6b5e; text-shadow: 0 0 6px rgba(255,107,94,0.5); }
+  .crt .term-scroll { max-height: 300px; overflow-y: auto; }
+  .crt .term-scroll::-webkit-scrollbar { width: 8px; }
+  .crt .term-scroll::-webkit-scrollbar-thumb { background: var(--phosphor-dim); border-radius: 4px; }
+
+  /* Demo control bar */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    margin-top: 16px;
+  }
+  .ctrl-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+  .ctrl-btn:hover { border-color: var(--accent2); color: #fff; }
+  .ctrl-btn.active {
+    background: rgba(56,225,198,0.14);
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+  .ctrl-hint { font-size: 0.78rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+  .demo-frame { margin-top: 12px; }
+  .demo-caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 10px;
+  }
+
+  /* ASCII art block */
+  .ascii {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.15;
+    color: var(--phosphor);
+    text-shadow: 0 0 4px var(--phosphor-glow);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* Phosphor swatches */
+  .swatches { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 20px; }
+  .swatch {
+    flex: 1; min-width: 200px;
+    border-radius: 12px;
+    padding: 20px;
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    background: #050a05;
+    border: 1px solid #14241a;
+  }
+  .swatch.green { color: #33ff66; text-shadow: 0 0 6px rgba(51,255,102,0.6); background:#050a05; }
+  .swatch.amber { color: #ffb000; text-shadow: 0 0 6px rgba(255,176,0,0.6); background:#0a0703; border-color:#241a05; }
+  .swatch .lbl { display:block; font-family:'JetBrains Mono',monospace; font-size:0.72rem; opacity:0.7; margin-top:8px; letter-spacing:0.1em; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .crt .scanlines::after, .crt.flicker, .term-cursor, header .blink-block { animation: none !important; }
+  }
+
+  @media (max-width: 640px) {
+    .split { grid-template-columns: 1fr; }
+    .crt .term-content, .cli-input { font-size: 1.15rem; }
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <h1>Retro Terminal &amp; CRT</h1>
+  <p class="tagline">Green-phosphor glow, scanlines, and the honest geometry of monospace.<span class="blink-block"></span></p>
+</header>
+
+<div class="container">
+
+  <p class="lead">For three decades the computer <em>was</em> the terminal: a glass tube glowing with monospaced text, one character cell at a time. The <strong>retro terminal aesthetic</strong> revives that look — phosphor green or amber on black, soft scanlines, a curved screen, and a cursor that never stops blinking. Below you'll find the history behind it, the visual principles that make it convincing, and several live, interactive demos you can actually type into.</p>
+
+  <!-- ===================== DEMO 1: TYPEWRITER ===================== -->
+  <section id="demo-typewriter">
+    <div class="section-label">Live Demo 01</div>
+    <h2>The Self-Typing Terminal</h2>
+    <p>A terminal that boots and types itself out, character by character, with a blinking block cursor. The glow, the scanlines, the drifting scan sweep, and the curvature vignette are all pure CSS — the typing is vanilla JavaScript.</p>
+
+    <div class="crt" id="crt1">
+      <div class="term-content" id="typewriter"></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="demo-caption">// Tip: the cursor parks at the end of each line, just like a real VT100 boot sequence.</div>
+  </section>
+
+  <!-- ===================== DEMO 2: INTERACTIVE CLI ===================== -->
+  <section id="demo-cli">
+    <div class="section-label">Live Demo 02</div>
+    <h2>Interactive Command Line</h2>
+    <p>This one is real. Type a command and press <span class="kbd">Enter</span>. Try <code>help</code>, <code>ls</code>, <code>whoami</code>, <code>date</code>, <code>echo hello</code>, <code>banner</code>, or <code>clear</code>. Use the <span class="kbd">↑</span> / <span class="kbd">↓</span> arrows to walk back through your command history.</p>
+
+    <div class="crt" id="crt2">
+      <div class="term-scroll">
+        <div class="term-content" id="cliLog"></div>
+        <div class="term-content cli-line">
+          <span class="prompt-symbol" id="cliPrompt">visitor@crt:~$</span>
+          <input class="cli-input" id="cliInput" autocomplete="off" spellcheck="false" aria-label="terminal command input" placeholder="">
+        </div>
+      </div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="demo-caption">// A tiny in-page shell. No network, no real filesystem — every response is canned and local.</div>
+  </section>
+
+  <!-- ===================== DEMO 3 + 4: CONTROLS ===================== -->
+  <section id="demo-controls">
+    <div class="section-label">Live Demo 03 &amp; 04</div>
+    <h2>Phosphor &amp; CRT Controls</h2>
+    <p>Toggle between the two classic monitor phosphors and switch the CRT artifacts on and off. These controls drive <em>both</em> terminals above and the preview below by flipping CSS custom properties and class names — no page reload, no flicker of the layout.</p>
+
+    <div class="controls">
+      <button class="ctrl-btn active" id="btnGreen" data-color="green">● Green P1</button>
+      <button class="ctrl-btn" id="btnAmber" data-color="amber">● Amber P3</button>
+      <span style="width:1px;height:22px;background:var(--border);"></span>
+      <button class="ctrl-btn active" id="btnScan">Scanlines: ON</button>
+      <button class="ctrl-btn active" id="btnFlicker">Flicker: ON</button>
+      <button class="ctrl-btn active" id="btnCurve">Curvature: ON</button>
+    </div>
+    <div class="ctrl-hint" style="margin-top:10px;">// All toggles apply live to every demo on this page.</div>
+
+    <div class="crt demo-frame" id="crt3">
+      <div class="term-content" style="font-size:1.25rem;">
+<span class="prompt-symbol">crt-preview$</span> render --phosphor=<span id="phLabel">green</span>
+<pre class="ascii" id="asciiArt">   _   _   _   _   _   _   _   _
+  / \ / \ / \ / \ / \ / \ / \ / \
+ ( P | H | O | S | P | H | O | R )
+  \_/ \_/ \_/ \_/ \_/ \_/ \_/ \_/
+
+  [████████████████████░░░░] 84%
+  signal ......... locked
+  refresh ........ 60 Hz
+  persistence .... long
+</pre><span class="prompt-symbol">crt-preview$</span> <span class="term-cursor"></span></div>
+      <div class="scanlines"></div>
+      <div class="vignette"></div>
+    </div>
+
+    <div class="swatches">
+      <div class="swatch green">P1 phosphor — green<span class="lbl">~525 nm · long persistence · the "classic" look</span></div>
+      <div class="swatch amber">P3 phosphor — amber<span class="lbl">~590 nm · easier on the eyes · popular on later monitors</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== HISTORY ===================== -->
+  <section id="history">
+    <div class="section-label">Background</div>
+    <h2>Where the Look Comes From</h2>
+    <p>Before the bitmapped, windowed desktop, most people met a computer through a <strong>video display terminal (VDT)</strong>: a keyboard and a cathode-ray-tube (CRT) screen wired to a distant mainframe or minicomputer. The terminal didn't run programs itself — it sent your keystrokes down the line and painted back whatever characters the host returned.</p>
+
+    <h3>The DEC VT100 and its family</h3>
+    <p>Digital Equipment Corporation's <strong>VT100</strong>, introduced in 1978, became the reference point for the whole genre. It standardized a set of <strong>escape sequences</strong> for moving the cursor, clearing the screen, and styling text — conventions later folded into the ANSI/ECMA terminal standards. Those same sequences still drive your modern terminal emulator today, which is why programs talk to <code>xterm</code> or the macOS Terminal as if they were addressing a VT100. IBM's terminals (the <strong>3270</strong> family for mainframes) and many others coexisted, but the VT-series DNA is what most "retro terminal" UIs are imitating.</p>
+
+    <h3>Green vs. amber phosphor</h3>
+    <p>A monochrome CRT glows in whatever color its <strong>phosphor coating</strong> emits when struck by the electron beam. Early terminals overwhelmingly used <strong>green</strong> phosphor (often the P1 type), because the human eye is most sensitive to green-yellow light, so the same beam energy looked brighter. Later, many manufacturers offered <strong>amber</strong> (P3-style) screens, which a lot of users found more comfortable for long sessions and which were marketed as reducing eye strain. Some monitors also used "paper-white" phosphors. There was never a single mandated standard — green simply came first and amber became the popular alternative, and that pairing is now the visual shorthand for "old computer."</p>
+
+    <h3>Why monospace?</h3>
+    <p>Character-cell terminals had no choice: the screen was a fixed grid of equal-width cells — typically <strong>80 columns by 24 rows</strong> — and each cell held exactly one glyph. <strong>Monospaced</strong> type wasn't a style decision, it was the hardware. That fixed grid is also why so much early computing culture assumes 80-character lines, box-drawing characters, and tables aligned with spaces. The aesthetic inherits all of it: when you reach for a monospace font today, you're reaching for that grid.</p>
+  </section>
+
+  <!-- ===================== PRINCIPLES ===================== -->
+  <section id="principles">
+    <div class="section-label">Visual Language</div>
+    <h2>Core Visual Principles</h2>
+    <p>A convincing CRT look is more than green text on black. A handful of physical artifacts sell the illusion — and overdoing any of them tips into parody.</p>
+
+    <div class="grid">
+      <div class="card">
+        <span class="ico" style="color:var(--phosphor);">✱</span>
+        <h3>Phosphor glow</h3>
+        <p>Text isn't crisp — it bleeds light. A soft text-shadow halo in the phosphor color mimics how excited phosphor blooms beyond each character.</p>
+      </div>
+      <div class="card">
+        <span class="ico" style="color:var(--accent2);">≡</span>
+        <h3>Scanlines</h3>
+        <p>The beam painted the image one horizontal line at a time, leaving faint dark gaps between lines. A subtle repeating gradient recreates them.</p>
+      </div>
+      <div class="card">
+        <span class="ico" style="color:var(--accent);">◠</span>
+        <h3>Curvature &amp; vignette</h3>
+        <p>Real tubes bulged outward and dimmed toward the corners. A radial vignette and slightly rounded frame suggest the curved glass.</p>
+      </div>
+      <div class="card">
+        <span class="ico" style="color:var(--warn);">▮</span>
+        <h3>The block cursor</h3>
+        <p>A solid blinking block — not a thin I-beam — is the signature. It marks where the next character lands on the fixed cell grid.</p>
+      </div>
+      <div class="card">
+        <span class="ico" style="color:var(--phosphor);">≈</span>
+        <h3>Flicker &amp; persistence</h3>
+        <p>Phosphor faded slowly and refresh was imperfect, so brightness wavered. A faint, occasional opacity flicker adds life without nausea.</p>
+      </div>
+      <div class="card">
+        <span class="ico" style="color:var(--accent2);">▤</span>
+        <h3>Monospace grid</h3>
+        <p>Everything aligns to a character cell. Tables, ASCII art, and box-drawing characters lean into the grid rather than fighting it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== WHEN TO USE ===================== -->
+  <section id="usage">
+    <div class="section-label">Application</div>
+    <h2>When to Use It Today</h2>
+    <p>The CRT look is a strong flavor. It carries connotations of hacking, hardware, nostalgia, and "this thing is for people who know what they're doing." That makes it a great fit for some products and a poor one for others.</p>
+
+    <div class="split">
+      <div class="use">
+        <h3>Reach for it when…</h3>
+        <ul class="clean">
+          <li>Building developer tools, CLIs, status dashboards, or DevOps consoles where a terminal metaphor already fits.</li>
+          <li>Designing for games, sci-fi, cyberpunk, or horror — diegetic computer screens love this look.</li>
+          <li>You want an instant nostalgia or "underground/hacker" tone for a landing page, demoscene piece, or portfolio.</li>
+          <li>Content is genuinely text-first and benefits from a calm, monochrome, distraction-free surface.</li>
+        </ul>
+      </div>
+      <div class="avoid">
+        <h3>Be cautious when…</h3>
+        <ul class="clean">
+          <li>The audience is broad or non-technical — the look can read as intimidating or broken.</li>
+          <li>You have dense, image-heavy, or data-visualization content that needs full color.</li>
+          <li>Brand trust matters (banking, healthcare, government) and "retro" undercuts perceived reliability.</li>
+          <li>The effects are decorative only — heavy scanlines and flicker over real UI quickly become fatiguing.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ACCESSIBILITY ===================== -->
+  <section id="accessibility">
+    <div class="section-label">Caveats</div>
+    <h2>Accessibility Caveats</h2>
+    <p>The very artifacts that make CRT styling charming are also the ones most likely to hurt readability. Treat the aesthetic as a skin over an accessible foundation, never a replacement for one.</p>
+
+    <div class="callout">
+      <h3>Things to watch</h3>
+      <p><strong>Motion sensitivity.</strong> Flicker, animated scanlines, and a constantly blinking cursor can trigger discomfort or be distracting. Always respect <code>prefers-reduced-motion</code> and offer a way to turn effects off — this page does both.</p>
+      <p><strong>Contrast &amp; glow.</strong> Glow halos and scanline gaps reduce effective contrast. Saturated green-on-black can also be hard to read at small sizes. Keep body text large, verify it still meets WCAG AA contrast, and don't rely on the glow for legibility.</p>
+      <p><strong>Color alone.</strong> Monochrome phosphor means you can't use color to distinguish states. Convey meaning with text, symbols, position, or weight instead.</p>
+      <p><strong>Real semantics underneath.</strong> A terminal "screen" should still be built from real, focusable, labeled HTML. The interactive demo above uses a genuine <code>&lt;input&gt;</code> with an accessible label, not a styled <code>div</code>.</p>
+      <p><strong>Font rendering.</strong> Pixel and bitmap-style fonts can degrade badly at certain sizes or zoom levels. Test at multiple zoom levels, and consider a cleaner monospace fallback for long-form reading.</p>
+    </div>
+  </section>
+
+  <!-- ===================== TECH NOTE ===================== -->
+  <section id="how">
+    <div class="section-label">Under the Hood</div>
+    <h2>How These Demos Work</h2>
+    <p>Everything on this page is one self-contained file. The glow is a layered <code>text-shadow</code>; scanlines are a <code>repeating-linear-gradient</code> overlay; the drifting sweep and flicker are CSS keyframe animations; the curvature is a <code>radial-gradient</code> vignette plus inset shadow. The typewriter and the command line are short vanilla-JavaScript routines — a queue of characters revealed on a timer, and a tiny canned-response shell with command history. No frameworks, no canvas, no external scripts.</p>
+  </section>
+
+</div>
+
+<footer>
+  Retro Terminal / CRT · UI/UX Design Research Hub · <a href="../index.html">← Back to Hub</a>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============================================================
+     DEMO 1 — Self-typing terminal
+     ============================================================ */
+  var twTarget = document.getElementById("typewriter");
+  var twLines = [
+    { t: "VT-CLAW BIOS v3.1  (c) Open Phosphor Systems", pre: "" },
+    { t: "Memory test ........ 640K OK", pre: "" },
+    { t: "Booting CRT/OS ..... ready", pre: "" },
+    { t: "", pre: "" },
+    { t: "login: visitor", pre: "" },
+    { t: "Last login: a long time ago on tty00", pre: "" },
+    { t: "Welcome to the retro terminal aesthetic.", pre: "visitor@crt:~$ echo ", glow: true },
+    { t: "Type into the demo below to try a live shell.", pre: "visitor@crt:~$ echo ", glow: true }
+  ];
+
+  var twLineIdx = 0, twCharIdx = 0, twBuffer = "";
+  var prefersReduced = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function renderTW(showCursor) {
+    var cursor = showCursor ? '<span class="term-cursor"></span>' : '';
+    twTarget.innerHTML = twBuffer + cursor;
+  }
+
+  function typeStep() {
+    if (twLineIdx >= twLines.length) {
+      renderTW(true);
+      return;
+    }
+    var line = twLines[twLineIdx];
+    var full = line.t;
+
+    if (twCharIdx === 0 && line.pre) {
+      twBuffer += line.pre;
+    }
+    if (twCharIdx < full.length) {
+      twBuffer += full.charAt(twCharIdx);
+      twCharIdx++;
+      renderTW(true);
+      setTimeout(typeStep, 26 + Math.random() * 38);
+    } else {
+      twBuffer += "\n";
+      twLineIdx++;
+      twCharIdx = 0;
+      renderTW(true);
+      setTimeout(typeStep, 320);
+    }
+  }
+
+  if (prefersReduced) {
+    // Show full content immediately, no animation.
+    for (var i = 0; i < twLines.length; i++) {
+      if (twLines[i].pre) twBuffer += twLines[i].pre;
+      twBuffer += twLines[i].t + "\n";
+    }
+    renderTW(true);
+  } else {
+    setTimeout(typeStep, 500);
+  }
+
+  /* ============================================================
+     DEMO 2 — Interactive command line
+     ============================================================ */
+  var cliInput = document.getElementById("cliInput");
+  var cliLog = document.getElementById("cliLog");
+  var cliScroll = cliLog.parentElement;
+  var history = [];
+  var histPos = -1;
+
+  var FILES = ["README.txt", "manifesto.md", "phosphor.cfg", "scanlines/", "bin/", ".profile"];
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function print(html, cls) {
+    var div = document.createElement("div");
+    div.className = "cli-output" + (cls ? " " + cls : "");
+    div.innerHTML = html;
+    cliLog.appendChild(div);
+    cliScroll.scrollTop = cliScroll.scrollHeight;
+  }
+
+  function echoCommand(cmd) {
+    print('<span class="prompt-symbol">visitor@crt:~$</span> ' + esc(cmd));
+  }
+
+  var COMMANDS = {
+    help: function () {
+      print("Available commands:");
+      print('  <span class="dim">help</span> ...... show this list');
+      print('  <span class="dim">ls</span> ........ list files in this fake directory');
+      print('  <span class="dim">whoami</span> .... print the current user');
+      print('  <span class="dim">date</span> ...... show a (decorative) timestamp');
+      print('  <span class="dim">echo X</span> .... print X back to you');
+      print('  <span class="dim">banner</span> .... print some ASCII art');
+      print('  <span class="dim">about</span> ..... what is this thing?');
+      print('  <span class="dim">clear</span> ..... wipe the screen');
+    },
+    ls: function () {
+      print(FILES.join("    "));
+    },
+    dir: function () { COMMANDS.ls(); },
+    whoami: function () {
+      print("visitor");
+    },
+    date: function () {
+      // Decorative only — NOT real time.
+      print('<span class="dim">(decorative)</span> Sat Jan 01 00:00:00 RETRO 1984');
+    },
+    about: function () {
+      print("A tiny in-page shell demonstrating the retro-terminal aesthetic.");
+      print("Every response is canned and local — no network, no real OS.");
+    },
+    banner: function () {
+      print(
+        "  ___ ___ _____ \n" +
+        " / __| _ \\_   _|\n" +
+        "| (__|   / | |  \n" +
+        " \\___|_|_\\ |_|  "
+      );
+    },
+    clear: function () {
+      cliLog.innerHTML = "";
+    },
+    cls: function () { COMMANDS.clear(); }
+  };
+
+  function runCommand(raw) {
+    var cmd = raw.trim();
+    if (cmd === "") return;
+    echoCommand(cmd);
+    history.push(cmd);
+    histPos = history.length;
+
+    var parts = cmd.split(/\s+/);
+    var name = parts[0].toLowerCase();
+    var args = parts.slice(1).join(" ");
+
+    if (name === "echo") {
+      print(esc(args));
+      return;
+    }
+    if (COMMANDS.hasOwnProperty(name)) {
+      COMMANDS[name]();
+      return;
+    }
+    print('command not found: ' + esc(name) + '  (try <span class="dim">help</span>)', "err");
+  }
+
+  cliInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      var val = cliInput.value;
+      cliInput.value = "";
+      runCommand(val);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (history.length === 0) return;
+      histPos = Math.max(0, histPos - 1);
+      cliInput.value = history[histPos] || "";
+      // move caret to end
+      var v = cliInput.value; cliInput.value = ""; cliInput.value = v;
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (history.length === 0) return;
+      histPos = Math.min(history.length, histPos + 1);
+      cliInput.value = histPos === history.length ? "" : (history[histPos] || "");
+    }
+  });
+
+  // Greet the user, then focus the input (without yanking the page scroll).
+  print('Type <span class="dim">help</span> and press Enter to begin.');
+  var crt2 = document.getElementById("crt2");
+  crt2.addEventListener("click", function () { cliInput.focus(); });
+
+  /* ============================================================
+     DEMO 3 & 4 — Phosphor + CRT controls
+     ============================================================ */
+  var crtEls = Array.prototype.slice.call(document.querySelectorAll(".crt"));
+  var btnGreen = document.getElementById("btnGreen");
+  var btnAmber = document.getElementById("btnAmber");
+  var btnScan = document.getElementById("btnScan");
+  var btnFlicker = document.getElementById("btnFlicker");
+  var btnCurve = document.getElementById("btnCurve");
+  var phLabel = document.getElementById("phLabel");
+
+  function setColor(color) {
+    var amber = color === "amber";
+    crtEls.forEach(function (el) { el.classList.toggle("amber", amber); });
+    // Also apply to standalone swatches container? swatches keep fixed colors by design.
+    btnGreen.classList.toggle("active", !amber);
+    btnAmber.classList.toggle("active", amber);
+    if (phLabel) phLabel.textContent = amber ? "amber" : "green";
+  }
+
+  btnGreen.addEventListener("click", function () { setColor("green"); });
+  btnAmber.addEventListener("click", function () { setColor("amber"); });
+
+  // Flicker is ON by default visually; reflect that in classes.
+  if (!prefersReduced) {
+    crtEls.forEach(function (el) { el.classList.add("flicker"); });
+  } else {
+    btnFlicker.classList.remove("active");
+    btnFlicker.textContent = "Flicker: OFF";
+  }
+
+  function toggleClassAll(cls, on) {
+    crtEls.forEach(function (el) { el.classList.toggle(cls, !on); });
+  }
+
+  btnScan.addEventListener("click", function () {
+    var on = !btnScan.classList.contains("active");
+    btnScan.classList.toggle("active", on);
+    btnScan.textContent = "Scanlines: " + (on ? "ON" : "OFF");
+    toggleClassAll("no-scan", on);
+  });
+
+  btnFlicker.addEventListener("click", function () {
+    var on = !btnFlicker.classList.contains("active");
+    btnFlicker.classList.toggle("active", on);
+    btnFlicker.textContent = "Flicker: " + (on ? "ON" : "OFF");
+    crtEls.forEach(function (el) { el.classList.toggle("flicker", on); });
+  });
+
+  btnCurve.addEventListener("click", function () {
+    var on = !btnCurve.classList.contains("active");
+    btnCurve.classList.toggle("active", on);
+    btnCurve.textContent = "Curvature: " + (on ? "ON" : "OFF");
+    toggleClassAll("no-curve", on);
+  });
+})();
+</script>
+</body>
+</html>

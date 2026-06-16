@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaporwave / Synthwave / Outrun — UI/UX Design Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ---- Dark page chrome (matches hub) ---- */
+    --bg: #0a0a12;
+    --surface: #14141f;
+    --surface2: #1d1d2c;
+    --border: #2a2a3e;
+    --text: #e6e6f0;
+    --text-dim: #8b8fa3;
+    --accent: #7aa2ff;
+
+    /* ---- Vaporwave demo palette ---- */
+    --vw-magenta: #ff2e97;
+    --vw-pink:    #ff6ad5;
+    --vw-cyan:    #05d9e8;
+    --vw-blue:    #2d4dff;
+    --vw-purple:  #b14aed;
+    --vw-violet:  #6a00f4;
+    --vw-sun1:    #ff5f6d;
+    --vw-sun2:    #ffc371;
+    --vw-deep:    #1a0033;
+    --vw-night:   #0d0221;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  code, kbd, .mono { font-family: 'JetBrains Mono', monospace; }
+  .display { font-family: 'Orbitron', sans-serif; }
+
+  /* ---- Faint global scanlines for ambiance ---- */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.015) 0px,
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  a { color: var(--accent); }
+
+  /* ---------- Back link ---------- */
+  .back-link {
+    display: inline-block;
+    margin: 20px 0 0 20px;
+    padding: 8px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .back-link:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    transform: translateX(-3px);
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    text-align: center;
+    padding: 64px 20px 52px;
+    position: relative;
+    background:
+      radial-gradient(circle at 30% 0%, rgba(255,46,151,0.16), transparent 55%),
+      radial-gradient(circle at 75% 30%, rgba(5,217,232,0.14), transparent 55%),
+      radial-gradient(circle at 50% 90%, rgba(177,74,237,0.12), transparent 65%);
+  }
+
+  header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.3rem, 6.5vw, 4.4rem);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+    background: linear-gradient(100deg, #ff2e97 0%, #b14aed 38%, #05d9e8 78%, #a8f0ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 40px rgba(255,46,151,0.25);
+    margin-bottom: 8px;
+  }
+  header .jp {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(0.9rem, 2.4vw, 1.25rem);
+    letter-spacing: 0.5em;
+    color: var(--vw-cyan);
+    text-shadow: 0 0 16px rgba(5,217,232,0.5);
+    margin-bottom: 18px;
+    opacity: 0.85;
+  }
+  header .tagline {
+    color: var(--text-dim);
+    font-size: 1.13rem;
+    max-width: 660px;
+    margin: 0 auto 22px;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(5,217,232,0.1);
+    border: 1px solid rgba(5,217,232,0.4);
+    color: var(--vw-cyan);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 3px;
+  }
+  .pill.pink   { background: rgba(255,46,151,0.1); border-color: rgba(255,46,151,0.4); color: var(--vw-pink); }
+  .pill.purple { background: rgba(177,74,237,0.12); border-color: rgba(177,74,237,0.45); color: var(--vw-purple); }
+
+  /* ---------- Layout ---------- */
+  .container { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+  section {
+    padding: 54px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  h2 .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: var(--vw-pink);
+    margin-right: 10px;
+    vertical-align: 2px;
+  }
+  h3 { font-size: 1.2rem; margin: 22px 0 8px; color: var(--text); }
+  p { color: #c8c8da; margin-bottom: 14px; }
+  p.lead { font-size: 1.08rem; }
+  .dim { color: var(--text-dim); }
+  ul, ol { margin: 0 0 14px 22px; color: #c8c8da; }
+  li { margin-bottom: 7px; }
+  strong { color: var(--text); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+  .card h3 { margin-top: 0; }
+
+  .demo-wrap {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--vw-night);
+    position: relative;
+  }
+  .demo-label {
+    position: absolute;
+    top: 12px; left: 14px;
+    z-index: 6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--vw-cyan);
+    background: rgba(13,2,33,0.6);
+    border: 1px solid rgba(5,217,232,0.3);
+    padding: 4px 10px;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+  }
+
+  /* ====================================================
+     DEMO 1 — Infinite perspective neon grid + sun
+     ==================================================== */
+  .scene {
+    position: relative;
+    height: 420px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1a0b3a 0%, #3a1066 38%, #7a1f6b 62%, #ff4d6d 100%);
+  }
+  /* starfield */
+  .scene .stars {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+      radial-gradient(1px 1px at 120px 80px, #cdebff, transparent),
+      radial-gradient(1px 1px at 220px 50px, #fff, transparent),
+      radial-gradient(1px 1px at 320px 110px, #ffd6f5, transparent),
+      radial-gradient(1px 1px at 420px 40px, #fff, transparent),
+      radial-gradient(1px 1px at 520px 90px, #cdebff, transparent),
+      radial-gradient(1px 1px at 640px 30px, #fff, transparent),
+      radial-gradient(1px 1px at 740px 120px, #fff, transparent),
+      radial-gradient(1px 1px at 80px 140px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 800px 200px;
+    opacity: 0.7;
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: 0.35; } to { opacity: 0.8; } }
+
+  /* sun */
+  .scene .sun {
+    position: absolute;
+    left: 50%;
+    bottom: 47%;
+    transform: translateX(-50%);
+    width: 230px; height: 230px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ffe53b 0%, #ff5f6d 55%, #b14aed 100%);
+    box-shadow: 0 0 80px 20px rgba(255,95,109,0.55), 0 0 140px 40px rgba(177,74,237,0.35);
+    overflow: hidden;
+    z-index: 2;
+  }
+  /* sun scanline gaps */
+  .scene .sun::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0; right: 0;
+    height: 60%;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 7px,
+      var(--vw-night) 7px, var(--vw-night) 11px
+    );
+    -webkit-mask-image: linear-gradient(to top, #000 30%, transparent 100%);
+    mask-image: linear-gradient(to top, #000 30%, transparent 100%);
+  }
+
+  /* horizon glow line */
+  .scene .horizon {
+    position: absolute;
+    left: 0; right: 0;
+    top: 53%;
+    height: 2px;
+    background: var(--vw-cyan);
+    box-shadow: 0 0 12px 3px var(--vw-cyan), 0 0 30px 8px rgba(5,217,232,0.5);
+    z-index: 3;
+  }
+
+  /* moving grid floor */
+  .scene .grid {
+    position: absolute;
+    left: -50%;
+    right: -50%;
+    bottom: 0;
+    top: 53%;
+    background-image:
+      linear-gradient(to right, rgba(5,217,232,0.55) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,46,151,0.6) 1px, transparent 1px);
+    background-size: 56px 56px;
+    transform: perspective(340px) rotateX(74deg);
+    transform-origin: top center;
+    animation: gridMove 1.6s linear infinite;
+  }
+  @keyframes gridMove {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 0 0, 0 56px; }
+  }
+  .scene .floorfade {
+    position: absolute;
+    left: 0; right: 0; bottom: 0; top: 53%;
+    background: linear-gradient(to bottom, rgba(13,2,33,0.55) 0%, transparent 30%);
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .scene-controls {
+    position: absolute;
+    bottom: 12px; right: 14px;
+    z-index: 7;
+    display: flex; gap: 8px;
+  }
+  .vw-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: var(--vw-cyan);
+    background: rgba(13,2,33,0.65);
+    border: 1px solid rgba(5,217,232,0.45);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-transform: uppercase;
+  }
+  .vw-btn:hover { background: rgba(5,217,232,0.18); box-shadow: 0 0 14px rgba(5,217,232,0.4); }
+
+  /* ====================================================
+     DEMO 2 — Glitch text
+     ==================================================== */
+  .glitch-stage {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 220px;
+    background:
+      radial-gradient(circle at 50% 120%, rgba(177,74,237,0.4), transparent 60%),
+      var(--vw-night);
+  }
+  .glitch {
+    position: relative;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.2rem, 8vw, 4.5rem);
+    letter-spacing: 0.05em;
+    color: #f6f1ff;
+    text-shadow: 0 0 18px rgba(255,46,151,0.45);
+    cursor: pointer;
+    user-select: none;
+  }
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+  .glitch::before {
+    color: var(--vw-cyan);
+    z-index: -1;
+    animation: glitchA 2.6s infinite linear alternate-reverse;
+  }
+  .glitch::after {
+    color: var(--vw-magenta);
+    z-index: -2;
+    animation: glitchB 2s infinite linear alternate-reverse;
+  }
+  .glitch.active::before { animation-duration: 0.5s; }
+  .glitch.active::after  { animation-duration: 0.4s; }
+
+  @keyframes glitchA {
+    0%   { clip-path: inset(10% 0 85% 0); transform: translate(-3px,-2px); }
+    20%  { clip-path: inset(80% 0 5% 0);  transform: translate(3px,2px); }
+    40%  { clip-path: inset(40% 0 40% 0); transform: translate(-2px,1px); }
+    60%  { clip-path: inset(20% 0 65% 0); transform: translate(2px,-1px); }
+    80%  { clip-path: inset(60% 0 20% 0); transform: translate(-3px,2px); }
+    100% { clip-path: inset(5% 0 90% 0);  transform: translate(3px,-2px); }
+  }
+  @keyframes glitchB {
+    0%   { clip-path: inset(70% 0 15% 0); transform: translate(3px,2px); }
+    25%  { clip-path: inset(15% 0 75% 0); transform: translate(-3px,-1px); }
+    50%  { clip-path: inset(55% 0 30% 0); transform: translate(2px,1px); }
+    75%  { clip-path: inset(30% 0 55% 0); transform: translate(-2px,-2px); }
+    100% { clip-path: inset(85% 0 5% 0);  transform: translate(3px,1px); }
+  }
+  .glitch-hint {
+    position: absolute;
+    bottom: 14px; left: 0; right: 0;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  /* ====================================================
+     DEMO 3 — Chrome / glossy text
+     ==================================================== */
+  .chrome-stage {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 200px;
+    background:
+      linear-gradient(180deg, #20023d 0%, #3a0a5e 100%);
+  }
+  .chrome {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.4rem, 9vw, 5rem);
+    letter-spacing: 0.03em;
+    background: linear-gradient(
+      180deg,
+      #fff 0%,
+      #d6e6ff 18%,
+      #8aa9d6 38%,
+      #2a3a6a 50%,
+      #c98bff 60%,
+      #ff8fd6 78%,
+      #fff 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 0 rgba(0,0,0,0.4)) drop-shadow(0 0 22px rgba(255,143,214,0.4));
+  }
+
+  /* ====================================================
+     DEMO 4 — Palette swatches
+     ==================================================== */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 14px;
+  }
+  .swatch {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    background: var(--surface);
+  }
+  .swatch:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .swatch:focus-visible { outline: 2px solid var(--vw-cyan); outline-offset: 2px; }
+  .swatch .chip { height: 78px; }
+  .swatch .meta { padding: 9px 11px; }
+  .swatch .name { font-size: 0.78rem; font-weight: 600; color: var(--text); }
+  .swatch .hex {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.03em;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: linear-gradient(100deg, var(--vw-magenta), var(--vw-purple));
+    color: #fff;
+    padding: 11px 22px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    box-shadow: 0 8px 30px rgba(255,46,151,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 10000;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* small inline katakana accent */
+  .kata { font-family: 'Orbitron', sans-serif; color: var(--vw-cyan); letter-spacing: 0.3em; }
+
+  .callout {
+    background: linear-gradient(100deg, rgba(255,46,151,0.08), rgba(5,217,232,0.06));
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--vw-pink);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 18px 0;
+  }
+  .callout strong { color: var(--vw-pink); }
+
+  table.pal {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 4px;
+    font-size: 0.9rem;
+  }
+  table.pal th, table.pal td {
+    text-align: left;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.pal th { color: var(--vw-cyan); font-weight: 600; }
+  table.pal td.mono { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    text-align: center;
+    padding: 50px 24px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+  footer a { color: var(--vw-pink); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene .grid, .scene .stars,
+    .glitch::before, .glitch::after { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <div class="jp">ヴェイパーウェイヴ</div>
+  <h1>VAPORWAVE</h1>
+  <p class="tagline">Neon sunsets, infinite chrome horizons, and the bittersweet nostalgia of a future the 1980s imagined but never arrived. Synthwave, Outrun, and the digital ruins of mall-era retrofuturism.</p>
+  <div>
+    <span class="pill pink">Aesthetic Movement</span>
+    <span class="pill">Retrofuturism</span>
+    <span class="pill purple">2010s Internet</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ============ ORIGINS ============ -->
+  <section id="origins">
+    <h2><span class="num">01</span>From Music Genre to Visual Aesthetic</h2>
+    <p class="lead">Vaporwave began around 2010–2012 not as a design style but as a <strong>microgenre of electronic music</strong>. Producers slowed down, chopped, and looped 1980s smooth jazz, corporate muzak, lounge, and early-90s R&amp;B into hazy, dreamlike collages. The music was a wry commentary on consumer capitalism and digital nostalgia, and the cover art that grew up around it became one of the most recognizable internet aesthetics of the decade.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>The seminal touchstones</h3>
+        <p>Two works are widely credited with crystallizing the sound and look. <strong>Macintosh Plus — <em>Floral Shoppe</em></strong> (Vektroid, 2011), with its pink bust of Helios against a checkerboard floor, became the genre's defining album cover. <strong>James Ferraro's <em>Far Side Virtual</em></strong> (2011) explored the soundscape of ringtones, startup chimes, and corporate optimism.</p>
+      </div>
+      <div class="card">
+        <h3>Why it resonated</h3>
+        <p>Vaporwave traffics in <strong>retrofuturism</strong>: the gleaming, optimistic future promised by 1980s technology advertising, viewed through the melancholy of knowing it never materialized as imagined. It mixes irony with genuine longing — a feeling sometimes called <em>anemoia</em>, nostalgia for a time you never actually lived through.</p>
+      </div>
+    </div>
+
+    <h3>Outrun &amp; Synthwave — the neon cousins</h3>
+    <p>Closely related visual languages emerged in parallel. <strong>Synthwave</strong> (also called retrowave) is a music and art style that earnestly celebrates 1980s synth-pop, film scores, and arcade culture. <strong>Outrun</strong> — named after Sega's 1986 arcade racer — narrows this to a specific palette: a chrome sun setting over a magenta-and-cyan grid that races toward the horizon. Where vaporwave is ironic and decayed, synthwave/outrun is sincere and triumphant. In modern usage the terms blur together, sharing neon, gradients, and that endless perspective grid.</p>
+
+    <div class="callout">
+      <p style="margin:0;"><strong>Quick distinction.</strong> <em>Vaporwave</em> = ironic, glitchy, consumer-collage nostalgia (statues, Windows 95, Japanese ad copy). <em>Synthwave / Outrun</em> = earnest neon-noir celebration of 80s arcades and night-drive cinema (grids, sunsets, sports cars). They borrow freely from each other.</p>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 1: GRID ============ -->
+  <section id="grid-demo">
+    <h2><span class="num">02</span>The Infinite Perspective Grid</h2>
+    <p>No element says "Outrun" more than a glowing wireframe floor racing toward a chrome sun on the horizon. It descends from early 3D vector graphics and racing games, where a perspective-projected grid was the cheapest way to convey motion and depth. The grid below is pure CSS — a flat plane rotated in 3D with an animated background offset that scrolls the lines endlessly toward you.</p>
+
+    <div class="demo-wrap">
+      <div class="demo-label">Demo 01 · Live perspective grid</div>
+      <div class="scene" id="scene">
+        <div class="stars"></div>
+        <div class="sun"></div>
+        <div class="horizon"></div>
+        <div class="grid" id="grid"></div>
+        <div class="floorfade"></div>
+        <div class="scene-controls">
+          <button class="vw-btn" id="speedBtn" type="button">Speed: 1x</button>
+          <button class="vw-btn" id="pauseBtn" type="button">Pause</button>
+        </div>
+      </div>
+    </div>
+    <p class="dim" style="font-size:0.85rem;margin-top:10px;">The floor is a single element with two repeating linear-gradients (cyan verticals, magenta horizontals) tilted ~74° in perspective; only the <code>background-position</code> animates, which keeps it smooth and GPU-cheap.</p>
+  </section>
+
+  <!-- ============ CORE ELEMENTS ============ -->
+  <section id="elements">
+    <h2><span class="num">03</span>Core Visual Elements</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Neon palette</h3>
+        <p>Saturated magenta, hot pink, electric cyan, and deep purple, almost always over a dark or sunset-gradient ground. High chroma against dark space creates the signature "glow."</p>
+      </div>
+      <div class="card">
+        <h3>Sunset gradients</h3>
+        <p>Vertical blends from gold/peach through coral to violet evoke a perpetual 80s sunset. The sun is often a striped disc — solid on top, gapped scanlines below.</p>
+      </div>
+      <div class="card">
+        <h3>Chrome &amp; glossy type</h3>
+        <p>Metallic, beveled, airbrushed letterforms with reflective vertical gradients — borrowed from 80s logos, hair-metal album art, and early Photoshop chrome filters.</p>
+      </div>
+      <div class="card">
+        <h3>Glitch &amp; datamosh</h3>
+        <p>RGB channel splits, scanlines, VHS tracking errors, and corrupted JPEG artifacts signal digital decay — the "ware" rotting away.</p>
+      </div>
+      <div class="card">
+        <h3>Greco-Roman statues</h3>
+        <p>Marble busts (Helios, Venus, David) juxtaposed with neon and tech imagery — high classical culture flattened into consumer kitsch.</p>
+      </div>
+      <div class="card">
+        <h3>Japanese katakana <span class="kata">アイ</span></h3>
+        <p>1980s Japan was the epitome of techno-optimism, so Japanese text — often ad copy or product names — became visual shorthand for that imagined future.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:26px;">Other recurring motifs</h3>
+    <ul>
+      <li><strong>Checkerboard floors</strong> stretching to a vanishing point (the <em>Floral Shoppe</em> cover).</li>
+      <li><strong>Early computing UI</strong> — Windows 95 chrome, Mac OS dialogs, dolphins, palm trees, and CRT distortion.</li>
+      <li><strong>Roman/Doric columns, dolphins, tropical plants</strong> and other "mall plaza" decor.</li>
+      <li><strong>Wordmarks rendered with wide letter-spacing</strong>, sometimes spaced out as <span class="mono">A&nbsp;E&nbsp;S&nbsp;T&nbsp;H&nbsp;E&nbsp;T&nbsp;I&nbsp;C</span>.</li>
+    </ul>
+  </section>
+
+  <!-- ============ DEMO 2: GLITCH ============ -->
+  <section id="glitch-demo">
+    <h2><span class="num">04</span>Glitch Text</h2>
+    <p>The glitch effect layers two duplicate copies of the text — one tinted cyan, one magenta — and animates them with offset clip-paths and small translations. The result reads as an RGB-split channel error, the kind of artifact you'd see on a degraded VHS or a corrupted display. Hover or tap the word to intensify it.</p>
+
+    <div class="demo-wrap">
+      <div class="demo-label">Demo 02 · RGB-split glitch (hover / tap)</div>
+      <div class="glitch-stage">
+        <div class="glitch display" id="glitch" data-text="SIGNAL">SIGNAL</div>
+        <div class="glitch-hint">hover or tap to amplify</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 3: CHROME ============ -->
+  <section id="chrome-demo">
+    <h2><span class="num">05</span>Chrome / Glossy Type</h2>
+    <p>Chrome lettering fakes a reflective metal surface using a vertical gradient: bright highlight at top, a dark "horizon" band across the middle (the reflected ground meeting sky), then a colored under-glow. A subtle drop shadow grounds it. This sample is a single heading with a multi-stop <code>background-clip: text</code> gradient — no images.</p>
+
+    <div class="demo-wrap">
+      <div class="demo-label">Demo 03 · CSS chrome gradient text</div>
+      <div class="chrome-stage">
+        <div class="chrome display">OUTRUN</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO 4: PALETTE ============ -->
+  <section id="palette-demo">
+    <h2><span class="num">06</span>The Signature Palette</h2>
+    <p>Click any swatch to copy its hex code. These high-chroma neons live against near-black or deep-violet backgrounds; the contrast against darkness is what produces the glow. Use them as <em>accents and light sources</em>, not as page backgrounds.</p>
+
+    <div class="demo-wrap" style="background:transparent;border:none;">
+      <div class="swatches" id="swatches"></div>
+    </div>
+
+    <table class="pal">
+      <thead><tr><th>Role</th><th>Hex</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Primary neon (magenta/pink)</td><td class="mono">#FF2E97</td><td>Hot signal pink — the dominant accent</td></tr>
+        <tr><td>Secondary neon (cyan)</td><td class="mono">#05D9E8</td><td>Electric cyan — grids, glow lines, links</td></tr>
+        <tr><td>Tertiary (purple/violet)</td><td class="mono">#B14AED</td><td>Mid-ground haze and gradients</td></tr>
+        <tr><td>Sunset warm</td><td class="mono">#FFC371</td><td>Top of the sun / gradient highlight</td></tr>
+        <tr><td>Sunset coral</td><td class="mono">#FF5F6D</td><td>Mid sunset band</td></tr>
+        <tr><td>Night ground</td><td class="mono">#0D0221</td><td>Deep violet-black canvas</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ APPLYING IT ============ -->
+  <section id="apply">
+    <h2><span class="num">07</span>Applying It Tastefully in Modern UI</h2>
+    <p>Full vaporwave is a maximalist mood, but its devices can be borrowed carefully for landing pages, music/gaming products, dev tools, and event sites. The trick is restraint — pick one or two signature moves and keep the rest of the interface calm and legible.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Do</h3>
+        <ul style="margin-bottom:0;">
+          <li>Use neon as <strong>accent and glow</strong> over dark, near-black surfaces.</li>
+          <li>Reserve the grid/sunset for <strong>hero sections</strong> or backgrounds behind large type.</li>
+          <li>Keep body copy in a clean sans (Inter, system UI) at normal contrast.</li>
+          <li>Add motion sparingly — one scrolling grid or one glitch heading, not five.</li>
+          <li>Respect <code>prefers-reduced-motion</code> and pause heavy animation.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Don't</h3>
+        <ul style="margin-bottom:0;">
+          <li>Set long paragraphs in chrome or glitch styling — they become unreadable.</li>
+          <li>Stack neon-on-neon; you lose all contrast and the glow effect.</li>
+          <li>Letter-space functional UI labels into <span class="mono">A E S T H E T I C</span>.</li>
+          <li>Use katakana or Japanese text you can't read or verify — it risks gibberish or worse.</li>
+          <li>Animate everything at once; constant motion exhausts and distracts.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Where it works well</h3>
+    <p>Synthwave/outrun styling fits products and content with a built-in nostalgic or nightlife tone: indie game storefronts, synthwave musicians and labels, retro-tech merch, hackathon and demoscene sites, and seasonal hero treatments. It rewards <strong>dark mode</strong> by default and pairs naturally with monospaced accents for a "terminal-meets-arcade" feel.</p>
+  </section>
+
+  <!-- ============ PITFALLS ============ -->
+  <section id="pitfalls">
+    <h2><span class="num">08</span>Pitfalls &amp; Accessibility</h2>
+    <div class="callout">
+      <p style="margin:0;"><strong>Legibility is the first casualty.</strong> Neon-on-dark glow, glitch jitter, and metallic gradients all reduce text contrast. Run real text through a contrast checker (WCAG AA needs 4.5:1 for body text) and never apply decorative treatments to content users must actually read.</p>
+    </div>
+    <ul>
+      <li><strong>Motion sensitivity.</strong> Scrolling grids and rapid glitch flicker can trigger discomfort or vestibular issues. Always honor <code>prefers-reduced-motion</code> and avoid strobing.</li>
+      <li><strong>Overuse fatigue.</strong> The aesthetic is intense by design. When every element glows and moves, nothing stands out and the page feels exhausting. Treat neon as a spotlight, not ambient light.</li>
+      <li><strong>Cultural shorthand.</strong> Katakana, statues, and "Japanese ad copy" are often used decoratively without meaning. Don't paste text you can't verify; mojibake or unintended words read as careless.</li>
+      <li><strong>Cliché creep.</strong> The chrome-sun-over-grid is now a visual cliché. Lean on the underlying ideas — depth, glow, gradient, nostalgia — rather than copying the exact <em>Floral Shoppe</em> composition.</li>
+      <li><strong>Performance.</strong> Stacked blurs, box-shadow glows, and large animated gradients can cost frames on low-end devices. Prefer transform/opacity animations and test on real hardware.</li>
+    </ul>
+    <p class="dim" style="font-size:0.9rem;">Used with discipline, the aesthetic delivers a strong emotional hit — warmth, nostalgia, and night-drive cool — with a handful of well-placed effects. Used without it, it becomes an unreadable neon soup.</p>
+  </section>
+
+</div>
+
+<footer>
+  Part of the <a href="../index.html">UI/UX Design Research</a> hub &middot; Vaporwave / Synthwave / Outrun &middot; 2010s internet aesthetic &middot; <span class="kata">アエスセティック</span>
+</footer>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+(function () {
+  "use strict";
+
+  function ready(fn) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", fn);
+    } else {
+      fn();
+    }
+  }
+
+  ready(function () {
+
+    /* ---------- Demo 1: grid speed / pause ---------- */
+    var grid = document.getElementById("grid");
+    var speedBtn = document.getElementById("speedBtn");
+    var pauseBtn = document.getElementById("pauseBtn");
+    var speeds = [1, 2, 0.5];
+    var baseDuration = 1.6; // seconds at 1x
+    var speedIdx = 0;
+    var paused = false;
+
+    function applyGrid() {
+      if (!grid) return;
+      var mult = speeds[speedIdx];
+      grid.style.animationDuration = (baseDuration / mult) + "s";
+      grid.style.animationPlayState = paused ? "paused" : "running";
+    }
+
+    if (speedBtn) {
+      speedBtn.addEventListener("click", function () {
+        speedIdx = (speedIdx + 1) % speeds.length;
+        speedBtn.textContent = "Speed: " + speeds[speedIdx] + "x";
+        applyGrid();
+      });
+    }
+    if (pauseBtn) {
+      pauseBtn.addEventListener("click", function () {
+        paused = !paused;
+        pauseBtn.textContent = paused ? "Play" : "Pause";
+        applyGrid();
+      });
+    }
+    applyGrid();
+
+    /* ---------- Demo 2: glitch amplify on hover/tap ---------- */
+    var glitch = document.getElementById("glitch");
+    if (glitch) {
+      glitch.addEventListener("mouseenter", function () { glitch.classList.add("active"); });
+      glitch.addEventListener("mouseleave", function () { glitch.classList.remove("active"); });
+      glitch.addEventListener("click", function () {
+        glitch.classList.add("active");
+        setTimeout(function () { glitch.classList.remove("active"); }, 900);
+      });
+      /* occasional auto-trigger so it feels alive */
+      setInterval(function () {
+        glitch.classList.add("active");
+        setTimeout(function () { glitch.classList.remove("active"); }, 420);
+      }, 5200);
+    }
+
+    /* ---------- Demo 4: palette swatches + copy ---------- */
+    var palette = [
+      { name: "Signal Pink",  hex: "#FF2E97" },
+      { name: "Hot Magenta",  hex: "#FF6AD5" },
+      { name: "Electric Cyan",hex: "#05D9E8" },
+      { name: "Outrun Blue",  hex: "#2D4DFF" },
+      { name: "Neon Purple",  hex: "#B14AED" },
+      { name: "Deep Violet",  hex: "#6A00F4" },
+      { name: "Sunset Coral", hex: "#FF5F6D" },
+      { name: "Sun Gold",     hex: "#FFC371" }
+    ];
+
+    var swatchHost = document.getElementById("swatches");
+    var toast = document.getElementById("toast");
+    var toastTimer = null;
+
+    function showToast(msg) {
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 1400);
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { showToast("Copied " + text); },
+          function () { fallbackCopy(text); }
+        );
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "absolute";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast(ok ? "Copied " + text : "Copy failed — " + text);
+      } catch (e) {
+        showToast("Copy this: " + text);
+      }
+    }
+
+    if (swatchHost) {
+      palette.forEach(function (c) {
+        var el = document.createElement("button");
+        el.type = "button";
+        el.className = "swatch";
+        el.setAttribute("aria-label", "Copy " + c.name + " " + c.hex);
+        el.innerHTML =
+          '<div class="chip" style="background:' + c.hex + ';box-shadow:inset 0 0 30px rgba(0,0,0,0.25);"></div>' +
+          '<div class="meta"><div class="name">' + c.name + '</div>' +
+          '<div class="hex">' + c.hex + '</div></div>';
+        el.addEventListener("click", function () { copyText(c.hex); });
+        swatchHost.appendChild(el);
+      });
+    }
+
+  });
+})();
+</script>
+
+</body>
+</html>

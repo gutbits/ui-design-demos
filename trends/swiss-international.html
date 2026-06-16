@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss Style / International Typographic Style — UI Design Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ---- DARK PAGE CHROME (matches hub) ---- */
+    --bg: #0a0a12;
+    --surface: #14141f;
+    --surface2: #1d1d2c;
+    --border: #2a2a3e;
+    --text: #e6e6f0;
+    --text-dim: #8b8fa3;
+    --accent: #e23a2e;      /* Swiss red */
+    --accent2: #f0c419;     /* warm signal */
+    --warn: #ffb86c;
+    --radius: 16px;
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    /* ---- AUTHENTIC SWISS DEMO PALETTE (light) ---- */
+    --paper: #f4f3ef;
+    --ink: #111111;
+    --red: #e2231a;
+    --rule: #d6d4cc;
+    --gridline: rgba(226, 35, 26, 0.28);
+    --baseline: rgba(17, 17, 17, 0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ---- BACK LINK ---- */
+  .back-link {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 9px 16px;
+    border-radius: 12px;
+    transition: border-color 0.25s var(--ease), transform 0.25s var(--ease), background 0.25s var(--ease);
+  }
+  .back-link::before { content: "←"; font-size: 15px; color: var(--accent); }
+  .back-link:hover {
+    border-color: var(--accent);
+    background: var(--surface);
+    transform: translateX(-2px);
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    position: relative;
+    text-align: center;
+    padding: 130px 24px 72px;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(90deg, rgba(226, 35, 26, 0.06) 1px, transparent 1px),
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 56px 56px, 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 75% at 50% 0%, #000 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 75% at 50% 0%, #000 0%, transparent 72%);
+    pointer-events: none;
+  }
+  header > * { position: relative; z-index: 1; }
+
+  .pill {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: rgba(226, 35, 26, 0.12);
+    border: 1px solid rgba(226, 35, 26, 0.4);
+    color: #ff6a5f;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+
+  header h1 {
+    font-family: 'Archivo', 'Inter', sans-serif;
+    font-size: clamp(2.5rem, 7.5vw, 4.8rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    color: #fff;
+  }
+  header h1 .red { color: var(--accent); }
+
+  header .tagline {
+    color: var(--text-dim);
+    font-size: clamp(1rem, 2.2vw, 1.22rem);
+    font-weight: 300;
+    margin-top: 20px;
+    max-width: 660px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ---- CONTAINER + SECTIONS ---- */
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  section {
+    padding: 70px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 10px;
+  }
+  section h2 {
+    font-family: 'Archivo', 'Inter', sans-serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 8px;
+  }
+  section .subtitle {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    font-weight: 300;
+    margin-bottom: 34px;
+    max-width: 740px;
+  }
+
+  p.body { color: var(--text-dim); font-size: 1rem; margin-bottom: 16px; max-width: 760px; }
+  p.body strong { color: var(--text); font-weight: 600; }
+  p.body em { color: #c7cad9; font-style: italic; }
+
+  /* ---- CARDS ---- */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
+  .card h3 .em { color: var(--accent); }
+  .card p { color: var(--text-dim); font-size: 0.94rem; }
+  .card ul { list-style: none; margin-top: 10px; }
+  .card li { color: var(--text-dim); font-size: 0.92rem; padding-left: 20px; position: relative; margin-bottom: 7px; }
+  .card li::before { content: "—"; position: absolute; left: 0; color: var(--accent); }
+
+  a.link { color: #ff6a5f; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+  a.link:hover { border-bottom-color: #ff6a5f; }
+
+  /* ---- TIMELINE ---- */
+  .timeline { border-left: 2px solid var(--border); margin-left: 6px; padding-left: 26px; margin-top: 10px; }
+  .tl-item { position: relative; padding-bottom: 26px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before {
+    content: "";
+    position: absolute;
+    left: -33px; top: 4px;
+    width: 12px; height: 12px;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+  }
+  .tl-item .yr { font-family: 'JetBrains Mono', monospace; color: var(--accent2); font-size: 0.85rem; font-weight: 600; }
+  .tl-item h4 { font-size: 1.02rem; font-weight: 600; margin: 2px 0 4px; }
+  .tl-item p { color: var(--text-dim); font-size: 0.93rem; }
+
+  /* ---- CODE BLOCK ---- */
+  .code-block {
+    background: #0d0d17;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.83rem;
+    line-height: 1.75;
+    overflow-x: auto;
+    margin-top: 14px;
+  }
+  .code-block .cm { color: #5a5f78; font-style: italic; }
+  .code-block .pr { color: #ff6a5f; }
+  .code-block .vl { color: #f0c419; }
+  .code-block .sel { color: #c792ea; }
+
+  /* ---- NOTE ---- */
+  .note {
+    background: rgba(226, 35, 26, 0.07);
+    border: 1px solid rgba(226, 35, 26, 0.3);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-top: 18px;
+  }
+  .note strong { color: #ff6a5f; }
+  .note p { color: var(--text-dim); font-size: 0.95rem; }
+
+  /* =========================================================
+     SHARED DEMO PANEL  (LIGHT — authentic Swiss canvas)
+     ========================================================= */
+  .demo-panel {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: var(--radius);
+    border: 1px solid #000;
+    overflow: hidden;
+    margin-top: 14px;
+    box-shadow: 0 30px 60px -30px rgba(0,0,0,0.7);
+  }
+  .demo-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 22px;
+    padding: 16px 22px;
+    background: #fff;
+    border-bottom: 2px solid var(--ink);
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  }
+  .demo-bar .ttl {
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-right: auto;
+  }
+  .demo-bar .ttl b { color: var(--red); }
+
+  /* Swiss-style controls */
+  .ctrl { display: inline-flex; align-items: center; gap: 9px; font-size: 0.8rem; color: var(--ink); }
+  .ctrl label { font-weight: 600; letter-spacing: 0.04em; }
+
+  .swiss-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 46px; height: 24px;
+    background: #ddd;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s var(--ease);
+    flex-shrink: 0;
+  }
+  .swiss-toggle::after {
+    content: "";
+    position: absolute;
+    top: 1px; left: 1px;
+    width: 18px; height: 18px;
+    background: var(--ink);
+    transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+  }
+  .swiss-toggle:checked { background: var(--red); }
+  .swiss-toggle:checked::after { transform: translateX(22px); background: #fff; }
+
+  input[type=range].swiss-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 170px;
+    height: 4px;
+    background: var(--ink);
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range].swiss-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 22px;
+    background: var(--red);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+  }
+  input[type=range].swiss-range::-moz-range-thumb {
+    width: 16px; height: 22px;
+    background: var(--red);
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    cursor: pointer;
+  }
+  .val-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 0.8rem;
+    background: var(--ink);
+    color: #fff;
+    padding: 2px 9px;
+    min-width: 34px;
+    text-align: center;
+  }
+
+  /* =========================================================
+     DEMO 1 — POSTER + GRID OVERLAY
+     ========================================================= */
+  .poster-stage { position: relative; }
+  .poster {
+    position: relative;
+    background: var(--paper);
+    aspect-ratio: 4 / 5;
+    max-height: 620px;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 7% 7% 6%;
+    display: flex;
+    flex-direction: column;
+  }
+  /* the visible grid overlay */
+  .grid-overlay {
+    position: absolute;
+    inset: 7% 7% 6%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease);
+    z-index: 5;
+  }
+  .grid-overlay.on { opacity: 1; }
+  .grid-overlay .col {
+    border-left: 1px solid var(--gridline);
+    border-right: 1px solid var(--gridline);
+    background: rgba(226, 35, 26, 0.05);
+  }
+  .baseline-overlay {
+    position: absolute;
+    inset: 7% 7% 6%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease);
+    z-index: 4;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--baseline) 0,
+      var(--baseline) 1px,
+      transparent 1px,
+      transparent 24px
+    );
+  }
+  .baseline-overlay.on { opacity: 1; }
+
+  /* poster content (authentic composition) */
+  .poster-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+  .poster .meta-top {
+    display: flex; justify-content: space-between;
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+  }
+  .poster .meta-top .r { color: var(--red); }
+  .poster .big-mark {
+    position: absolute;
+    top: 8%; right: 0;
+    width: 34%;
+    aspect-ratio: 1;
+    background: var(--red);
+    border-radius: 50%;
+    z-index: 1;
+  }
+  .poster .headline {
+    font-family: 'Archivo', 'Helvetica Neue', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.2rem, 9vw, 5.4rem);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    margin-top: 16%;
+    color: var(--ink);
+    z-index: 3;
+    position: relative;
+  }
+  .poster .headline .red { color: var(--red); }
+  .poster .sub {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+  }
+  .poster .sub .lead {
+    font-size: clamp(0.75rem, 1.8vw, 1rem);
+    font-weight: 500;
+    line-height: 1.35;
+    max-width: 58%;
+  }
+  .poster .vtext {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  /* =========================================================
+     DEMO 2 — COLUMN REFLOW
+     ========================================================= */
+  .reflow-stage { padding: 26px 24px 30px; }
+  .reflow {
+    display: grid;
+    gap: 12px;
+    transition: none;
+  }
+  .reflow .block {
+    background: #fff;
+    border: 2px solid var(--ink);
+    min-height: 56px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .reflow .block .h {
+    height: 8px; width: 60%;
+    background: var(--ink);
+  }
+  .reflow .block .l { height: 5px; background: #c9c7bf; }
+  .reflow .block .l.s { width: 80%; }
+  .reflow .block.red { background: var(--red); border-color: var(--ink); }
+  .reflow .block.red .h { background: #fff; }
+  .reflow .block.red .l { background: rgba(255,255,255,0.55); }
+  .reflow .block.tall { grid-row: span 2; }
+  .reflow .meta {
+    margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    color: #555;
+    border-top: 1px solid var(--rule);
+    padding-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .reflow .meta b { color: var(--ink); }
+
+  /* =========================================================
+     DEMO 3 — TYPE SCALE
+     ========================================================= */
+  .type-stage { padding: 28px 26px 32px; }
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    border-bottom: 1px solid var(--rule);
+    padding: 12px 0;
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-row .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+    width: 88px;
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+  .type-row .px {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: #888;
+    width: 78px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .type-row .sample {
+    font-family: 'Archivo', 'Helvetica Neue', sans-serif;
+    color: var(--ink);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .type-row .sample.body-w { font-weight: 400; letter-spacing: 0; }
+
+  /* =========================================================
+     PRINCIPLES STRIP
+     ========================================================= */
+  .principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 14px; }
+  .principle { background: var(--surface); padding: 22px; }
+  .principle .num { font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 0.8rem; font-weight: 600; }
+  .principle h4 { font-size: 1rem; font-weight: 600; margin: 8px 0 6px; }
+  .principle p { color: var(--text-dim); font-size: 0.88rem; }
+
+  /* ---- FOOTER ---- */
+  footer { text-align: center; padding: 54px 24px; color: var(--text-dim); font-size: 0.85rem; }
+  footer a { color: #ff6a5f; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .demo-bar { gap: 12px 16px; }
+    input[type=range].swiss-range { width: 130px; }
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <span class="pill">Movement · 1950s Switzerland</span>
+  <h1>Swiss Style <span class="red">/</span><br>International Typographic Style</h1>
+  <p class="tagline">Mathematical grids, Helvetica, asymmetric balance, and objectivity over ornament — the rationalist design system that still underpins how interfaces are laid out today.</p>
+</header>
+
+<div class="container">
+
+  <!-- ================= DEMO 1: POSTER + GRID OVERLAY ================= -->
+  <section id="poster">
+    <span class="eyebrow">Showcase · Demo 01</span>
+    <h2>The Swiss poster — with a grid you can switch on</h2>
+    <p class="subtitle">A classic red / black / white composition built in pure HTML &amp; CSS: asymmetric balance, an oversized Archivo (Helvetica-stack) headline, a single circular form, and rotated marginal text. Flip the grid overlay to reveal the six-column structure and baseline rhythm holding it together.</p>
+
+    <div class="demo-panel">
+      <div class="demo-bar">
+        <span class="ttl">Poster <b>—</b> Konzert</span>
+        <span class="ctrl">
+          <label for="t-grid">Column grid</label>
+          <input type="checkbox" id="t-grid" class="swiss-toggle" checked>
+        </span>
+        <span class="ctrl">
+          <label for="t-base">Baseline</label>
+          <input type="checkbox" id="t-base" class="swiss-toggle">
+        </span>
+      </div>
+
+      <div class="poster-stage">
+        <div class="poster">
+          <!-- visible grid overlay -->
+          <div class="grid-overlay on" id="gridOverlay" aria-hidden="true">
+            <div class="col"></div><div class="col"></div><div class="col"></div>
+            <div class="col"></div><div class="col"></div><div class="col"></div>
+          </div>
+          <div class="baseline-overlay" id="baseOverlay" aria-hidden="true"></div>
+
+          <div class="big-mark"></div>
+
+          <div class="poster-content">
+            <div class="meta-top">
+              <span>Tonhalle Zürich</span>
+              <span class="r">19 — 21 Okt</span>
+            </div>
+
+            <div class="headline">
+              Neue<br><span class="red">Musik.</span><br>1958
+            </div>
+
+            <div class="sub">
+              <p class="lead">Drei Abende neuer Komposition. Karten an der Kasse und im Vorverkauf. Eintritt vier Franken.</p>
+              <span class="vtext">Müller-Brockmann</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <p><strong>What to notice:</strong> nothing is centered for its own sake. The headline hangs from a column edge, the circle anchors the upper-right tension, and every text block sits on a shared baseline. Decoration is absent — meaning is carried entirely by <em>type, scale, and position</em>.</p>
+    </div>
+  </section>
+
+  <!-- ================= DEMO 2: COLUMN SLIDER ================= -->
+  <section id="columns">
+    <span class="eyebrow">Interactive · Demo 02</span>
+    <h2>The grid is a variable, not a decoration</h2>
+    <p class="subtitle">Josef Müller-Brockmann treated the column count as a design decision with consequences. Drag the slider from 2 to 12 columns and watch a layout re-flow live — the same content, organised by a different mathematical lattice.</p>
+
+    <div class="demo-panel">
+      <div class="demo-bar">
+        <span class="ttl">Reflow <b>—</b> Modular grid</span>
+        <span class="ctrl">
+          <label for="colRange">Columns</label>
+          <input type="range" id="colRange" class="swiss-range" min="2" max="12" step="1" value="6">
+          <span class="val-chip" id="colVal">6</span>
+        </span>
+      </div>
+      <div class="reflow-stage">
+        <div class="reflow" id="reflow"></div>
+        <div class="meta">
+          <span><b id="mCols">6</b> columns</span>
+          <span>gutter <b>12px</b></span>
+          <span><b id="mFields">24</b> grid fields</span>
+          <span>flush-left, ragged-right</span>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <p><strong>Why it matters for UI:</strong> design systems like Material and Bootstrap inherited exactly this idea — a fixed column grid (4 / 8 / 12) with consistent gutters that components snap to. The Swiss grid is the direct ancestor of the responsive layout grid.</p>
+    </div>
+  </section>
+
+  <!-- ================= DEMO 3: TYPE SCALE ================= -->
+  <section id="scale">
+    <span class="eyebrow">Interactive · Demo 03</span>
+    <h2>A modular typographic scale</h2>
+    <p class="subtitle">Swiss hierarchy is mathematical: pick a base size and a ratio, and every step is derived from it. Change the ratio to feel the difference between a tight, editorial scale and a dramatic, poster-like one — the active multiplier is shown live.</p>
+
+    <div class="demo-panel">
+      <div class="demo-bar">
+        <span class="ttl">Scale <b>—</b> Base 16px</span>
+        <span class="ctrl">
+          <label for="ratioRange">Ratio</label>
+          <input type="range" id="ratioRange" class="swiss-range" min="105" max="170" step="1" value="125">
+          <span class="val-chip" id="ratioVal">1.250</span>
+        </span>
+      </div>
+      <div class="type-stage" id="typeStage"></div>
+    </div>
+    <div class="note">
+      <p><strong>1.250 (major third)</strong> and <strong>1.333 (perfect fourth)</strong> are the workhorse ratios of modern UI type scales. Tailwind, Material, and most design tokens ship a near-identical geometric progression — a direct descendant of Emil Ruder's modular thinking.</p>
+    </div>
+  </section>
+
+  <!-- ================= HISTORY ================= -->
+  <section id="history">
+    <span class="eyebrow">Context</span>
+    <h2>Where it came from</h2>
+    <p class="subtitle">A design language forged in post-war Switzerland, exported to the world as the visual default of the modern era.</p>
+
+    <p class="body">In the years after the Second World War, a neutral and prosperous Switzerland became an unlikely engine of graphic innovation. Building on the rationalism of the <strong>Bauhaus</strong>, <strong>De Stijl</strong>, and the Russian Constructivists, a generation of Swiss designers pursued clarity, legibility, and objectivity above all. They rejected the expressive, decorative poster traditions of the previous decades in favour of a design that aimed to be <em>universal</em> — readable across languages and cultures. By the 1960s the approach had spread internationally, earning its second name: the <strong>International Typographic Style</strong>.</p>
+
+    <p class="body">Two cities anchored the movement. The <strong>Zürich school</strong>, led by <strong>Josef Müller-Brockmann</strong>, codified the mathematical grid and produced some of the era's most iconic concert and public-information posters. The <strong>Basel school</strong>, where <strong>Armin Hofmann</strong> and <strong>Emil Ruder</strong> taught, emphasised typographic structure, form-and-counterform, and rigorous experimentation. Their teaching exported the method worldwide — Hofmann's influence in particular reached deep into American design education.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <span class="yr">1928–40s</span>
+        <h4>Roots: New Typography</h4>
+        <p>Jan Tschichold's <em>Die neue Typographie</em> and Bauhaus rationalism establish asymmetry, sans-serif type, and functional layout as a moral stance against ornament.</p>
+      </div>
+      <div class="tl-item">
+        <span class="yr">1950s</span>
+        <h4>The grid is codified</h4>
+        <p>Müller-Brockmann in Zürich, Hofmann and Ruder in Basel formalise the modular grid system, objective photography, and flush-left typesetting.</p>
+      </div>
+      <div class="tl-item">
+        <span class="yr">1957</span>
+        <h4>Helvetica &amp; Univers</h4>
+        <p>Max Miedinger &amp; Eduard Hoffmann release <em>Neue Haas Grotesk</em> (later Helvetica); Adrian Frutiger releases the systematically-numbered <em>Univers</em> family.</p>
+      </div>
+      <div class="tl-item">
+        <span class="yr">1961</span>
+        <h4>The method is written down</h4>
+        <p>Emil Ruder's <em>Typographie</em>, and later Müller-Brockmann's <em>Grid Systems in Graphic Design</em> (1981), turn the practice into a teachable, exportable system.</p>
+      </div>
+      <div class="tl-item">
+        <span class="yr">1960s–70s</span>
+        <h4>Goes global</h4>
+        <p>Adopted for corporate identity, signage (think transit systems), and international wayfinding — the look of competent, neutral modernity worldwide.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRINCIPLES ================= -->
+  <section id="principles">
+    <span class="eyebrow">The method</span>
+    <h2>Core principles</h2>
+    <p class="subtitle">Strip away the romance and Swiss style is a small set of disciplined rules — most of which map cleanly onto how good interfaces are still built.</p>
+
+    <div class="principles">
+      <div class="principle">
+        <span class="num">01</span>
+        <h4>The grid</h4>
+        <p>A modular lattice of columns, rows, and gutters. Every element aligns to it. The grid is invisible in the result but governs everything.</p>
+      </div>
+      <div class="principle">
+        <span class="num">02</span>
+        <h4>Typographic hierarchy</h4>
+        <p>Size, weight, and position — not color or decoration — establish what matters first. A clear reading order is engineered.</p>
+      </div>
+      <div class="principle">
+        <span class="num">03</span>
+        <h4>Mathematical proportion</h4>
+        <p>Margins, type sizes, and spacing derive from ratios and a base unit, giving the whole composition a felt internal logic.</p>
+      </div>
+      <div class="principle">
+        <span class="num">04</span>
+        <h4>Objectivity</h4>
+        <p>Sans-serif type, factual photography, no ornament. The designer's ego recedes so the message can be read plainly.</p>
+      </div>
+      <div class="principle">
+        <span class="num">05</span>
+        <h4>Flush-left, ragged-right</h4>
+        <p>Text aligns hard to the left and ends naturally on the right — honest word spacing over forced justification.</p>
+      </div>
+      <div class="principle">
+        <span class="num">06</span>
+        <h4>Asymmetric balance</h4>
+        <p>Tension and weight, not mirror symmetry. Whitespace is an active material that gives elements room to speak.</p>
+      </div>
+      <div class="principle">
+        <span class="num">07</span>
+        <h4>Restrained palette</h4>
+        <p>Often black and white plus a single accent — classically red. Color is a signal, never a finish.</p>
+      </div>
+      <div class="principle">
+        <span class="num">08</span>
+        <h4>Generous whitespace</h4>
+        <p>Empty space is structural, not leftover. It frames content, sets rhythm, and conveys confidence and calm.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INFLUENCE ON MODERN UI ================= -->
+  <section id="influence">
+    <span class="eyebrow">Legacy</span>
+    <h2>How it shaped modern UI</h2>
+    <p class="subtitle">The Swiss grid never went away — it just moved from print to pixels. Its DNA is visible across the most influential digital design systems.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="em">Apple</span> — clarity as a value</h3>
+        <p>Apple's long love of Helvetica (then San Francisco), heavy whitespace, flush-left text, and rigorous alignment is Swiss thinking applied to hardware and software. Susan Kare and the early Mac team, and later Jony Ive's marketing pages, all lean on disciplined grids and restrained type.</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">Google Material</span> — the grid, systematised</h3>
+        <p>Material Design's responsive layout grid (4 / 8 / 12 columns, baseline grid, an 8px spacing unit, and a modular type scale) is a near-literal translation of Swiss principles into a component framework for screens.</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">Vercel &amp; Linear</span> — modern minimalism</h3>
+        <p>Today's developer-tool aesthetic — tight grotesque type, monochrome plus one accent, immense whitespace, mathematically even spacing — is the International Typographic Style with dark-mode and a sharper accent color.</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">Design tokens</span> — proportion as code</h3>
+        <p>Spacing scales, modular type ramps, and grid systems baked into Tailwind, design-token specs, and Figma libraries are the direct, programmable descendants of Ruder's ratios and Müller-Brockmann's columns.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW TO APPLY ================= -->
+  <section id="apply">
+    <span class="eyebrow">Practice</span>
+    <h2>Applying it to your own work</h2>
+    <p class="subtitle">A practical checklist for bringing Swiss discipline into a modern interface — plus the CSS that makes the grid real.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>Start with a grid</h3>
+        <ul>
+          <li>Pick 12 columns + a consistent gutter</li>
+          <li>Define an 8px base spacing unit</li>
+          <li>Snap every element to it</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Build a type scale</h3>
+        <ul>
+          <li>Base 16px, ratio ≈ 1.25</li>
+          <li>Three or four sizes, no more</li>
+          <li>Use weight &amp; size for hierarchy</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Restrain the palette</h3>
+        <ul>
+          <li>Neutral + one accent</li>
+          <li>Color signals, never decorates</li>
+          <li>Let whitespace do the framing</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block">
+<span class="cm">/* A Swiss-inspired layout grid + modular scale */</span>
+<span class="sel">:root</span> {
+  <span class="pr">--unit</span>: <span class="vl">8px</span>;            <span class="cm">/* base spacing rhythm */</span>
+  <span class="pr">--ratio</span>: <span class="vl">1.25</span>;          <span class="cm">/* major third */</span>
+  <span class="pr">--text-base</span>: <span class="vl">1rem</span>;
+  <span class="pr">--text-lg</span>: <span class="vl">calc(var(--text-base) * var(--ratio))</span>;
+  <span class="pr">--text-xl</span>: <span class="vl">calc(var(--text-lg) * var(--ratio))</span>;
+}
+
+<span class="sel">.layout</span> {
+  <span class="pr">display</span>: <span class="vl">grid</span>;
+  <span class="pr">grid-template-columns</span>: <span class="vl">repeat(12, 1fr)</span>;
+  <span class="pr">gap</span>: <span class="vl">calc(var(--unit) * 3)</span>;       <span class="cm">/* 24px gutter */</span>
+  <span class="pr">text-align</span>: <span class="vl">left</span>;             <span class="cm">/* flush-left */</span>
+}
+
+<span class="sel">.hero</span> { <span class="pr">grid-column</span>: <span class="vl">1 / 7</span>; }     <span class="cm">/* asymmetric: spans 6 of 12 */</span>
+    </div>
+
+    <div class="note">
+      <p><strong>The discipline is the point.</strong> Swiss style isn't a skin you apply at the end — it's a set of constraints you adopt at the start. Choose the grid, choose the scale, choose one accent, and then let the structure carry the design.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Part of the <a href="../index.html">UI/UX Design Research</a> hub &middot; Swiss Style / International Typographic Style &middot; 1950s movement
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    /* ---------- DEMO 1: grid + baseline overlays ---------- */
+    var gridToggle = document.getElementById('t-grid');
+    var baseToggle = document.getElementById('t-base');
+    var gridOverlay = document.getElementById('gridOverlay');
+    var baseOverlay = document.getElementById('baseOverlay');
+
+    if (gridToggle && gridOverlay) {
+      gridToggle.addEventListener('change', function () {
+        gridOverlay.classList.toggle('on', gridToggle.checked);
+      });
+    }
+    if (baseToggle && baseOverlay) {
+      baseToggle.addEventListener('change', function () {
+        baseOverlay.classList.toggle('on', baseToggle.checked);
+      });
+    }
+
+    /* ---------- DEMO 2: column reflow ---------- */
+    var colRange = document.getElementById('colRange');
+    var colVal = document.getElementById('colVal');
+    var reflow = document.getElementById('reflow');
+    var mCols = document.getElementById('mCols');
+    var mFields = document.getElementById('mFields');
+
+    // a fixed pool of "content" blocks; spans recompute per column count
+    var BLOCK_COUNT = 24;
+
+    function buildReflow(cols) {
+      reflow.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+      reflow.innerHTML = '';
+      var rows = 0;
+      for (var i = 0; i < BLOCK_COUNT; i++) {
+        var b = document.createElement('div');
+        b.className = 'block';
+        // emphasise roughly every 5th block in red, like a Swiss accent
+        if (i % 5 === 0) b.classList.add('red');
+        // give a few blocks extra row span for asymmetric rhythm,
+        // but only when we have room (>=4 cols) so it stays clean
+        if (cols >= 4 && i % 7 === 3) b.classList.add('tall');
+        b.innerHTML = '<span class="h"></span><span class="l"></span><span class="l s"></span>';
+        reflow.appendChild(b);
+      }
+      rows = Math.ceil(BLOCK_COUNT / cols);
+      if (mFields) mFields.textContent = cols * rows;
+    }
+
+    function updateCols() {
+      var c = parseInt(colRange.value, 10);
+      if (colVal) colVal.textContent = c;
+      if (mCols) mCols.textContent = c;
+      buildReflow(c);
+    }
+
+    if (colRange && reflow) {
+      colRange.addEventListener('input', updateCols);
+      updateCols();
+    }
+
+    /* ---------- DEMO 3: modular type scale ---------- */
+    var ratioRange = document.getElementById('ratioRange');
+    var ratioVal = document.getElementById('ratioVal');
+    var typeStage = document.getElementById('typeStage');
+
+    // steps: name, sample text, exponent relative to base (base = 0)
+    var STEPS = [
+      { tag: 'Display',  text: 'Helvetica',            exp: 3, weight: 900 },
+      { tag: 'H1',       text: 'Grid Systems',         exp: 2, weight: 800 },
+      { tag: 'H2',       text: 'Asymmetric Balance',   exp: 1.4, weight: 700 },
+      { tag: 'Lead',     text: 'Flush-left, ragged-right paragraphs', exp: 0.6, weight: 500 },
+      { tag: 'Body',     text: 'Objective typography, set on a baseline grid for even rhythm.', exp: 0, weight: 400, body: true },
+      { tag: 'Caption',  text: 'Müller-Brockmann · Zürich · 1958', exp: -0.7, weight: 500 }
+    ];
+
+    var BASE = 16; // px
+
+    function buildScale(ratio) {
+      typeStage.innerHTML = '';
+      STEPS.forEach(function (s) {
+        var px = BASE * Math.pow(ratio, s.exp);
+        var row = document.createElement('div');
+        row.className = 'type-row';
+
+        var tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = s.tag;
+
+        var pxEl = document.createElement('span');
+        pxEl.className = 'px';
+        pxEl.textContent = px.toFixed(1) + 'px';
+
+        var sample = document.createElement('span');
+        sample.className = 'sample' + (s.body ? ' body-w' : '');
+        sample.style.fontSize = px.toFixed(1) + 'px';
+        sample.style.fontWeight = s.weight;
+        // clamp visual size so huge ratios don't blow the panel apart
+        if (px > 64) sample.style.fontSize = '64px';
+        sample.textContent = s.text;
+
+        row.appendChild(tag);
+        row.appendChild(pxEl);
+        row.appendChild(sample);
+        typeStage.appendChild(row);
+      });
+    }
+
+    function updateScale() {
+      var ratio = parseInt(ratioRange.value, 10) / 100;
+      if (ratioVal) ratioVal.textContent = ratio.toFixed(3);
+      buildScale(ratio);
+    }
+
+    if (ratioRange && typeStage) {
+      ratioRange.addEventListener('input', updateScale);
+      updateScale();
+    }
+  });
+</script>
+</body>
+</html>

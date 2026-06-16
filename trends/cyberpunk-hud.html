@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyberpunk / Neon HUD — UI Design Trends</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --bg-deep: #06060c;
+    --panel: #0d0d18;
+    --text: #e6e6f0;
+    --dim: #8b8fa3;
+    --cyan: #00f0ff;
+    --magenta: #ff2bd6;
+    --lime: #b8ff3c;
+    --amber: #ffb300;
+    --line: rgba(0,240,255,0.18);
+    /* glow intensity is driven live by the slider demo */
+    --glow: 1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+    /* faint scanline texture over the whole page */
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,240,255,0.025) 0 1px, transparent 1px 3px);
+  }
+
+  ::selection { background: var(--magenta); color: #fff; }
+
+  .back-link {
+    position: fixed; top: 20px; left: 20px; z-index: 1000;
+    color: var(--cyan); text-decoration: none;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500;
+    letter-spacing: 1px; text-transform: uppercase;
+    background: rgba(10,12,22,0.7);
+    backdrop-filter: blur(8px);
+    padding: 9px 16px;
+    border: 1px solid var(--line);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  }
+  .back-link:hover {
+    background: rgba(0,240,255,0.12);
+    color: #fff;
+    box-shadow: 0 0 18px rgba(0,240,255,0.4);
+  }
+
+  /* ===================== HEADER ===================== */
+  header.hero {
+    position: relative; text-align: center;
+    padding: 130px 20px 70px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,43,214,0.12), transparent 60%),
+      radial-gradient(ellipse at 50% 120%, rgba(0,240,255,0.14), transparent 55%);
+  }
+  /* perspective grid floor */
+  .grid-floor {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 45%;
+    background-image:
+      linear-gradient(rgba(0,240,255,0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,0.25) 1px, transparent 1px);
+    background-size: 44px 44px;
+    transform: perspective(340px) rotateX(72deg);
+    transform-origin: bottom center;
+    opacity: 0.5;
+    mask-image: linear-gradient(transparent, #000 80%);
+    -webkit-mask-image: linear-gradient(transparent, #000 80%);
+    animation: floorScroll 7s linear infinite;
+    z-index: 0;
+  }
+  @keyframes floorScroll { from { background-position: 0 0; } to { background-position: 0 44px; } }
+
+  .hero-inner { position: relative; z-index: 1; }
+  h1.title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.2rem, 7vw, 4.6rem);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow:
+      0 0 8px rgba(0,240,255,0.8),
+      0 0 24px rgba(0,240,255,0.5),
+      0 0 2px rgba(255,43,214,0.9);
+    line-height: 1.05;
+  }
+  .tagline {
+    margin-top: 22px;
+    color: var(--dim);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500; font-size: clamp(1rem, 2.4vw, 1.35rem);
+    letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .tagline b { color: var(--lime); font-weight: 700; }
+  .hero-meta {
+    margin-top: 26px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    color: var(--cyan); letter-spacing: 2px; opacity: 0.7;
+  }
+
+  /* ===================== LAYOUT ===================== */
+  .container { max-width: 1000px; margin: 0 auto; padding: 30px 20px 60px; position: relative; }
+
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.3rem, 3.6vw, 1.9rem); font-weight: 700;
+    color: #fff; margin: 80px 0 12px; letter-spacing: 2px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .section-title::before {
+    content: ""; width: 26px; height: 2px; background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+  }
+  .section-kicker {
+    font-family: 'JetBrains Mono', monospace; color: var(--magenta);
+    font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase;
+    margin: 60px 0 0 40px;
+  }
+
+  /* Generic angular framed panel with corner brackets */
+  .frame {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 30px;
+    margin: 22px 0;
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  }
+  .bracket {
+    position: absolute; width: 18px; height: 18px; pointer-events: none;
+    border-color: var(--cyan);
+  }
+  .bracket.tl { top: 6px; left: 6px; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+  .bracket.tr { top: 6px; right: 6px; border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+  .bracket.bl { bottom: 6px; left: 6px; border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+  .bracket.br { bottom: 6px; right: 6px; border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+
+  p.lede { color: var(--text); font-weight: 300; font-size: 1.06rem; }
+  .prose p { color: var(--dim); font-weight: 300; margin-bottom: 16px; }
+  .prose strong { color: var(--text); font-weight: 600; }
+  .prose em { color: var(--lime); font-style: normal; }
+  .prose a { color: var(--cyan); }
+  .prose ul { list-style: none; margin: 18px 0; padding: 0; }
+  .prose li { color: var(--dim); font-weight: 300; margin-bottom: 12px; padding-left: 22px; position: relative; }
+  .prose li::before {
+    content: "▸"; position: absolute; left: 0; top: 0;
+    color: var(--cyan); text-shadow: 0 0 6px var(--cyan);
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+    background: rgba(0,240,255,0.08); color: var(--cyan);
+    padding: 1px 6px; border-radius: 3px;
+  }
+
+  /* ===================== DEMO 1: HUD PANEL ===================== */
+  .demo-wrap { margin: 22px 0; }
+  .hud {
+    position: relative; overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(0,240,255,0.04), transparent 30%),
+      var(--bg-deep);
+    border: 1px solid var(--line);
+    padding: 26px;
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+  }
+  .hud-head {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 18px;
+    font-family: 'Orbitron', sans-serif; letter-spacing: 2px; text-transform: uppercase;
+  }
+  .hud-head .id { color: var(--cyan); font-size: 0.95rem; text-shadow: 0 0 8px rgba(0,240,255,0.6); }
+  .hud-head .status {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--lime);
+    display: flex; align-items: center; gap: 8px; letter-spacing: 1px;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--lime);
+    box-shadow: 0 0 8px var(--lime); animation: blink 1.4s steps(1) infinite;
+  }
+  @keyframes blink { 0%,60% { opacity: 1; } 61%,100% { opacity: 0.25; } }
+
+  .telemetry { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 14px; }
+  .tcell {
+    background: rgba(0,240,255,0.03);
+    border: 1px solid rgba(0,240,255,0.12);
+    padding: 12px 14px;
+  }
+  .tcell .label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    color: var(--dim); letter-spacing: 2px; text-transform: uppercase;
+  }
+  .tcell .value {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    font-size: 1.5rem; color: var(--cyan); margin-top: 4px;
+    text-shadow: 0 0 10px rgba(0,240,255,0.45);
+    font-variant-numeric: tabular-nums;
+  }
+  .tcell .value.mag { color: var(--magenta); text-shadow: 0 0 10px rgba(255,43,214,0.5); }
+  .tcell .value.lime { color: var(--lime); text-shadow: 0 0 10px rgba(184,255,60,0.45); }
+  .tcell .unit { font-size: 0.65rem; color: var(--dim); margin-left: 3px; }
+  .bar { height: 4px; background: rgba(255,255,255,0.06); margin-top: 8px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); width: 50%; transition: width 0.4s ease; }
+  .bar.mag > i { background: var(--magenta); box-shadow: 0 0 8px var(--magenta); }
+  .bar.lime > i { background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+
+  /* scanning line that sweeps across the HUD */
+  .scanline {
+    position: absolute; left: 0; right: 0; top: 0; height: 90px; pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(0,240,255,0.14) 60%, rgba(0,240,255,0.35));
+    border-bottom: 1px solid rgba(0,240,255,0.7);
+    box-shadow: 0 0 22px rgba(0,240,255,0.4);
+    animation: sweep 4.2s linear infinite;
+  }
+  @keyframes sweep { 0% { transform: translateY(-100px); } 100% { transform: translateY(560px); } }
+
+  .sim-note {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: var(--dim);
+    margin-top: 14px; letter-spacing: 1px; text-align: right; opacity: 0.8;
+  }
+
+  /* ===================== DEMO 2: GLITCH TEXT ===================== */
+  .glitch-stage { text-align: center; padding: 40px 20px; }
+  .glitch {
+    position: relative; display: inline-block;
+    font-family: 'Orbitron', sans-serif; font-weight: 900;
+    font-size: clamp(2rem, 8vw, 4.5rem); letter-spacing: 3px; text-transform: uppercase;
+    color: #fff;
+    cursor: crosshair;
+  }
+  .glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    overflow: hidden;
+  }
+  .glitch::before { color: var(--magenta); z-index: -1; animation: glitchA 2.6s infinite linear alternate-reverse; }
+  .glitch::after  { color: var(--cyan);    z-index: -2; animation: glitchB 3.1s infinite linear alternate-reverse; }
+  .glitch:hover::before { animation-duration: 0.5s; }
+  .glitch:hover::after  { animation-duration: 0.42s; }
+  @keyframes glitchA {
+    0%   { clip-path: inset(8% 0 86% 0);  transform: translate(-3px,-2px); }
+    20%  { clip-path: inset(60% 0 12% 0); transform: translate(3px,1px); }
+    40%  { clip-path: inset(34% 0 50% 0); transform: translate(-2px,2px); }
+    60%  { clip-path: inset(80% 0 4% 0);  transform: translate(2px,-1px); }
+    80%  { clip-path: inset(20% 0 70% 0); transform: translate(-3px,1px); }
+    100% { clip-path: inset(46% 0 30% 0); transform: translate(2px,2px); }
+  }
+  @keyframes glitchB {
+    0%   { clip-path: inset(70% 0 8% 0);  transform: translate(3px,2px); }
+    20%  { clip-path: inset(12% 0 78% 0); transform: translate(-3px,-1px); }
+    40%  { clip-path: inset(50% 0 24% 0); transform: translate(2px,-2px); }
+    60%  { clip-path: inset(4% 0 88% 0);  transform: translate(-2px,1px); }
+    80%  { clip-path: inset(64% 0 18% 0); transform: translate(3px,-2px); }
+    100% { clip-path: inset(28% 0 56% 0); transform: translate(-3px,-2px); }
+  }
+  .glitch-sub {
+    margin-top: 18px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    color: var(--dim); letter-spacing: 2px;
+  }
+
+  /* ===================== DEMO 3: GLOW SLIDER ===================== */
+  .glow-demo { display: grid; grid-template-columns: 1fr; gap: 26px; align-items: center; }
+  @media (min-width: 720px) { .glow-demo { grid-template-columns: 1.1fr 0.9fr; } }
+  .glow-sample {
+    text-align: center; padding: 46px 20px; background: var(--bg-deep);
+    border: 1px solid var(--line);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+  .glow-btn {
+    display: inline-block; font-family: 'Orbitron', sans-serif; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 3px; font-size: 1.1rem;
+    color: var(--cyan); padding: 16px 34px;
+    border: 2px solid var(--cyan);
+    background: rgba(0,240,255,0.05);
+    /* glow scales with the --glow variable, set live by the slider */
+    text-shadow: 0 0 calc(6px * var(--glow)) var(--cyan), 0 0 calc(18px * var(--glow)) rgba(0,240,255,0.7);
+    box-shadow:
+      0 0 calc(8px * var(--glow)) rgba(0,240,255,0.6),
+      inset 0 0 calc(12px * var(--glow)) rgba(0,240,255,0.25);
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  }
+  .glow-readout {
+    display: block; margin-top: 20px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--dim); letter-spacing: 1px;
+  }
+  .control {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--dim);
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .control label { display: block; margin-bottom: 10px; color: var(--cyan); }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 4px;
+    background: rgba(0,240,255,0.2); outline: none; margin: 8px 0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
+    background: var(--cyan); cursor: pointer;
+    box-shadow: 0 0 12px var(--cyan);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px; height: 18px; background: var(--cyan); border: none; cursor: pointer;
+    box-shadow: 0 0 12px var(--cyan);
+  }
+
+  /* ===================== DEMO 4: RADAR ===================== */
+  .radar-stage { display: flex; justify-content: center; padding: 24px; }
+  .radar {
+    position: relative; width: 280px; height: 280px; border-radius: 50%;
+    background:
+      radial-gradient(circle, rgba(0,240,255,0.06), transparent 70%),
+      var(--bg-deep);
+    border: 1px solid rgba(0,240,255,0.4);
+    box-shadow: 0 0 30px rgba(0,240,255,0.15), inset 0 0 40px rgba(0,240,255,0.08);
+    overflow: hidden;
+  }
+  .radar .ring { position: absolute; border: 1px solid rgba(0,240,255,0.18); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+  .radar .ring.r1 { width: 33%; height: 33%; }
+  .radar .ring.r2 { width: 66%; height: 66%; }
+  .radar .ring.r3 { width: 99%; height: 99%; }
+  .radar .cross-h, .radar .cross-v { position: absolute; background: rgba(0,240,255,0.18); }
+  .radar .cross-h { left: 0; right: 0; top: 50%; height: 1px; }
+  .radar .cross-v { top: 0; bottom: 0; left: 50%; width: 1px; }
+  .sweep {
+    position: absolute; top: 50%; left: 50%; width: 50%; height: 50%;
+    transform-origin: top left;
+    background: conic-gradient(from 0deg, rgba(0,240,255,0.45), transparent 55deg);
+    animation: radarSpin 3.6s linear infinite;
+  }
+  @keyframes radarSpin { to { transform: rotate(360deg); } }
+  .blip { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px var(--lime); transform: translate(-50%,-50%); animation: blipPulse 2s ease-in-out infinite; }
+  .blip.b2 { background: var(--magenta); box-shadow: 0 0 10px var(--magenta); animation-delay: 0.7s; }
+  .blip.b3 { background: var(--amber); box-shadow: 0 0 10px var(--amber); animation-delay: 1.3s; }
+  @keyframes blipPulse { 0%,100% { opacity: 0.3; transform: translate(-50%,-50%) scale(0.7); } 50% { opacity: 1; transform: translate(-50%,-50%) scale(1.2); } }
+  .radar-cap { font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: var(--dim); text-align: center; margin-top: 12px; letter-spacing: 1px; }
+
+  /* ===================== PALETTE ===================== */
+  .palette { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 14px; margin: 22px 0; }
+  .swatch {
+    height: 110px; padding: 12px; position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 500;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+  .swatch .nm { color: #fff; }
+  .swatch .hx { color: rgba(255,255,255,0.75); }
+
+  /* ===================== TABLE (works/fails) ===================== */
+  .split { display: grid; grid-template-columns: 1fr; gap: 18px; margin: 22px 0; }
+  @media (min-width: 720px) { .split { grid-template-columns: 1fr 1fr; } }
+  .col-good { border-top: 2px solid var(--lime); }
+  .col-bad { border-top: 2px solid var(--magenta); }
+  .col h4 { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; text-transform: uppercase; font-size: 1rem; margin-bottom: 14px; }
+  .col-good h4 { color: var(--lime); }
+  .col-bad h4 { color: var(--magenta); }
+
+  /* ===================== CALLOUT / A11Y ===================== */
+  .callout {
+    background: rgba(255,43,214,0.06);
+    border-left: 3px solid var(--magenta);
+    padding: 26px; margin: 26px 0;
+  }
+  .callout.warn { background: rgba(255,179,0,0.07); border-left-color: var(--amber); }
+  .callout h3 { font-family: 'Orbitron', sans-serif; color: var(--magenta); font-size: 1.05rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .callout.warn h3 { color: var(--amber); }
+  .callout p { color: var(--dim); font-weight: 300; margin-bottom: 10px; }
+  .callout strong { color: var(--text); font-weight: 600; }
+
+  /* motion toggle */
+  .motion-toggle {
+    position: fixed; top: 20px; right: 20px; z-index: 1000;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px;
+    color: var(--lime); cursor: pointer; user-select: none;
+    background: rgba(10,12,22,0.7); backdrop-filter: blur(8px);
+    border: 1px solid rgba(184,255,60,0.3);
+    padding: 9px 14px; text-transform: uppercase;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: background 0.2s;
+  }
+  .motion-toggle:hover { background: rgba(184,255,60,0.12); }
+  .motion-toggle .state { color: #fff; }
+
+  /* When reduced motion is active (system or toggle), kill heavy animation */
+  body.reduce-motion .grid-floor,
+  body.reduce-motion .scanline,
+  body.reduce-motion .sweep,
+  body.reduce-motion .glitch::before,
+  body.reduce-motion .glitch::after,
+  body.reduce-motion .blip,
+  body.reduce-motion .dot { animation: none !important; }
+  body.reduce-motion .glitch::before { transform: none; }
+  body.reduce-motion .glitch::after  { transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .grid-floor, .scanline, .sweep, .glitch::before, .glitch::after, .blip, .dot { animation: none !important; }
+  }
+
+  footer {
+    text-align: center; padding: 50px 20px; color: var(--dim);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; letter-spacing: 1px;
+    border-top: 1px solid var(--line); margin-top: 40px;
+  }
+  footer a { color: var(--cyan); text-decoration: none; }
+  footer a:hover { text-shadow: 0 0 10px var(--cyan); }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+<div class="motion-toggle" id="motionToggle" role="button" tabindex="0" aria-pressed="false">
+  MOTION: <span class="state" id="motionState">ON</span>
+</div>
+
+<!-- ===================== HEADER ===================== -->
+<header class="hero">
+  <div class="grid-floor" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <h1 class="title">Cyberpunk&nbsp;HUD</h1>
+    <p class="tagline">Neon on near-black · glitch · monospace telemetry · <b>FUI</b></p>
+    <p class="hero-meta">// SYS.AESTHETIC ::: BLADE_RUNNER → GHOST_IN_THE_SHELL → CYBERPUNK_2077</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <p class="lede prose">A look pulled straight from science-fiction cinema and games: <strong>luminous neon graphics floating on near-black</strong>, dense readouts in monospace type, angular frames wrapped in corner brackets, sweeping scan lines and the occasional burst of digital glitch. It promises a world that is high-tech, surveilled and a little dangerous — and over the last decade it has leaked out of fiction and into real product design.</p>
+
+  <!-- ===================== DEMO 1: HUD PANEL ===================== -->
+  <p class="section-kicker">DEMO_01 // LIVE_INTERFACE</p>
+  <h2 class="section-title">Animated HUD Panel</h2>
+  <p class="prose" style="color:var(--dim);">A heads-up display with corner brackets, a sweeping scan line, and a live-updating telemetry readout. <strong style="color:var(--text)">The numbers below are randomly simulated in the browser</strong> — they are not real sensor data.</p>
+
+  <div class="demo-wrap">
+    <div class="hud" id="hud">
+      <div class="scanline" aria-hidden="true"></div>
+      <div class="hud-head">
+        <span class="id">UNIT&nbsp;//&nbsp;ENVOY-7</span>
+        <span class="status"><span class="dot"></span> LINK ACTIVE</span>
+      </div>
+      <div class="telemetry">
+        <div class="tcell">
+          <div class="label">Core Temp</div>
+          <div class="value"><span data-tel="temp">42.0</span><span class="unit">°C</span></div>
+          <div class="bar"><i data-bar="temp"></i></div>
+        </div>
+        <div class="tcell">
+          <div class="label">Power Draw</div>
+          <div class="value mag"><span data-tel="power">128</span><span class="unit">kW</span></div>
+          <div class="bar mag"><i data-bar="power"></i></div>
+        </div>
+        <div class="tcell">
+          <div class="label">Net Latency</div>
+          <div class="value lime"><span data-tel="ping">14</span><span class="unit">ms</span></div>
+          <div class="bar lime"><i data-bar="ping"></i></div>
+        </div>
+        <div class="tcell">
+          <div class="label">Shield</div>
+          <div class="value"><span data-tel="shield">87</span><span class="unit">%</span></div>
+          <div class="bar"><i data-bar="shield"></i></div>
+        </div>
+        <div class="tcell">
+          <div class="label">Throughput</div>
+          <div class="value mag"><span data-tel="thru">3.42</span><span class="unit">Gb/s</span></div>
+          <div class="bar mag"><i data-bar="thru"></i></div>
+        </div>
+        <div class="tcell">
+          <div class="label">Sync</div>
+          <div class="value lime"><span data-tel="sync">99.2</span><span class="unit">%</span></div>
+          <div class="bar lime"><i data-bar="sync"></i></div>
+        </div>
+      </div>
+      <p class="sim-note">// values are client-side random walks · refresh ~600ms · SIMULATED</p>
+    </div>
+  </div>
+
+  <!-- ===================== DEMO 2: GLITCH ===================== -->
+  <p class="section-kicker">DEMO_02 // SIGNAL_CORRUPTION</p>
+  <h2 class="section-title">Glitch Text</h2>
+  <p class="prose" style="color:var(--dim);">RGB channel split via two pseudo-elements (cyan + magenta) plus a <code>clip-path</code> jitter that slices the text at random heights. It auto-loops; <strong style="color:var(--text)">hover to intensify</strong>.</p>
+  <div class="frame">
+    <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+    <div class="glitch-stage">
+      <span class="glitch" data-text="NIGHT CITY">NIGHT CITY</span>
+      <p class="glitch-sub">// ::CHROMATIC ABERRATION :: CLIP JITTER :: CRT BLEED::</p>
+    </div>
+  </div>
+
+  <!-- ===================== DEMO 3: GLOW SLIDER ===================== -->
+  <p class="section-kicker">DEMO_03 // EMISSION_CONTROL</p>
+  <h2 class="section-title">Neon Glow Intensity</h2>
+  <p class="prose" style="color:var(--dim);">The whole aesthetic lives or dies on <em>glow</em>. Drag the slider to drive a single CSS custom property (<code>--glow</code>) that scales every <code>text-shadow</code> and <code>box-shadow</code> on the sample button in real time.</p>
+  <div class="frame">
+    <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+    <div class="glow-demo">
+      <div class="glow-sample" id="glowSample">
+        <span class="glow-btn">JACK IN</span>
+        <span class="glow-readout">--glow: <span id="glowVal">1.0</span></span>
+      </div>
+      <div class="control">
+        <label for="glowSlider">Glow Multiplier</label>
+        <input type="range" id="glowSlider" min="0" max="40" value="10">
+        <span id="glowHint">0 = flat · 1.0 = default · 4.0 = blown out</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== DEMO 4: RADAR ===================== -->
+  <p class="section-kicker">DEMO_04 // SENSOR_SWEEP</p>
+  <h2 class="section-title">Animated Radar / Reticle</h2>
+  <p class="prose" style="color:var(--dim);">A classic sweeping radar built from a rotating <code>conic-gradient</code>, concentric rings and pulsing contact blips — the recurring "scanning" motif of sci-fi interfaces.</p>
+  <div class="frame">
+    <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+    <div class="radar-stage">
+      <div>
+        <div class="radar" aria-hidden="true">
+          <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+          <div class="cross-h"></div><div class="cross-v"></div>
+          <div class="sweep"></div>
+          <div class="blip" style="top:38%;left:62%;"></div>
+          <div class="blip b2" style="top:66%;left:40%;"></div>
+          <div class="blip b3" style="top:30%;left:34%;"></div>
+        </div>
+        <p class="radar-cap">// 3 CONTACTS TRACKED · SWEEP 3.6s</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ORIGIN ===================== -->
+  <h2 class="section-title">Where It Comes From</h2>
+  <div class="frame prose">
+    <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+    <p>The aesthetic was born in fiction. <strong>Ridley Scott's <em>Blade Runner</em> (1982)</strong> fixed the template — rain-soaked neon, towering advertising, glowing readouts in a perpetual night — and three decades of cyberpunk built on it. <strong><em>Ghost in the Shell</em></strong> added cool, clinical network interfaces and cascading code; <strong><em>The Matrix</em></strong> gave us the green data-rain; <strong><em>Tron</em></strong> gave us glowing vector grids. Games like <strong><em>Deus Ex</em></strong> and <strong>CD Projekt's <em>Cyberpunk 2077</em></strong> (with its signature cyan-and-yellow Braindance overlays) carried it into interactive space.</p>
+    <p>Out of this grew a real craft discipline: <strong>FUI</strong> — variously expanded as <em>Fantasy, Fictional, Fake or Future User Interface</em>. FUI designers build the screens, holograms and HUDs you see in films and games. They are interfaces that must <strong>read instantly as "advanced technology" to an audience</strong>, even though no one ever truly operates them. Studios such as <strong>Territory Studio</strong> (the screen graphics in <em>Blade Runner 2049</em>, <em>Guardians of the Galaxy</em>, <em>Ex Machina</em>) and designers like <strong>GMUNK</strong> and <strong>Jayse Hansen</strong> (Iron Man's HUD, <em>The Avengers</em>, <em>Star Wars</em>) turned motion-graphic screen design into a recognised specialty.</p>
+    <p>The feedback loop runs both ways. Decades of audiences trained on glowing telemetry now <strong>expect "serious technology" to look like this</strong>, so the language has bled back into real products — wherever a brand wants to signal power, speed, surveillance or the cutting edge.</p>
+  </div>
+
+  <!-- ===================== VISUAL LANGUAGE ===================== -->
+  <h2 class="section-title">The Visual Language</h2>
+  <div class="frame prose">
+    <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+    <ul>
+      <li><strong>Neon glow on near-black</strong> — saturated cyan, magenta and lime emitting <code>text-shadow</code> / <code>box-shadow</code> halos against a deep #06–0a backdrop for maximum luminance contrast.</li>
+      <li><strong>Angular frames &amp; corner brackets</strong> — clipped, beveled panels framed by L-shaped brackets and chamfered corners (here via <code>clip-path</code>) that read as machined hardware rather than soft cards.</li>
+      <li><strong>Monospace telemetry</strong> — dense numeric readouts, coordinates, hex, timestamps and status codes in a mono font with <code>tabular-nums</code> so digits don't shift as they tick.</li>
+      <li><strong>Scanlines &amp; CRT texture</strong> — faint horizontal lines evoking cathode-ray displays, often with a moving scan beam sweeping the surface.</li>
+      <li><strong>Glitch</strong> — RGB channel split, clip-path slicing, and brief datamosh stutters that suggest a fragile, corruptible signal.</li>
+      <li><strong>Animated reticles &amp; sweeps</strong> — radar arcs, targeting crosshairs, loading rings and "scanning" passes that imply a system actively perceiving the world.</li>
+      <li><strong>Holographic accents</strong> — translucency, additive blending and faint chromatic fringing to suggest projected, volumetric light.</li>
+    </ul>
+  </div>
+
+  <!-- ===================== PALETTE ===================== -->
+  <h2 class="section-title">Signature Palette</h2>
+  <div class="palette">
+    <div class="swatch" style="background:#06060c; box-shadow:inset 0 0 30px rgba(0,240,255,0.15);"><span class="nm">Void</span><span class="hx">#06060C</span></div>
+    <div class="swatch" style="background:#0a0a12;"><span class="nm">Carbon</span><span class="hx">#0A0A12</span></div>
+    <div class="swatch" style="background:#001b1f; box-shadow:inset 0 0 30px rgba(0,240,255,0.6);"><span class="nm">Cyan</span><span class="hx">#00F0FF</span></div>
+    <div class="swatch" style="background:#2a001f; box-shadow:inset 0 0 30px rgba(255,43,214,0.55);"><span class="nm">Magenta</span><span class="hx">#FF2BD6</span></div>
+    <div class="swatch" style="background:#1c2400; box-shadow:inset 0 0 30px rgba(184,255,60,0.5);"><span class="nm">Lime</span><span class="hx">#B8FF3C</span></div>
+    <div class="swatch" style="background:#2a1c00; box-shadow:inset 0 0 30px rgba(255,179,0,0.5);"><span class="nm">Amber</span><span class="hx">#FFB300</span></div>
+  </div>
+
+  <!-- ===================== WORKS / FAILS ===================== -->
+  <h2 class="section-title">Where It Works — and Fails</h2>
+  <div class="split">
+    <div class="frame col col-good">
+      <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+      <h4>Works</h4>
+      <div class="prose">
+        <ul>
+          <li><strong>Games &amp; XR HUDs</strong> — the native home; players expect immersive, diegetic overlays and short glances at glowing data.</li>
+          <li><strong>Crypto / trading dashboards</strong> — dark mode, dense numerics and "high-tech finance" branding map perfectly onto the look.</li>
+          <li><strong>Developer &amp; ops tools</strong> — terminals, monitoring grids and sci-fi-flavored dev products lean into mono type and neon accents.</li>
+          <li><strong>Esports &amp; streaming overlays</strong> — broadcast graphics that must read as fast, energetic and futuristic.</li>
+          <li><strong>Brand &amp; launch moments</strong> — hero sections and product reveals where spectacle matters more than long reading.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="frame col col-bad">
+      <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+      <h4>Fails</h4>
+      <div class="prose">
+        <ul>
+          <li><strong>Legibility</strong> — neon-on-black glow blooms and low-contrast hues sabotage sustained reading; body text suffers most.</li>
+          <li><strong>Accessibility</strong> — thin glowing type, saturated color pairs and decorative noise routinely fail WCAG contrast and confuse low-vision users.</li>
+          <li><strong>Seizure risk</strong> — heavy glitch, flashing and rapid flicker can trigger photosensitive epilepsy.</li>
+          <li><strong>Content-dense apps</strong> — docs, forms, email and settings drown when every panel competes with animation and glow.</li>
+          <li><strong>Cognitive load</strong> — fake telemetry and ornamental brackets add visual work without adding information.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== A11Y ===================== -->
+  <h2 class="section-title">Accessibility &amp; Safety</h2>
+  <div class="callout warn">
+    <h3>Seizure Safety First</h3>
+    <p>Glitch, flicker and rapid flashing are the signature flourishes of this style and also its biggest hazard. Content that <strong>flashes more than three times per second</strong> can trigger photosensitive seizures (WCAG 2.3.1). Keep flashing well below that threshold, avoid large saturated-red flashes, and never make a glitch effect unavoidable — give users a way to stop it.</p>
+  </div>
+  <div class="callout">
+    <h3>Honor prefers-reduced-motion</h3>
+    <p>Every heavy animation on this page — the scan beam, radar sweep, grid scroll, blinking status, and the glitch text — is gated behind <code>@media (prefers-reduced-motion: reduce)</code> <strong>and</strong> a manual <strong>MOTION toggle</strong> (top-right) that adds a <code>.reduce-motion</code> class. When either is active, animations stop while the static composition still reads correctly.</p>
+    <p>Beyond motion: provide a non-glowing high-contrast text path for anything users must actually read, keep real content out of decorative HUD chrome, ensure focus states survive the neon, and treat the aesthetic as a <strong>skin over an accessible base</strong> — never as a replacement for legible structure.</p>
+  </div>
+
+  <!-- ===================== CLOSING ===================== -->
+  <div class="frame prose">
+    <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+    <p><strong>The takeaway.</strong> Cyberpunk / FUI is a <em>spectacle</em> aesthetic engineered to make technology feel powerful and alive. It excels at first impressions, immersion and branding, and it is a joy to build with CSS. But it was designed to be <em>looked at</em>, not <em>used for hours</em> — so the discipline is knowing where the glow belongs (heroes, dashboards, games, launches) and where legible, calm, accessible design must win instead.</p>
+  </div>
+
+</div>
+
+<footer>
+  // END_OF_LINE — <a href="../index.html">Back to Hub</a> · UI Design Trends Research
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- Motion state: system preference OR manual toggle ----
+  var mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var toggle = document.getElementById('motionToggle');
+  var stateEl = document.getElementById('motionState');
+  var userForcedReduce = false;
+
+  function motionReduced() {
+    return userForcedReduce || mql.matches;
+  }
+  function applyMotion() {
+    var reduced = motionReduced();
+    document.body.classList.toggle('reduce-motion', reduced);
+    if (stateEl) stateEl.textContent = reduced ? 'OFF' : 'ON';
+    if (toggle) toggle.setAttribute('aria-pressed', reduced ? 'true' : 'false');
+  }
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      userForcedReduce = !userForcedReduce;
+      applyMotion();
+    });
+    toggle.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
+    });
+  }
+  if (mql.addEventListener) mql.addEventListener('change', applyMotion);
+  applyMotion();
+
+  // ---- DEMO 1: live simulated telemetry ----
+  // Each metric is a small random walk clamped to a range. Bars reflect % of range.
+  var metrics = {
+    temp:   { v: 42.0, min: 28,  max: 65,   dec: 1, step: 1.4 },
+    power:  { v: 128,  min: 60,  max: 240,  dec: 0, step: 9   },
+    ping:   { v: 14,   min: 4,   max: 90,   dec: 0, step: 6   },
+    shield: { v: 87,   min: 35,  max: 100,  dec: 0, step: 4   },
+    thru:   { v: 3.42, min: 0.5, max: 9.9,  dec: 2, step: 0.6 },
+    sync:   { v: 99.2, min: 88,  max: 100,  dec: 1, step: 1.1 }
+  };
+  var telSpans = {}, telBars = {};
+  Object.keys(metrics).forEach(function (k) {
+    telSpans[k] = document.querySelector('[data-tel="' + k + '"]');
+    telBars[k]  = document.querySelector('[data-bar="' + k + '"]');
+  });
+
+  function clamp(x, lo, hi) { return x < lo ? lo : (x > hi ? hi : x); }
+
+  function stepTelemetry() {
+    Object.keys(metrics).forEach(function (k) {
+      var m = metrics[k];
+      m.v = clamp(m.v + (Math.random() - 0.5) * 2 * m.step, m.min, m.max);
+      if (telSpans[k]) telSpans[k].textContent = m.v.toFixed(m.dec);
+      if (telBars[k]) {
+        var pct = ((m.v - m.min) / (m.max - m.min)) * 100;
+        telBars[k].style.width = pct.toFixed(1) + '%';
+      }
+    });
+  }
+  stepTelemetry();
+  var telTimer = setInterval(stepTelemetry, 600);
+
+  // ---- DEMO 3: neon glow slider ----
+  var slider = document.getElementById('glowSlider');
+  var glowVal = document.getElementById('glowVal');
+  var rootStyle = document.documentElement.style;
+  function applyGlow() {
+    var g = parseInt(slider.value, 10) / 10; // 0.0 .. 4.0
+    rootStyle.setProperty('--glow', String(g));
+    if (glowVal) glowVal.textContent = g.toFixed(1);
+  }
+  if (slider) {
+    slider.addEventListener('input', applyGlow);
+    applyGlow();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memphis Design — UI/UX Design Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* page chrome (dark, matches hub) */
+    --bg: #0a0a12;
+    --surface: #14141f;
+    --surface2: #1d1d2c;
+    --border: #2a2a3e;
+    --text: #e6e6f0;
+    --text-dim: #8b8fa3;
+    --accent: #7aa2ff;
+    --accent2: #38e1c6;
+    --warn: #ffb86c;
+
+    /* Memphis demo palette */
+    --m-black: #1a1a1a;
+    --m-cream: #f4f0e6;
+    --m-pink: #ff5da2;
+    --m-cyan: #21d4d4;
+    --m-yellow: #ffcb1f;
+    --m-red2: #ff4d3d;
+    --m-blue: #2b3fff;
+    --m-green: #3ddc84;
+    --m-purple: #9b5de5;
+    --m-orange: #ff7b29;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  code, .code-block, kbd { font-family: 'JetBrains Mono', monospace; }
+
+  /* ---------- Back link ---------- */
+  .back-link {
+    display: inline-block;
+    margin: 20px 0 0 20px;
+    padding: 8px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .back-link:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    transform: translateX(-3px);
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    position: relative;
+    text-align: center;
+    padding: 64px 20px 56px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 22% 18%, rgba(255,93,162,0.16), transparent 55%),
+      radial-gradient(circle at 80% 30%, rgba(33,212,212,0.14), transparent 55%),
+      radial-gradient(circle at 50% 88%, rgba(255,203,31,0.10), transparent 60%);
+  }
+
+  header h1 {
+    font-family: 'Archivo Black', system-ui, sans-serif;
+    font-size: clamp(2.4rem, 7vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+    background: linear-gradient(96deg, #ff5da2 0%, #ffcb1f 38%, #21d4d4 70%, #9b5de5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  header .tagline {
+    color: var(--text-dim);
+    font-size: 1.15rem;
+    max-width: 660px;
+    margin: 0 auto 22px;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(255,93,162,0.12);
+    border: 1px solid rgba(255,93,162,0.4);
+    color: var(--m-pink);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pill + .pill { margin-left: 8px; }
+  .pill.cyan { background: rgba(33,212,212,0.12); border-color: rgba(33,212,212,0.4); color: var(--m-cyan); }
+  .pill.yellow { background: rgba(255,203,31,0.12); border-color: rgba(255,203,31,0.4); color: var(--m-yellow); }
+
+  /* decorative header shapes */
+  .head-shape { position: absolute; pointer-events: none; opacity: 0.85; }
+
+  /* ---------- Layout ---------- */
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  section:last-child { border-bottom: none; }
+
+  h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  h2 .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--m-pink);
+    margin-right: 10px;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 1.02rem;
+    margin-bottom: 28px;
+  }
+
+  h3 { font-size: 1.15rem; margin: 26px 0 10px; font-weight: 600; }
+  p { margin-bottom: 14px; }
+  p a, .prose a { color: var(--accent); }
+
+  .lead { font-size: 1.1rem; color: var(--text); }
+  strong { color: #fff; font-weight: 700; }
+  em { color: var(--m-yellow); font-style: normal; font-weight: 600; }
+
+  ul, ol { margin: 0 0 16px 22px; }
+  li { margin-bottom: 8px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+  }
+  .card h3 { margin-top: 0; }
+
+  .callout {
+    border-left: 4px solid var(--m-pink);
+    background: var(--surface);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin: 22px 0;
+    color: var(--text-dim);
+  }
+  .callout strong { color: var(--m-pink); }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    padding: 5px 12px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  /* ---------- Demo shell ---------- */
+  .demo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    margin: 24px 0;
+  }
+  .demo-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .demo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid var(--m-black);
+    background: var(--m-yellow);
+    color: var(--m-black);
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--m-black);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--m-black); }
+  .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--m-black); }
+  .btn.pink { background: var(--m-pink); color: #fff; }
+  .btn.cyan { background: var(--m-cyan); }
+
+  /* ---------- Demo 1: generative canvas ---------- */
+  #patternCanvas {
+    display: block;
+    width: 100%;
+    height: 420px;
+    border-radius: 12px;
+    border: 3px solid var(--m-black);
+    background: var(--m-cream);
+  }
+  .canvas-controls { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+  .seed-readout {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .slider-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-dim); }
+  input[type=range] { accent-color: var(--m-pink); cursor: pointer; }
+
+  /* ---------- Demo 2: palette ---------- */
+  .palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 14px; }
+  .swatch {
+    border-radius: 12px;
+    border: 3px solid var(--m-black);
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--surface2);
+    transition: transform 0.15s ease;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+  }
+  .swatch:hover { transform: translate(-2px,-2px); }
+  .swatch .chip { height: 78px; position: relative; }
+  .swatch .chip::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(0,0,0,0.18) 2px, transparent 2px);
+    background-size: 16px 16px;
+    opacity: 0.5;
+  }
+  .swatch .meta {
+    padding: 8px 10px;
+    background: var(--m-cream);
+    color: var(--m-black);
+  }
+  .swatch .meta .name { font-weight: 700; font-size: 0.82rem; }
+  .swatch .meta .hex { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; opacity: 0.7; }
+
+  /* ---------- Demo 3: Memphis components ---------- */
+  .comp-stage {
+    position: relative;
+    background: var(--m-cream);
+    border: 3px solid var(--m-black);
+    border-radius: 14px;
+    padding: 36px 28px;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .comp-stage::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(var(--m-cyan) 3px, transparent 3px);
+    background-size: 34px 34px;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .m-card {
+    position: relative;
+    width: 268px;
+    background: #fff;
+    border: 3px solid var(--m-black);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 8px 8px 0 var(--m-black);
+    color: var(--m-black);
+    z-index: 1;
+  }
+  .m-card .ribbon {
+    display: inline-block;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--m-pink);
+    color: #fff;
+    padding: 4px 10px;
+    border: 2px solid var(--m-black);
+    border-radius: 6px;
+    transform: rotate(-2deg);
+    margin-bottom: 12px;
+  }
+  .m-card h4 { font-size: 1.2rem; margin-bottom: 6px; font-weight: 800; }
+  .m-card p { font-size: 0.86rem; color: #444; margin-bottom: 14px; }
+  .m-card .corner-tri {
+    position: absolute; top: -3px; right: 24px;
+    width: 0; height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 26px solid var(--m-yellow);
+    filter: drop-shadow(0 2px 0 var(--m-black));
+  }
+
+  .m-panel {
+    position: relative;
+    width: 268px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 1;
+  }
+
+  /* memphis toggle */
+  .m-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--m-black);
+    font-weight: 700;
+  }
+  .m-switch {
+    width: 64px; height: 34px;
+    border: 3px solid var(--m-black);
+    border-radius: 999px;
+    background: var(--m-cream);
+    position: relative;
+    transition: background 0.2s ease;
+  }
+  .m-switch .knob {
+    position: absolute; top: 2px; left: 2px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--m-red2);
+    border: 3px solid var(--m-black);
+    transition: transform 0.22s cubic-bezier(.5,1.6,.4,1), background 0.2s ease;
+  }
+  .m-toggle.on .m-switch { background: var(--m-cyan); }
+  .m-toggle.on .m-switch .knob { transform: translateX(30px); background: var(--m-yellow); }
+
+  .m-btn {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+    padding: 13px 22px;
+    border-radius: 12px;
+    border: 3px solid var(--m-black);
+    background: var(--m-blue);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 6px 6px 0 var(--m-black);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .m-btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--m-black); }
+  .m-btn:active { transform: translate(3px,3px); box-shadow: 2px 2px 0 var(--m-black); }
+
+  .m-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 3px solid var(--m-black);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--m-black);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    box-shadow: 4px 4px 0 var(--m-cyan);
+    outline: none;
+  }
+  .m-input::placeholder { color: #999; }
+  .m-input:focus { box-shadow: 4px 4px 0 var(--m-pink); }
+
+  /* ---------- Demo 4: floating shapes ---------- */
+  .float-stage {
+    position: relative;
+    height: 300px;
+    border-radius: 14px;
+    border: 3px solid var(--m-black);
+    background: linear-gradient(135deg, #2b1a3a 0%, #16213e 100%);
+    overflow: hidden;
+  }
+  .float-stage .center-label {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    color: #fff;
+    z-index: 5;
+    pointer-events: none;
+    text-shadow: 3px 3px 0 var(--m-pink), 6px 6px 0 var(--m-cyan);
+  }
+  .floater { position: absolute; will-change: transform; }
+  @keyframes floatY {
+    0%   { transform: translateY(0) rotate(0deg); }
+    50%  { transform: translateY(-26px) rotate(180deg); }
+    100% { transform: translateY(0) rotate(360deg); }
+  }
+
+  /* ---------- do / don't ---------- */
+  .dd { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .dd { grid-template-columns: 1fr; } }
+  .dd .do, .dd .dont { border-radius: 12px; padding: 18px 20px; border: 1px solid var(--border); }
+  .dd .do { background: rgba(61,220,132,0.06); border-color: rgba(61,220,132,0.35); }
+  .dd .dont { background: rgba(255,77,61,0.06); border-color: rgba(255,77,61,0.35); }
+  .dd h4 { margin-bottom: 10px; font-size: 1rem; }
+  .dd .do h4 { color: var(--m-green); }
+  .dd .dont h4 { color: var(--m-red2); }
+  .dd ul { margin-left: 18px; }
+  .dd li { font-size: 0.9rem; color: var(--text-dim); }
+
+  /* ---------- timeline ---------- */
+  .timeline { position: relative; margin: 24px 0 8px; padding-left: 26px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px;
+    width: 3px; background: linear-gradient(var(--m-pink), var(--m-cyan), var(--m-yellow));
+    border-radius: 3px;
+  }
+  .tl-item { position: relative; margin-bottom: 20px; }
+  .tl-item::before {
+    content: ""; position: absolute; left: -23px; top: 4px;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--m-yellow); border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--m-pink);
+  }
+  .tl-item .yr { font-family: 'JetBrains Mono', monospace; color: var(--m-cyan); font-weight: 600; font-size: 0.88rem; }
+
+  /* ---------- toast ---------- */
+  #toast {
+    position: fixed;
+    left: 50%;
+    bottom: 32px;
+    transform: translateX(-50%) translateY(28px);
+    background: var(--m-black);
+    color: #fff;
+    border: 3px solid var(--m-yellow);
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    box-shadow: 5px 5px 0 var(--m-pink);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- footer ---------- */
+  footer { text-align: center; padding: 50px 24px; color: var(--text-dim); font-size: 0.85rem; }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <svg class="head-shape" style="left:6%;top:30%" width="70" height="70" viewBox="0 0 70 70" aria-hidden="true">
+    <path d="M5 35 Q20 10 35 35 T65 35" fill="none" stroke="#ff5da2" stroke-width="7" stroke-linecap="round"/>
+  </svg>
+  <svg class="head-shape" style="right:8%;top:24%" width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
+    <polygon points="30,4 56,52 4,52" fill="none" stroke="#21d4d4" stroke-width="6"/>
+  </svg>
+  <svg class="head-shape" style="right:16%;bottom:14%" width="54" height="54" viewBox="0 0 54 54" aria-hidden="true">
+    <circle cx="27" cy="27" r="9" fill="#ffcb1f"/>
+    <circle cx="9" cy="9" r="5" fill="#9b5de5"/>
+    <circle cx="45" cy="14" r="5" fill="#ff7b29"/>
+  </svg>
+  <svg class="head-shape" style="left:13%;bottom:12%" width="64" height="40" viewBox="0 0 64 40" aria-hidden="true">
+    <path d="M2 38 L10 2 L18 38 L26 2 L34 38 L42 2 L50 38 L58 2" fill="none" stroke="#ff7b29" stroke-width="5" stroke-linejoin="round"/>
+  </svg>
+
+  <h1>Memphis Design</h1>
+  <p class="tagline">Milan, 1981. Ettore Sottsass and a band of rebels detonate good taste with squiggles, confetti, and clashing color — the most joyfully unserious movement in design history.</p>
+  <div>
+    <span class="pill">Postmodern</span>
+    <span class="pill cyan">1981–1987</span>
+    <span class="pill yellow">Anti-Design</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ===================== INTRO ===================== -->
+  <section id="intro">
+    <h2><span class="num">00</span>What is Memphis?</h2>
+    <p class="subtitle">A deliberate rebellion against "less is more."</p>
+    <p class="lead">Memphis is the look of squiggles on a hotel carpet, terrazzo on a cafe table, and the title card of a 1980s sitcom. It is loud, geometric, and proudly tacky — and it was a serious philosophical argument dressed up as a party.</p>
+    <p>Born in Milan in 1981, the <strong>Memphis Group</strong> rejected the cool rationalism that had dominated design since the Bauhaus. Where modernism preached function, restraint, and "good taste," Memphis answered with <em>decoration for its own sake</em>: primary colors slammed against pastels, plastic laminates printed to look like bird's-eye marble, asymmetry, and shapes that refer to nothing but their own exuberance. It was design as joke, manifesto, and provocation all at once.</p>
+    <p>The movement lasted barely six years, but its visual DNA — squiggles, confetti dots, jagged "lightning" bolts, and terrazzo speckle — went on to define the graphic texture of an entire decade and is endlessly recycled today whenever a brand wants to feel playful, nostalgic, and a little chaotic.</p>
+    <div class="tag-row">
+      <span class="tag">squiggle</span>
+      <span class="tag">terrazzo</span>
+      <span class="tag">confetti</span>
+      <span class="tag">zigzag</span>
+      <span class="tag">polka-dot</span>
+      <span class="tag">clashing-color</span>
+      <span class="tag">anti-design</span>
+      <span class="tag">postmodern</span>
+    </div>
+  </section>
+
+  <!-- ===================== HISTORY ===================== -->
+  <section id="history">
+    <h2><span class="num">01</span>History &amp; Origins</h2>
+    <p class="subtitle">A dinner party, a Bob Dylan record, and a revolt against modernism.</p>
+
+    <p>On the night of December 11, 1980, the Italian architect and designer <strong>Ettore Sottsass</strong> gathered a group of younger designers at his Milan apartment. As the story goes, Bob Dylan's <em>"Stuck Inside of Mobile with the Memphis Blues Again"</em> was playing on repeat — and the group took its name from that song, conveniently nodding both to the home of the blues and to ancient Egypt, the seat of an earlier high culture. The collective debuted at the Salone del Mobile furniture fair in <strong>September 1981</strong>, and the reaction was electric: critics were appalled, and that was exactly the point.</p>
+
+    <h3>The reaction against sleek modernism</h3>
+    <p>By the late 1970s, mainstream design had calcified into a polished, corporate minimalism — black boxes, chrome, and the idea that an object's form should quietly follow its function. Sottsass, who had spent years designing typewriters and calculators for Olivetti, found this orthodoxy spiritually empty. Memphis was his rebuttal: objects should be <em>emotional, narrative, and fun</em>, not just efficient. The group embraced cheap, "low" industrial materials — plastic laminate (Abet Laminati), particleboard, neon — and treated them as luxuriously as marble, deliberately blurring the line between high design and kitsch.</p>
+
+    <h3>Postmodern playfulness</h3>
+    <p>Memphis was the furniture-and-product wing of a much larger <strong>postmodern</strong> turn happening across architecture and graphics in the 1980s. It rejected the notion of a single "correct" style, mixed historical references freely (Art Deco, 1950s diner culture, Pop Art, Bauhaus geometry), and prized irony and surprise. Sottsass's <strong>Carlton room divider (1981)</strong> — a wildly asymmetric bookshelf in clashing laminates that can barely hold books — became the movement's icon precisely because it refused to be "useful" in the expected way.</p>
+
+    <div class="timeline">
+      <div class="tl-item"><span class="yr">1917–1980</span> — Sottsass builds a career in Italian industrial design (notably the bright-red Olivetti Valentine typewriter), growing restless with rationalist orthodoxy.</div>
+      <div class="tl-item"><span class="yr">Dec 1980</span> — The founding meeting in Milan; the name "Memphis" is chosen from the Dylan track on the turntable.</div>
+      <div class="tl-item"><span class="yr">1981</span> — Memphis debuts at the Salone del Mobile. The Carlton divider and Tahiti lamp scandalize and electrify the design world.</div>
+      <div class="tl-item"><span class="yr">1981–1987</span> — Members including Michele De Lucchi, Nathalie du Pasquier, George Sowden, Martine Bedin, Matteo Thun, and Shiro Kuramata produce furniture, ceramics, textiles, and patterns.</div>
+      <div class="tl-item"><span class="yr">1985</span> — Sottsass steps back from the group; its commercial moment is already cresting.</div>
+      <div class="tl-item"><span class="yr">1988</span> — The Memphis Group formally disbands, its language already escaping into mass culture.</div>
+    </div>
+
+    <div class="callout"><strong>Karl Lagerfeld factor:</strong> the fashion designer famously furnished an entire Monte Carlo apartment in Memphis pieces, lending the "ugly" movement a jolt of celebrity glamour and accelerating its spread far beyond Milan's design fairs.</div>
+
+    <h3>Escape into 80s &amp; 90s graphics</h3>
+    <p>Memphis's furniture was expensive and short-lived, but its <em>patterns</em> were free to copy — and the 80s copied them everywhere. The "Bacterio" squiggle and confetti speckle migrated onto paper cups, sneakers, MTV bumpers, mall food courts, and TV sets. Anyone who grew up in that era recognizes the descendants instantly:</p>
+    <ul>
+      <li>The jagged pastel-and-teal <strong>Saved by the Bell</strong> title sequence and its infamous geometric backdrop.</li>
+      <li><strong>Trapper Keeper</strong> binders, Lisa Frank's neon menagerie, and Trapper-style folders dripping with zigzags and dots.</li>
+      <li>The <strong>"Solo Jazz" paper cup</strong> (1991) — teal-and-purple squiggles and brushstrokes — arguably the most-printed Memphis-derived pattern of all time.</li>
+      <li>Arcade cabinet art, roller-rink carpets, and early-90s sportswear graphics.</li>
+    </ul>
+
+    <h3>The revival</h3>
+    <p>After two decades of disdain, Memphis came roaring back in the <strong>2010s and 2020s</strong>. Nostalgia for analog-era optimism, the flat-design era's hunger for personality, and a generation rediscovering the originals via social media all converged. Today you see Memphis-flavored work in brand illustration, editorial design, sneaker drops, festival branding, and "fun startup" marketing — usually a tamed, more legible version that borrows the shapes and palette without the original's full assault on usability.</p>
+  </section>
+
+  <!-- ===================== VISUAL LANGUAGE ===================== -->
+  <section id="language">
+    <h2><span class="num">02</span>Core Visual Language</h2>
+    <p class="subtitle">The grammar of joyful chaos.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Shape vocabulary</h3>
+        <p>Memphis is built from a small kit of instantly recognizable forms, scattered with abandon:</p>
+        <ul>
+          <li><strong>Squiggles</strong> — loose hand-drawn worms (the "Bacterio" motif).</li>
+          <li><strong>Confetti dots</strong> — polka dots in random sizes and colors.</li>
+          <li><strong>Triangles &amp; zigzags</strong> — sharp, jagged, lightning-bolt energy.</li>
+          <li><strong>Terrazzo</strong> — speckled stone-chip texture.</li>
+          <li><strong>Grids &amp; checkers</strong> — often warped or tilted off-axis.</li>
+          <li><strong>Half-circles &amp; arcs</strong> — fans, rainbows, and pie slices.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Color rules (and rule-breaking)</h3>
+        <p>The palette is the most defining trait: <strong>saturated primaries</strong> (cobalt blue, lemon yellow, red) deliberately clashed with <strong>chalky pastels</strong> (mint, peach, lilac) plus hot pink, teal, and black.</p>
+        <ul>
+          <li>High contrast and "wrong" adjacencies are the goal, not a mistake.</li>
+          <li>Black outlines and a cream/off-white ground let the colors pop.</li>
+          <li>No single dominant color — balance through chaos.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Pattern layering</h3>
+    <p>A single Memphis composition rarely uses one pattern. It <em>layers</em> them: a checkerboard panel sits beside a field of dots, overlaid with a squiggle, anchored by a solid triangle. The trick is rhythm — shapes are scattered to feel spontaneous, but spacing and repetition keep the eye moving rather than overwhelmed. Diagonal tension (tilted grids, off-axis shapes) keeps everything feeling alive and unstable.</p>
+
+    <h3>Intentional "bad taste"</h3>
+    <p>Crucially, Memphis breaks the rules <em>on purpose</em>. It pairs colors that color theory says shouldn't meet, fakes luxury with cheap laminate, and decorates surfaces that "should" be plain. This is not naive design — it is sophisticated designers performing bad taste as a critique of the idea that taste is fixed and universal. Understanding that intent is what separates a knowing Memphis homage from an accidental mess.</p>
+  </section>
+
+  <!-- ===================== DEMO 1: GENERATIVE CANVAS ===================== -->
+  <section id="demo-canvas">
+    <h2><span class="num">03</span>Live Demo — Generative Pattern</h2>
+    <p class="subtitle">A scatter of squiggles, dots, triangles and zigzags. Hit regenerate.</p>
+
+    <div class="demo">
+      <div class="demo-head">
+        <span class="demo-label">// generative-memphis.canvas</span>
+        <span class="seed-readout" id="seedReadout">seed: —</span>
+      </div>
+      <canvas id="patternCanvas" width="1000" height="420" role="img" aria-label="Generative Memphis pattern"></canvas>
+      <div class="canvas-controls">
+        <button class="btn pink" id="regenBtn" type="button">Regenerate ⚡</button>
+        <button class="btn cyan" id="downloadBtn" type="button">Download PNG</button>
+        <span class="slider-wrap">density
+          <input type="range" id="densitySlider" min="20" max="160" value="80" aria-label="Pattern density">
+          <span id="densityVal">80</span>
+        </span>
+      </div>
+    </div>
+    <p>Every press reseeds a small pseudo-random generator and repaints the whole canvas — squiggles, confetti, triangles, zigzags, arcs and terrazzo speckle, all drawn from the Memphis palette on a cream ground. Drag the density slider to crank the chaos up or down.</p>
+  </section>
+
+  <!-- ===================== DEMO 2: PALETTE ===================== -->
+  <section id="demo-palette">
+    <h2><span class="num">04</span>Live Demo — Signature Palette</h2>
+    <p class="subtitle">Click any swatch to copy its hex.</p>
+
+    <div class="demo">
+      <div class="demo-head"><span class="demo-label">// click-to-copy</span></div>
+      <div class="palette" id="palette"></div>
+    </div>
+    <p>These are the workhorse colors of the Memphis look: saturated primaries and hot accents clashing against soft pastels, all kept legible by a near-black outline and a cream backdrop. Pull two or three at random and let them fight.</p>
+  </section>
+
+  <!-- ===================== DEMO 3: COMPONENTS ===================== -->
+  <section id="demo-components">
+    <h2><span class="num">05</span>Live Demo — Memphis UI Components</h2>
+    <p class="subtitle">The aesthetic mapped onto real, working controls.</p>
+
+    <div class="demo">
+      <div class="demo-head"><span class="demo-label">// chunky-outline.components</span></div>
+      <div class="comp-stage">
+        <div class="m-card">
+          <span class="corner-tri"></span>
+          <span class="ribbon">New Drop</span>
+          <h4>Squiggle Pass</h4>
+          <p>A playful card with hard offset shadow, thick outline, and a confetti-dot field behind it.</p>
+          <button class="m-btn" type="button" id="cardBtn">Grab it →</button>
+        </div>
+
+        <div class="m-panel">
+          <div class="m-toggle" id="mToggle" role="switch" aria-checked="false" tabindex="0">
+            <span class="m-switch"><span class="knob"></span></span>
+            <span id="toggleLabel">Confetti: off</span>
+          </div>
+          <input class="m-input" type="text" placeholder="Type something loud…" aria-label="Demo text input">
+          <button class="m-btn" type="button" style="background:var(--m-pink)" id="shoutBtn">Shout it</button>
+        </div>
+      </div>
+    </div>
+
+    <p>Notice the recipe that makes these read as "Memphis" without becoming unusable: a <strong>thick black outline</strong>, a <strong>hard offset drop shadow</strong> (no blur), <strong>chunky rounded corners</strong>, one or two decorative shapes per element, and a single clashing accent. The controls still behave like normal buttons, toggles, and inputs — the style is a costume over solid interaction patterns.</p>
+  </section>
+
+  <!-- ===================== DEMO 4: FLOATING SHAPES ===================== -->
+  <section id="demo-float">
+    <h2><span class="num">06</span>Live Demo — Floating Shapes</h2>
+    <p class="subtitle">An animated background of drifting Memphis confetti.</p>
+
+    <div class="demo">
+      <div class="demo-head">
+        <span class="demo-label">// ambient-motion.background</span>
+        <button class="btn" id="floatToggle" type="button">Pause motion</button>
+      </div>
+      <div class="float-stage" id="floatStage">
+        <div class="center-label">MEMPHIS</div>
+      </div>
+    </div>
+    <p>A dozen primitives — circles, triangles, squiggles and zigzags — drift and rotate on independent loops over a dusk gradient. Used sparingly behind a hero headline, this kind of gentle ambient motion delivers Memphis energy without the static visual noise of a fully patterned page.</p>
+  </section>
+
+  <!-- ===================== USING IT TASTEFULLY ===================== -->
+  <section id="modern">
+    <h2><span class="num">07</span>Using Memphis in Modern UI</h2>
+    <p class="subtitle">How to borrow the joy without burning the user's retinas.</p>
+
+    <p>The original Memphis was anti-usability by design — but a product still has to ship. The modern approach is to treat Memphis as a <strong>seasoning, not the meal</strong>: deploy its shapes and palette in the places where personality helps (empty states, onboarding, marketing, celebration moments) while keeping the load-bearing interface calm and legible.</p>
+
+    <div class="dd">
+      <div class="do">
+        <h4>✓ Do</h4>
+        <ul>
+          <li>Restrict the busy patterns to <strong>accents</strong>: hero backgrounds, dividers, empty states, confetti on success.</li>
+          <li>Keep <strong>one calm surface</strong> for dense content — Memphis around it, not behind the body text.</li>
+          <li>Pick a <strong>tightened 4–6 color subset</strong> and check contrast for any text on top (WCAG AA).</li>
+          <li>Reuse the signature moves consistently: thick outlines, hard offset shadows, a couple of shapes per element.</li>
+          <li>Add a <strong>reduced-motion</strong> fallback for floating-shape animations.</li>
+        </ul>
+      </div>
+      <div class="dont">
+        <h4>✗ Don't</h4>
+        <ul>
+          <li>Don't pattern the entire viewport behind paragraphs — it destroys readability.</li>
+          <li>Don't put low-contrast text directly on a confetti field.</li>
+          <li>Don't let every element shout at once; chaos needs a quiet frame to register.</li>
+          <li>Don't animate everything forever — ambient motion should be slow and ignorable.</li>
+          <li>Don't confuse "random mess" with Memphis; the originals were rhythmically composed.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout"><strong>Rule of thumb:</strong> if you removed every decorative shape, the interface should still be perfectly usable. Memphis is the icing — the cake underneath must stand on its own.</div>
+
+    <h3>Where it works best today</h3>
+    <p>Memphis shines in contexts that <em>want</em> to feel human, optimistic, and a little irreverent: creative tools, kids' and education products, music and festival brands, fintech trying to seem friendly, and any landing page selling fun. It tends to clash with contexts that need to project trust and seriousness — banking dashboards, medical records, enterprise admin — where its "intentional bad taste" reads as simply unprofessional.</p>
+  </section>
+
+</div>
+
+<div id="toast" role="status" aria-live="polite">Copied!</div>
+
+<footer>
+  <p>UI/UX Design Research Hub · Memphis Design</p>
+  <p style="margin-top:8px"><a href="../index.html">← Back to Hub</a></p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============ shared Memphis palette ============ */
+  var PALETTE = [
+    { name: "Hot Pink",    hex: "#FF5DA2" },
+    { name: "Cobalt",      hex: "#2B3FFF" },
+    { name: "Memphis Cyan",hex: "#21D4D4" },
+    { name: "Lemon",       hex: "#FFCB1F" },
+    { name: "Tomato",      hex: "#FF4D3D" },
+    { name: "Tangerine",   hex: "#FF7B29" },
+    { name: "Grape",       hex: "#9B5DE5" },
+    { name: "Mint",        hex: "#3DDC84" },
+    { name: "Cream",       hex: "#F4F0E6" },
+    { name: "Ink",         hex: "#1A1A1A" }
+  ];
+
+  /* ============ tiny seeded PRNG (mulberry32) ============ */
+  function makeRng(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /* ============ toast helper ============ */
+  var toastEl = document.getElementById("toast");
+  var toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 1600);
+  }
+
+  function copyText(text, label) {
+    function ok() { toast((label || text) + " copied!"); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function () { fallbackCopy(text, ok); });
+    } else {
+      fallbackCopy(text, ok);
+    }
+  }
+  function fallbackCopy(text, done) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      if (done) done();
+    } catch (e) {
+      toast("Copy failed — " + text);
+    }
+  }
+
+  /* ============ DEMO 1: generative canvas ============ */
+  var canvas = document.getElementById("patternCanvas");
+  var ctx = canvas.getContext("2d");
+  var seedReadout = document.getElementById("seedReadout");
+  var densitySlider = document.getElementById("densitySlider");
+  var densityVal = document.getElementById("densityVal");
+  var DRAW_COLORS = ["#FF5DA2", "#2B3FFF", "#21D4D4", "#FFCB1F", "#FF4D3D", "#FF7B29", "#9B5DE5", "#3DDC84", "#1A1A1A"];
+
+  function pick(rng, arr) { return arr[Math.floor(rng() * arr.length)]; }
+
+  function drawSquiggle(rng, x, y, s, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 4 + rng() * 4;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    var steps = 4 + Math.floor(rng() * 3);
+    var dir = rng() > 0.5 ? 1 : -1;
+    ctx.moveTo(x, y);
+    for (var i = 0; i < steps; i++) {
+      var cx = x + (i + 0.5) * s;
+      var cy = y + dir * (i % 2 === 0 ? -s : s);
+      var nx = x + (i + 1) * s;
+      ctx.quadraticCurveTo(cx, cy, nx, y);
+    }
+    ctx.stroke();
+  }
+
+  function drawZigzag(rng, x, y, s, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 4 + rng() * 3;
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    var n = 4 + Math.floor(rng() * 3);
+    for (var i = 1; i <= n; i++) {
+      ctx.lineTo(x + i * s, y + (i % 2 === 0 ? 0 : -s));
+    }
+    ctx.stroke();
+  }
+
+  function drawTriangle(rng, x, y, s, color) {
+    ctx.beginPath();
+    ctx.moveTo(x, y - s);
+    ctx.lineTo(x + s, y + s);
+    ctx.lineTo(x - s, y + s);
+    ctx.closePath();
+    if (rng() > 0.45) { ctx.fillStyle = color; ctx.fill(); }
+    else { ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.stroke(); }
+  }
+
+  function drawDot(rng, x, y, s, color) {
+    ctx.beginPath();
+    ctx.arc(x, y, s, 0, Math.PI * 2);
+    if (rng() > 0.4) { ctx.fillStyle = color; ctx.fill(); }
+    else { ctx.strokeStyle = color; ctx.lineWidth = 3 + rng() * 2; ctx.stroke(); }
+  }
+
+  function drawArc(rng, x, y, s, color) {
+    ctx.beginPath();
+    ctx.lineWidth = 5 + rng() * 4;
+    ctx.strokeStyle = color;
+    var start = rng() * Math.PI * 2;
+    ctx.arc(x, y, s, start, start + Math.PI);
+    ctx.stroke();
+  }
+
+  function drawBars(rng, x, y, s, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    for (var i = 0; i < 4; i++) {
+      ctx.beginPath();
+      ctx.moveTo(x, y + i * 6);
+      ctx.lineTo(x + s, y + i * 6);
+      ctx.stroke();
+    }
+  }
+
+  function terrazzo(rng, w, h, count) {
+    for (var i = 0; i < count; i++) {
+      ctx.fillStyle = pick(rng, DRAW_COLORS);
+      ctx.globalAlpha = 0.35 + rng() * 0.3;
+      var x = rng() * w, y = rng() * h, r = 1.5 + rng() * 3;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  var SHAPES = [drawSquiggle, drawZigzag, drawTriangle, drawDot, drawArc, drawBars];
+
+  function render(seed, density) {
+    var rng = makeRng(seed);
+    var w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#F4F0E6";
+    ctx.fillRect(0, 0, w, h);
+
+    terrazzo(rng, w, h, Math.floor(density * 4));
+
+    for (var i = 0; i < density; i++) {
+      var x = 20 + rng() * (w - 40);
+      var y = 20 + rng() * (h - 40);
+      var s = 8 + rng() * 26;
+      var color = pick(rng, DRAW_COLORS);
+      var fn = SHAPES[Math.floor(rng() * SHAPES.length)];
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate((rng() - 0.5) * 0.9);
+      fn(rng, 0, 0, s, color);
+      ctx.restore();
+    }
+    seedReadout.textContent = "seed: " + seed.toString(16).toUpperCase();
+  }
+
+  function regenerate() {
+    var seed = (Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+    render(seed, parseInt(densitySlider.value, 10));
+  }
+
+  document.getElementById("regenBtn").addEventListener("click", regenerate);
+  densitySlider.addEventListener("input", function () {
+    densityVal.textContent = densitySlider.value;
+    render(lastSeedFromReadout(), parseInt(densitySlider.value, 10));
+  });
+  function lastSeedFromReadout() {
+    var m = /seed: ([0-9A-F]+)/.exec(seedReadout.textContent);
+    return m ? parseInt(m[1], 16) >>> 0 : 0x1234ABCD;
+  }
+
+  document.getElementById("downloadBtn").addEventListener("click", function () {
+    try {
+      var link = document.createElement("a");
+      link.download = "memphis-pattern.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      toast("PNG downloaded!");
+    } catch (e) { toast("Download blocked"); }
+  });
+
+  // initial paint with a fixed pleasant seed
+  render(0x5A0771, 80);
+
+  /* ============ DEMO 2: palette ============ */
+  var paletteEl = document.getElementById("palette");
+  PALETTE.forEach(function (c) {
+    var sw = document.createElement("button");
+    sw.className = "swatch";
+    sw.type = "button";
+    sw.setAttribute("aria-label", "Copy " + c.name + " " + c.hex);
+    sw.innerHTML =
+      '<div class="chip" style="background:' + c.hex + '"></div>' +
+      '<div class="meta"><div class="name">' + c.name + '</div>' +
+      '<div class="hex">' + c.hex + '</div></div>';
+    sw.addEventListener("click", function () { copyText(c.hex, c.hex); });
+    paletteEl.appendChild(sw);
+  });
+
+  /* ============ DEMO 3: components ============ */
+  var mToggle = document.getElementById("mToggle");
+  var toggleLabel = document.getElementById("toggleLabel");
+  function flipToggle() {
+    var on = mToggle.classList.toggle("on");
+    mToggle.setAttribute("aria-checked", on ? "true" : "false");
+    toggleLabel.textContent = "Confetti: " + (on ? "on" : "off");
+    if (on) burstConfetti();
+  }
+  mToggle.addEventListener("click", flipToggle);
+  mToggle.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipToggle(); }
+  });
+
+  document.getElementById("cardBtn").addEventListener("click", function () { toast("Added to cart!"); burstConfetti(); });
+  document.getElementById("shoutBtn").addEventListener("click", function () { toast("📣 SHOUTED!"); });
+
+  // little confetti burst over the component stage
+  function burstConfetti() {
+    var stage = document.querySelector(".comp-stage");
+    if (!stage) return;
+    var colors = ["#FF5DA2", "#21D4D4", "#FFCB1F", "#2B3FFF", "#FF7B29", "#9B5DE5"];
+    for (var i = 0; i < 18; i++) {
+      var bit = document.createElement("span");
+      var size = 6 + Math.random() * 8;
+      bit.style.cssText =
+        "position:absolute;z-index:3;pointer-events:none;left:" + (40 + Math.random() * 20) + "%;top:50%;" +
+        "width:" + size + "px;height:" + size + "px;background:" + colors[i % colors.length] + ";" +
+        "border:2px solid #1a1a1a;border-radius:" + (Math.random() > 0.5 ? "50%" : "2px") + ";";
+      stage.appendChild(bit);
+      animateBit(bit);
+    }
+  }
+  function animateBit(bit) {
+    var dx = (Math.random() - 0.5) * 260;
+    var dy = -120 - Math.random() * 140;
+    var rot = (Math.random() - 0.5) * 720;
+    var start = null, dur = 900 + Math.random() * 500;
+    function step(ts) {
+      if (start === null) start = ts;
+      var t = (ts - start) / dur;
+      if (t >= 1) { bit.remove(); return; }
+      var ease = 1 - Math.pow(1 - t, 2);
+      bit.style.transform = "translate(" + dx * ease + "px," + (dy * ease + 160 * t * t) + "px) rotate(" + rot * ease + "deg)";
+      bit.style.opacity = String(1 - t);
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ============ DEMO 4: floating shapes ============ */
+  var floatStage = document.getElementById("floatStage");
+  var prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function shapeSVG(kind, color) {
+    switch (kind) {
+      case "tri":
+        return '<svg width="100%" height="100%" viewBox="0 0 40 40"><polygon points="20,3 37,37 3,37" fill="' + color + '" stroke="#1a1a1a" stroke-width="2"/></svg>';
+      case "circle":
+        return '<svg width="100%" height="100%" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="' + color + '" stroke="#1a1a1a" stroke-width="2"/></svg>';
+      case "squig":
+        return '<svg width="100%" height="100%" viewBox="0 0 48 24"><path d="M2 12 Q10 0 18 12 T34 12 T48 12" fill="none" stroke="' + color + '" stroke-width="4" stroke-linecap="round"/></svg>';
+      default:
+        return '<svg width="100%" height="100%" viewBox="0 0 48 24"><path d="M2 22 L10 4 L18 22 L26 4 L34 22 L42 4" fill="none" stroke="' + color + '" stroke-width="4" stroke-linejoin="round"/></svg>';
+    }
+  }
+
+  var floaters = [];
+  function buildFloaters() {
+    var kinds = ["tri", "circle", "squig", "zig"];
+    var colors = ["#FF5DA2", "#21D4D4", "#FFCB1F", "#FF7B29", "#9B5DE5", "#3DDC84"];
+    for (var i = 0; i < 12; i++) {
+      var f = document.createElement("div");
+      f.className = "floater";
+      var sz = 22 + Math.random() * 36;
+      var kind = kinds[i % kinds.length];
+      f.style.width = sz + "px";
+      f.style.height = sz + "px";
+      f.style.left = (5 + Math.random() * 88) + "%";
+      f.style.top = (8 + Math.random() * 78) + "%";
+      f.innerHTML = shapeSVG(kind, colors[i % colors.length]);
+      if (!prefersReduced) {
+        var dur = 6 + Math.random() * 7;
+        f.style.animation = "floatY " + dur + "s ease-in-out infinite";
+        f.style.animationDelay = (-Math.random() * dur) + "s";
+      }
+      floatStage.appendChild(f);
+      floaters.push(f);
+    }
+  }
+  buildFloaters();
+
+  var motionPaused = false;
+  var floatToggleBtn = document.getElementById("floatToggle");
+  floatToggleBtn.addEventListener("click", function () {
+    motionPaused = !motionPaused;
+    floaters.forEach(function (f) { f.style.animationPlayState = motionPaused ? "paused" : "running"; });
+    floatToggleBtn.textContent = motionPaused ? "Play motion" : "Pause motion";
+  });
+
+})();
+</script>
+</body>
+</html>
