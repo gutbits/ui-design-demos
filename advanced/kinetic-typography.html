@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kinetic Typography &amp; Animated Type — UI/UX Design Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;600&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --surface: #14141f;
+    --surface2: #1d1d2c;
+    --border: #2a2a3e;
+    --text: #e6e6f0;
+    --text-dim: #8b8fa3;
+    --accent: #7aa2ff;
+    --accent2: #38e1c6;
+    --warn: #ffb86c;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-optical-sizing: auto;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Back link ---------- */
+  .back-link {
+    display: inline-block;
+    margin: 20px 0 0 20px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: border-color 0.2s, transform 0.2s, color 0.2s;
+  }
+  .back-link:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    transform: translateX(-3px);
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    position: relative;
+    padding: 80px 24px 64px;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% -10%, rgba(122,162,255,0.22), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 85% 30%, rgba(56,225,198,0.14), transparent 55%),
+      radial-gradient(ellipse 60% 50% at 10% 40%, rgba(255,184,108,0.10), transparent 55%);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  header h1 {
+    font-size: clamp(2.4rem, 7vw, 4.4rem);
+    line-height: 1.05;
+    margin: 0 0 16px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(110deg, #7aa2ff 0%, #38e1c6 45%, #ffb86c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  header .tagline {
+    max-width: 640px;
+    margin: 0 auto 24px;
+    color: var(--text-dim);
+    font-size: clamp(1rem, 2.4vw, 1.2rem);
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent2);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    margin: 4px;
+  }
+
+  /* ---------- Layout ---------- */
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  section h2 {
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    margin: 0 0 6px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  section .subtitle {
+    color: var(--text-dim);
+    margin: 0 0 28px;
+    font-size: 1rem;
+    max-width: 720px;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    margin: 0 0 8px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  p { margin: 0 0 14px; }
+
+  a { color: var(--accent); }
+  a:hover { color: var(--accent2); }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px;
+    margin-bottom: 24px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .demo-stage {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 40px 24px;
+    margin: 18px 0;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+  }
+
+  button.ctrl {
+    background: linear-gradient(135deg, rgba(122,162,255,0.2), rgba(56,225,198,0.16));
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: "Inter", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.1s;
+  }
+  button.ctrl:hover { border-color: var(--accent); }
+  button.ctrl:active { transform: scale(0.96); }
+
+  .slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-family: "JetBrains Mono", monospace;
+  }
+  input[type="range"] {
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  /* ---------- Code blocks ---------- */
+  .code-block {
+    background: #0d0d16;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 16px 0;
+    white-space: pre;
+    color: #c8c8da;
+  }
+  .code-block .k { color: var(--accent); }
+  .code-block .s { color: var(--accent2); }
+  .code-block .c { color: var(--text-dim); font-style: italic; }
+  .code-block .n { color: var(--warn); }
+  .code-block .f { color: #c792ea; }
+
+  /* ---------- Notes ---------- */
+  .note {
+    background: rgba(255,184,108,0.08);
+    border: 1px solid rgba(255,184,108,0.35);
+    border-left: 3px solid var(--warn);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 18px 0;
+    font-size: 0.92rem;
+  }
+  .note strong { color: var(--warn); }
+  .note ul { margin: 10px 0 0; padding-left: 20px; }
+  .note li { margin-bottom: 6px; }
+
+  /* ---------- Demo 1: per-char reveal ---------- */
+  #revealHeadline {
+    font-size: clamp(1.8rem, 6vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  #revealHeadline .char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.8em) rotateX(-70deg);
+    transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  #revealHeadline .char.in {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+
+  /* ---------- Demo 2: scramble ---------- */
+  #scrambleText {
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(1.4rem, 5vw, 2.4rem);
+    font-weight: 600;
+    color: var(--accent2);
+    letter-spacing: 0.04em;
+  }
+  #scrambleText .dud { color: var(--accent); opacity: 0.7; }
+
+  /* ---------- Demo 3: variable font ---------- */
+  #vfWord {
+    font-family: "Roboto Flex", "Inter", sans-serif;
+    font-size: clamp(2.4rem, 8vw, 4.6rem);
+    line-height: 1;
+    color: var(--text);
+    font-variation-settings: "wght" 100, "wdth" 100;
+    animation: vfPulse 4s ease-in-out infinite;
+  }
+  @keyframes vfPulse {
+    0%, 100% { font-variation-settings: "wght" 100, "wdth" 75; }
+    50%      { font-variation-settings: "wght" 900, "wdth" 125; }
+  }
+  #vfWord.hoverMode { animation: none; transition: font-variation-settings 0.5s ease; }
+  #vfWord.hoverMode:hover { font-variation-settings: "wght" 1000, "wdth" 150; }
+
+  /* ---------- Demo 4: aurora gradient text ---------- */
+  .aurora-text {
+    font-size: clamp(2rem, 7vw, 3.6rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(110deg, #7aa2ff, #38e1c6, #ffb86c, #c792ea, #7aa2ff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: auroraMove 6s linear infinite;
+  }
+  @keyframes auroraMove {
+    to { background-position: 300% 50%; }
+  }
+
+  /* ---------- Demo 5: glitch ---------- */
+  .glitch {
+    position: relative;
+    font-size: clamp(2rem, 7vw, 3.6rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .glitch::before { color: var(--accent2); }
+  .glitch::after { color: var(--warn); }
+  .glitch:hover::before {
+    opacity: 0.9;
+    animation: glitchTop 0.5s steps(2, end) infinite;
+  }
+  .glitch:hover::after {
+    opacity: 0.9;
+    animation: glitchBot 0.5s steps(2, end) infinite;
+  }
+  @keyframes glitchTop {
+    0%   { clip-path: inset(0 0 70% 0); transform: translate(-3px, -2px); }
+    50%  { clip-path: inset(20% 0 40% 0); transform: translate(3px, 1px); }
+    100% { clip-path: inset(10% 0 60% 0); transform: translate(-2px, 2px); }
+  }
+  @keyframes glitchBot {
+    0%   { clip-path: inset(70% 0 0 0); transform: translate(3px, 2px); }
+    50%  { clip-path: inset(45% 0 25% 0); transform: translate(-3px, -1px); }
+    100% { clip-path: inset(55% 0 10% 0); transform: translate(2px, -2px); }
+  }
+
+  /* ---------- Demo 6: wavy ---------- */
+  #wavyText {
+    font-size: clamp(2rem, 7vw, 3.6rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+  }
+  #wavyText .wchar {
+    display: inline-block;
+    will-change: transform;
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px 60px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    #revealHeadline .char { opacity: 1; transform: none; transition: none; }
+    #vfWord { animation: none; font-variation-settings: "wght" 700, "wdth" 100; }
+    .aurora-text { animation: none; background-position: 50% 50%; }
+    .glitch:hover::before, .glitch:hover::after { animation: none; opacity: 0; }
+    #wavyText .wchar { transform: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <h1>Kinetic Typography &amp; Animated Type</h1>
+  <p class="tagline">Text that moves, morphs, reveals and reacts. Variable-font animation, character-split reveals, scramble decode effects, marquees, glitch, aurora gradients and per-letter motion — built with vanilla CSS and JS.</p>
+  <div>
+    <span class="pill">variable-fonts</span>
+    <span class="pill">clip-path</span>
+    <span class="pill">background-clip:text</span>
+    <span class="pill">requestAnimationFrame</span>
+    <span class="pill">prefers-reduced-motion</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ================= INTRO ================= -->
+  <section>
+    <h2>What is kinetic typography?</h2>
+    <p class="subtitle">Animating text to carry meaning, rhythm and emotion — not just decoration. Motion directs attention, sequences reading order, and adds personality, but it must stay subordinate to legibility.</p>
+    <p>The demos below are all real and self-contained: no GSAP, no Lottie, no framework. They lean on a small set of primitives — splitting text into spans, animating <code>font-variation-settings</code>, clipping gradients to glyphs with <code>background-clip: text</code>, slicing layers with <code>clip-path</code>, and driving frame-by-frame motion with <code>requestAnimationFrame</code>. Every effect freezes to a readable final state when the user prefers reduced motion.</p>
+  </section>
+
+  <!-- ================= DEMO 1 ================= -->
+  <section>
+    <h2>1 · Per-character reveal</h2>
+    <p class="subtitle">Split a headline into individual <code>&lt;span&gt;</code> characters in JS, then animate them in with a staggered transform and opacity. The original text stays as an <code>aria-label</code> for screen readers.</p>
+    <div class="card">
+      <div class="demo-stage">
+        <div id="revealHeadline" aria-label="Design in motion">Design in motion</div>
+      </div>
+      <div class="controls">
+        <button class="ctrl" id="revealReplay">Replay reveal</button>
+        <div class="slider-wrap">
+          <label for="revealStagger">stagger</label>
+          <input type="range" id="revealStagger" min="10" max="120" value="45">
+          <span id="revealStaggerVal">45ms</span>
+        </div>
+      </div>
+      <div class="code-block"><span class="c">// split into chars, keep original text accessible</span>
+el.<span class="f">setAttribute</span>(<span class="s">'aria-label'</span>, text);
+el.innerHTML = [...text].<span class="f">map</span>(c =&gt;
+  c === <span class="s">' '</span> ? <span class="s">' '</span>
+    : <span class="s">`&lt;span class="char" aria-hidden="true"&gt;</span>${c}<span class="s">&lt;/span&gt;`</span>
+).<span class="f">join</span>(<span class="s">''</span>);
+
+<span class="c">// stagger the .in class per index</span>
+chars.<span class="f">forEach</span>((ch, i) =&gt;
+  <span class="f">setTimeout</span>(() =&gt; ch.classList.<span class="f">add</span>(<span class="s">'in'</span>), i * <span class="n">stagger</span>));</div>
+    </div>
+  </section>
+
+  <!-- ================= DEMO 2 ================= -->
+  <section>
+    <h2>2 · Text scramble / decode</h2>
+    <p class="subtitle">The classic "decrypting" effect: each slot cycles through random glyphs, then locks onto its final character one position at a time. Pure timers and a frame loop.</p>
+    <div class="card">
+      <div class="demo-stage">
+        <div id="scrambleText" aria-label="ACCESS GRANTED">ACCESS GRANTED</div>
+      </div>
+      <div class="controls">
+        <button class="ctrl" id="scrambleReplay">Run decode</button>
+        <button class="ctrl" id="scrambleSwap">Swap phrase</button>
+      </div>
+      <div class="code-block"><span class="c">// each char resolves after a random start, scrambling until then</span>
+<span class="k">const</span> chars = <span class="s">'!&lt;&gt;-_\\/[]{}=+*^?#________'</span>;
+<span class="k">function</span> <span class="f">frame</span>() {
+  <span class="k">let</span> out = <span class="s">''</span>, done = <span class="n">0</span>;
+  <span class="k">for</span> (<span class="k">const</span> q <span class="k">of</span> queue) {
+    <span class="k">if</span> (frameCount &gt;= q.end) { done++; out += q.to; }
+    <span class="k">else if</span> (frameCount &gt;= q.start) {
+      <span class="k">if</span> (!q.char || Math.<span class="f">random</span>() &lt; <span class="n">0.28</span>)
+        q.char = chars[Math.<span class="f">random</span>() * chars.length | <span class="n">0</span>];
+      out += <span class="s">`&lt;span class="dud"&gt;</span>${q.char}<span class="s">&lt;/span&gt;`</span>;
+    } <span class="k">else</span> out += q.from;
+  }
+  el.innerHTML = out;
+  <span class="k">if</span> (done &lt; queue.length) <span class="f">requestAnimationFrame</span>(frame);
+}</div>
+    </div>
+  </section>
+
+  <!-- ================= DEMO 3 ================= -->
+  <section>
+    <h2>3 · Variable-font weight animation</h2>
+    <p class="subtitle">One font file, a continuous range of weights and widths. Animating <code>font-variation-settings</code> morphs the letterforms themselves — far smoother than swapping discrete weights. This uses Roboto Flex (<code>wght</code> 100–1000, <code>wdth</code> 25–151).</p>
+    <div class="card">
+      <div class="demo-stage">
+        <div id="vfWord">VARIABLE</div>
+      </div>
+      <div class="controls">
+        <button class="ctrl" id="vfToggle">Switch to hover mode</button>
+        <div class="slider-wrap" id="vfManualWrap">
+          <label for="vfWeight">wght</label>
+          <input type="range" id="vfWeight" min="100" max="1000" value="400" disabled>
+          <span id="vfWeightVal">auto</span>
+        </div>
+      </div>
+      <div class="code-block"><span class="k">@keyframes</span> <span class="f">pulse</span> {
+  <span class="n">0%</span>, <span class="n">100%</span> { <span class="k">font-variation-settings</span>: <span class="s">"wght"</span> <span class="n">100</span>, <span class="s">"wdth"</span> <span class="n">75</span>; }
+  <span class="n">50%</span>      { <span class="k">font-variation-settings</span>: <span class="s">"wght"</span> <span class="n">900</span>, <span class="s">"wdth"</span> <span class="n">125</span>; }
+}
+.<span class="f">word</span> { <span class="k">animation</span>: pulse <span class="n">4s</span> ease-in-out infinite; }
+
+<span class="c">/* hover variant — animate one axis on interaction */</span>
+.<span class="f">word</span>:hover { <span class="k">font-variation-settings</span>: <span class="s">"wght"</span> <span class="n">1000</span>; }</div>
+    </div>
+  </section>
+
+  <!-- ================= DEMO 4 ================= -->
+  <section>
+    <h2>4 · Gradient / aurora animated text</h2>
+    <p class="subtitle">A multi-stop linear gradient is clipped to the glyphs with <code>background-clip: text</code> and the <code>background-position</code> is animated, so colour appears to flow through the letters.</p>
+    <div class="card">
+      <div class="demo-stage">
+        <div class="aurora-text">aurora flow</div>
+      </div>
+      <div class="code-block">.<span class="f">aurora</span> {
+  <span class="k">background</span>: <span class="f">linear-gradient</span>(<span class="n">110deg</span>,
+    <span class="s">#7aa2ff</span>, <span class="s">#38e1c6</span>, <span class="s">#ffb86c</span>, <span class="s">#c792ea</span>, <span class="s">#7aa2ff</span>);
+  <span class="k">background-size</span>: <span class="n">300%</span> <span class="n">100%</span>;
+  <span class="k">-webkit-background-clip</span>: text;
+  <span class="k">background-clip</span>: text;
+  <span class="k">color</span>: transparent;
+  <span class="k">animation</span>: flow <span class="n">6s</span> linear infinite;
+}
+<span class="k">@keyframes</span> <span class="f">flow</span> { <span class="k">to</span> { <span class="k">background-position</span>: <span class="n">300%</span> <span class="n">50%</span>; } }</div>
+    </div>
+  </section>
+
+  <!-- ================= DEMO 5 ================= -->
+  <section>
+    <h2>5 · Glitch text</h2>
+    <p class="subtitle">Two pseudo-element copies of the text are offset in colour and sliced with <code>clip-path: inset()</code>, then jittered on hover. No images, no JS — the text content lives in <code>data-text</code>.</p>
+    <div class="card">
+      <div class="demo-stage">
+        <div class="glitch" data-text="SYSTEM ERROR" tabindex="0">SYSTEM ERROR</div>
+        <p style="color:var(--text-dim);font-size:0.85rem;margin-top:14px;">hover or focus the text</p>
+      </div>
+      <div class="code-block">.<span class="f">glitch</span>::before,
+.<span class="f">glitch</span>::after { <span class="k">content</span>: <span class="f">attr</span>(data-text); <span class="k">position</span>: absolute; <span class="k">inset</span>: <span class="n">0</span>; }
+.<span class="f">glitch</span>::before { <span class="k">color</span>: <span class="s">#38e1c6</span>; }
+.<span class="f">glitch</span>::after  { <span class="k">color</span>: <span class="s">#ffb86c</span>; }
+
+<span class="k">@keyframes</span> <span class="f">glitchTop</span> {
+  <span class="n">0%</span>   { <span class="k">clip-path</span>: <span class="f">inset</span>(<span class="n">0</span> <span class="n">0</span> <span class="n">70%</span> <span class="n">0</span>); <span class="k">transform</span>: <span class="f">translate</span>(<span class="n">-3px</span>, <span class="n">-2px</span>); }
+  <span class="n">100%</span> { <span class="k">clip-path</span>: <span class="f">inset</span>(<span class="n">10%</span> <span class="n">0</span> <span class="n">60%</span> <span class="n">0</span>); <span class="k">transform</span>: <span class="f">translate</span>(<span class="n">-2px</span>, <span class="n">2px</span>); }
+}</div>
+    </div>
+  </section>
+
+  <!-- ================= DEMO 6 ================= -->
+  <section>
+    <h2>6 · Wavy / per-letter sine motion</h2>
+    <p class="subtitle">Each letter is a span; a <code>requestAnimationFrame</code> loop offsets its <code>translateY</code> by a sine wave whose phase shifts per index, producing a travelling ripple. The speed slider scales the angular velocity.</p>
+    <div class="card">
+      <div class="demo-stage">
+        <div id="wavyText" aria-label="floating letters">floating letters</div>
+      </div>
+      <div class="controls">
+        <button class="ctrl" id="wavyToggle">Pause</button>
+        <div class="slider-wrap">
+          <label for="wavySpeed">speed</label>
+          <input type="range" id="wavySpeed" min="1" max="60" value="22">
+          <span id="wavySpeedVal">2.2</span>
+        </div>
+      </div>
+      <div class="code-block"><span class="k">function</span> <span class="f">loop</span>(t) {
+  letters.<span class="f">forEach</span>((el, i) =&gt; {
+    <span class="k">const</span> y = Math.<span class="f">sin</span>(t * <span class="n">0.001</span> * speed + i * <span class="n">0.5</span>) * amplitude;
+    el.style.transform = <span class="s">`translateY(</span>${y}px<span class="s">)`</span>;
+  });
+  <span class="f">requestAnimationFrame</span>(loop);
+}</div>
+    </div>
+  </section>
+
+  <!-- ================= TECHNIQUES ================= -->
+  <section>
+    <h2>Techniques</h2>
+    <p class="subtitle">The building blocks behind every effect above, and where each one earns its keep.</p>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Character / word splitting</h3>
+        <p>Wrap each char, word or line in a span so you can stagger or transform them independently. Roll your own (as above) or use <a href="https://gsap.com/docs/v3/Plugins/SplitText/" target="_blank" rel="noopener">GSAP SplitText</a> for line-aware splitting that survives wrapping. Always restore an accessible label.</p>
+      </div>
+      <div class="card">
+        <h3>Variable fonts</h3>
+        <p>A single file exposes continuous axes (<code>wght</code>, <code>wdth</code>, <code>slnt</code>, <code>opsz</code>, plus custom axes). Animate them via <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-variation-settings" target="_blank" rel="noopener">font-variation-settings</a>. See <a href="https://fonts.google.com/knowledge/introducing_type/introducing_variable_fonts" target="_blank" rel="noopener">Google Fonts variable fonts</a>.</p>
+      </div>
+      <div class="card">
+        <h3>clip-path</h3>
+        <p>Slice and reveal type without masks or images. <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" target="_blank" rel="noopener">clip-path</a> with <code>inset()</code>, <code>polygon()</code> or <code>circle()</code> powers wipes, glitch slices and reveal-on-scroll.</p>
+      </div>
+      <div class="card">
+        <h3>background-clip: text</h3>
+        <p>Paint a gradient, image or animated background and clip it to the glyph shapes. Pair with an animated <code>background-position</code> for flowing colour, or a <code>conic-gradient</code> for a shimmer sweep.</p>
+      </div>
+      <div class="card">
+        <h3>SVG text</h3>
+        <p>Use <code>&lt;text&gt;</code> with <code>stroke-dasharray</code>/<code>stroke-dashoffset</code> for handwriting effects, or <code>&lt;textPath&gt;</code> to run type along a curve. Crisp, scalable, and animatable with SMIL or CSS.</p>
+      </div>
+      <div class="card">
+        <h3>WebGL text</h3>
+        <p>For displacement, fluid and particle type, render glyphs to a texture or use MSDF fonts and animate in a fragment shader (three.js, OGL, Curtains). Powerful but heavy — reserve it for hero moments. See <a href="https://web.dev/articles/css-text-balancing" target="_blank" rel="noopener">web.dev</a> for lighter-weight text layout tooling.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRINCIPLES ================= -->
+  <section>
+    <h2>Principles</h2>
+    <p class="subtitle">Motion should serve reading, never fight it.</p>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Readability first</h3>
+        <p>The reader must be able to parse the words at every frame, or at minimum at rest. If an effect makes text momentarily illegible, keep it brief and ensure a stable, readable end state.</p>
+      </div>
+      <div class="card">
+        <h3>Timing &amp; easing</h3>
+        <p>Use eased curves (<code>cubic-bezier</code>), short durations (150–600ms for reveals), and small staggers (30–60ms). Linear, slow or jittery motion reads as cheap or distracting.</p>
+      </div>
+      <div class="card">
+        <h3>Hierarchy</h3>
+        <p>Animate one focal element per view. Reserve kinetic treatment for headlines, hero words and calls to action — competing animations flatten hierarchy and exhaust the reader.</p>
+      </div>
+      <div class="card">
+        <h3>Don't animate body copy</h3>
+        <p>Long-form paragraphs should sit still. Continuous motion under reading text spikes cognitive load and harms comprehension. Save kinetic effects for display type.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NOTES ================= -->
+  <section style="border-bottom:none;">
+    <h2>Honest caveats</h2>
+    <p class="subtitle">Kinetic type is easy to overdo. Mind these before shipping.</p>
+
+    <div class="note">
+      <strong>Accessibility.</strong> Splitting text into per-character spans destroys it for screen readers and copy/paste reliability.
+      <ul>
+        <li>Put the real string in <code>aria-label</code> on the container and mark the spans <code>aria-hidden="true"</code> (every JS demo here does this).</li>
+        <li>Always honour <code>prefers-reduced-motion: reduce</code> — freeze every effect to its final readable state, as the CSS in this page does.</li>
+        <li>Glitch and scramble effects can trip assistive tech and parsers; keep the accessible text static underneath.</li>
+      </ul>
+    </div>
+
+    <div class="note">
+      <strong>Performance.</strong> Animate only <code>transform</code> and <code>opacity</code> where possible — they're compositor-friendly. Animating <code>font-variation-settings</code>, <code>clip-path</code> or <code>background-position</code> can trigger paint; profile on low-end devices and use <code>will-change</code> sparingly. A per-letter rAF loop on a long string is many style writes per frame — batch and cap them.
+    </div>
+
+    <div class="note">
+      <strong>Legibility &amp; motion sickness.</strong> Rapid, looping or parallax-style text motion can cause discomfort, nausea or vestibular distress for some users. Keep amplitudes small, avoid infinite high-frequency loops near body text, and never gate content behind an animation that can't be skipped.
+    </div>
+  </section>
+
+  <footer>
+    UI/UX Design Research · Advanced · Kinetic Typography. All demos are vanilla CSS/JS; only fonts are loaded externally.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Demo 1: per-character reveal ---------- */
+  (function () {
+    var el = document.getElementById("revealHeadline");
+    var staggerInput = document.getElementById("revealStagger");
+    var staggerVal = document.getElementById("revealStaggerVal");
+    var replay = document.getElementById("revealReplay");
+    var text = el.textContent;
+    var timers = [];
+
+    function build() {
+      el.setAttribute("aria-label", text);
+      el.innerHTML = "";
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < text.length; i++) {
+        var c = text[i];
+        if (c === " ") {
+          frag.appendChild(document.createTextNode(" "));
+        } else {
+          var s = document.createElement("span");
+          s.className = "char";
+          s.setAttribute("aria-hidden", "true");
+          s.textContent = c;
+          frag.appendChild(s);
+        }
+      }
+      el.appendChild(frag);
+    }
+
+    function play() {
+      timers.forEach(clearTimeout);
+      timers = [];
+      var chars = el.querySelectorAll(".char");
+      var stagger = parseInt(staggerInput.value, 10);
+      if (reduceMotion) {
+        chars.forEach(function (ch) { ch.classList.add("in"); });
+        return;
+      }
+      chars.forEach(function (ch, i) {
+        ch.classList.remove("in");
+        timers.push(setTimeout(function () { ch.classList.add("in"); }, i * stagger));
+      });
+    }
+
+    build();
+    play();
+    replay.addEventListener("click", play);
+    staggerInput.addEventListener("input", function () {
+      staggerVal.textContent = staggerInput.value + "ms";
+    });
+  })();
+
+  /* ---------- Demo 2: scramble / decode ---------- */
+  (function () {
+    var el = document.getElementById("scrambleText");
+    var replay = document.getElementById("scrambleReplay");
+    var swap = document.getElementById("scrambleSwap");
+    var glyphs = "!<>-_\\/[]{}=+*^?#ABCDEF0123456789";
+    var phrases = ["ACCESS GRANTED", "SIGNAL LOCKED", "RENDER COMPLETE", "DECODING TYPE"];
+    var pIndex = 0;
+    var frameReq = null;
+
+    function setText(newText) {
+      var oldText = el.getAttribute("aria-label") || el.textContent;
+      el.setAttribute("aria-label", newText);
+      if (reduceMotion) {
+        el.textContent = newText;
+        return;
+      }
+      var length = Math.max(oldText.length, newText.length);
+      var queue = [];
+      for (var i = 0; i < length; i++) {
+        var from = oldText[i] || "";
+        var to = newText[i] || "";
+        var start = Math.floor(Math.random() * 20);
+        var end = start + Math.floor(Math.random() * 30) + 10;
+        queue.push({ from: from, to: to, start: start, end: end, char: "" });
+      }
+      var frame = 0;
+      if (frameReq) cancelAnimationFrame(frameReq);
+      (function update() {
+        var out = "";
+        var done = 0;
+        for (var j = 0; j < queue.length; j++) {
+          var q = queue[j];
+          if (frame >= q.end) {
+            done++;
+            out += q.to;
+          } else if (frame >= q.start) {
+            if (!q.char || Math.random() < 0.28) {
+              q.char = glyphs[Math.floor(Math.random() * glyphs.length)];
+            }
+            out += '<span class="dud">' + q.char + "</span>";
+          } else {
+            out += q.from;
+          }
+        }
+        el.innerHTML = out;
+        frame++;
+        if (done < queue.length) {
+          frameReq = requestAnimationFrame(update);
+        }
+      })();
+    }
+
+    replay.addEventListener("click", function () { setText(phrases[pIndex]); });
+    swap.addEventListener("click", function () {
+      pIndex = (pIndex + 1) % phrases.length;
+      setText(phrases[pIndex]);
+    });
+    // initial decode on load
+    el.textContent = "";
+    setText(phrases[0]);
+  })();
+
+  /* ---------- Demo 3: variable font ---------- */
+  (function () {
+    var word = document.getElementById("vfWord");
+    var toggle = document.getElementById("vfToggle");
+    var slider = document.getElementById("vfWeight");
+    var val = document.getElementById("vfWeightVal");
+    var hoverMode = false;
+
+    toggle.addEventListener("click", function () {
+      hoverMode = !hoverMode;
+      if (hoverMode) {
+        word.classList.add("hoverMode");
+        slider.disabled = false;
+        val.textContent = slider.value;
+        toggle.textContent = "Switch to auto loop";
+        applySlider();
+      } else {
+        word.classList.remove("hoverMode");
+        word.style.fontVariationSettings = "";
+        slider.disabled = true;
+        val.textContent = "auto";
+        toggle.textContent = "Switch to hover mode";
+      }
+    });
+
+    function applySlider() {
+      word.style.fontVariationSettings = '"wght" ' + slider.value + ', "wdth" 100';
+      val.textContent = slider.value;
+    }
+    slider.addEventListener("input", function () {
+      if (hoverMode) applySlider();
+    });
+  })();
+
+  /* ---------- Demo 6: wavy sine motion ---------- */
+  (function () {
+    var el = document.getElementById("wavyText");
+    var toggle = document.getElementById("wavyToggle");
+    var speedInput = document.getElementById("wavySpeed");
+    var speedVal = document.getElementById("wavySpeedVal");
+    var text = el.textContent;
+    var running = !reduceMotion;
+    var rafId = null;
+    var amplitude = 14;
+
+    // build letter spans, keep accessible label
+    el.setAttribute("aria-label", text);
+    el.innerHTML = "";
+    var letters = [];
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (c === " ") {
+        el.appendChild(document.createTextNode(" "));
+        continue;
+      }
+      var span = document.createElement("span");
+      span.className = "wchar";
+      span.setAttribute("aria-hidden", "true");
+      span.textContent = c;
+      el.appendChild(span);
+      letters.push(span);
+    }
+
+    function speed() { return parseInt(speedInput.value, 10) / 10; }
+
+    function loop(t) {
+      var s = speed();
+      for (var j = 0; j < letters.length; j++) {
+        var y = Math.sin(t * 0.001 * s + j * 0.5) * amplitude;
+        letters[j].style.transform = "translateY(" + y.toFixed(2) + "px)";
+      }
+      if (running) rafId = requestAnimationFrame(loop);
+    }
+
+    function start() {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(loop);
+    }
+
+    speedInput.addEventListener("input", function () {
+      speedVal.textContent = speed().toFixed(1);
+    });
+
+    toggle.addEventListener("click", function () {
+      running = !running;
+      toggle.textContent = running ? "Pause" : "Play";
+      if (running) start();
+      else if (rafId) cancelAnimationFrame(rafId);
+    });
+
+    if (running) {
+      start();
+    } else {
+      toggle.textContent = "Play";
+    }
+  })();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Y2K / Frutiger Aero Revival — UI/UX Design Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --surface: #14141f;
+    --surface2: #1d1d2c;
+    --border: #2a2a3e;
+    --text: #e6e6f0;
+    --text-dim: #8b8fa3;
+    --accent: #7aa2ff;
+    --accent2: #38e1c6;
+    --warn: #ffb86c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code, .code-block, kbd { font-family: 'JetBrains Mono', monospace; }
+
+  /* ---------- Back link ---------- */
+  .back-link {
+    display: inline-block;
+    margin: 20px 0 0 20px;
+    padding: 8px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .back-link:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    transform: translateX(-3px);
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    text-align: center;
+    padding: 70px 20px 60px;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(122,162,255,0.18), transparent 55%),
+      radial-gradient(circle at 75% 80%, rgba(56,225,198,0.16), transparent 55%),
+      radial-gradient(circle at 50% 50%, rgba(255,184,108,0.06), transparent 70%);
+  }
+
+  header h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    background: linear-gradient(100deg, #7aa2ff 0%, #38e1c6 50%, #a8f0ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+  }
+
+  header .tagline {
+    color: var(--text-dim);
+    font-size: 1.15rem;
+    max-width: 640px;
+    margin: 0 auto 22px;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(56,225,198,0.12);
+    border: 1px solid rgba(56,225,198,0.4);
+    color: var(--accent2);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pill + .pill { margin-left: 8px; }
+  .pill.blue { background: rgba(122,162,255,0.12); border-color: rgba(122,162,255,0.4); color: var(--accent); }
+  .pill.warn { background: rgba(255,184,108,0.12); border-color: rgba(255,184,108,0.4); color: var(--warn); }
+
+  /* ---------- Layout ---------- */
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  section:last-child { border-bottom: none; }
+
+  h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  h2 .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-right: 10px;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 1.02rem;
+    margin-bottom: 28px;
+  }
+
+  h3 { font-size: 1.15rem; margin: 26px 0 10px; font-weight: 600; }
+  p { margin-bottom: 14px; }
+  p a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(122,162,255,0.3); }
+  p a:hover { border-bottom-color: var(--accent); }
+
+  ul { margin: 0 0 14px 22px; }
+  li { margin-bottom: 8px; }
+
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin: 22px 0;
+  }
+  .demo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    margin: 22px 0;
+  }
+  .demo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 18px;
+    display: block;
+  }
+
+  /* ---------- Code block ---------- */
+  .code-block {
+    background: #0d0d18;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    margin: 18px 0;
+  }
+  .code-block .c-kw { color: #c792ea; }
+  .code-block .c-prop { color: var(--accent); }
+  .code-block .c-val { color: var(--accent2); }
+  .code-block .c-str { color: var(--warn); }
+  .code-block .c-com { color: #5a5f73; font-style: italic; }
+  .code-block .c-sel { color: #ff9cee; }
+
+  /* ---------- Note ---------- */
+  .note {
+    background: rgba(255,184,108,0.07);
+    border: 1px solid rgba(255,184,108,0.35);
+    border-left: 4px solid var(--warn);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 22px 0;
+  }
+  .note strong { color: var(--warn); }
+  .note ul { margin-top: 8px; }
+
+  /* ================================================================
+     ============== Y2K / FRUTIGER AERO DEMO STYLES =================
+     ================================================================ */
+
+  /* ---- 1. Aqua gel buttons ---- */
+  .aqua-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+  .aqua-btn {
+    position: relative;
+    border: none;
+    cursor: pointer;
+    padding: 14px 34px;
+    border-radius: 999px;
+    font-family: 'Baloo 2', 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+    overflow: hidden;
+    transition: transform 0.08s ease, box-shadow 0.2s ease;
+  }
+  .aqua-btn::before {
+    content: "";
+    position: absolute;
+    top: 3px; left: 6px; right: 6px;
+    height: 42%;
+    border-radius: 999px 999px 60% 60% / 999px 999px 100% 100%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.15));
+    pointer-events: none;
+  }
+  .aqua-blue {
+    background: linear-gradient(to bottom, #6fc3ff 0%, #1d8eff 50%, #0058d6 51%, #2aa0ff 100%);
+    box-shadow: 0 6px 16px rgba(29,142,255,0.5), inset 0 -3px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .aqua-green {
+    background: linear-gradient(to bottom, #b6ff7a 0%, #4fd11a 50%, #2c9e00 51%, #6fe83a 100%);
+    box-shadow: 0 6px 16px rgba(79,209,26,0.5), inset 0 -3px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .aqua-pink {
+    background: linear-gradient(to bottom, #ffb6e6 0%, #ff4fb0 50%, #d6008a 51%, #ff70c8 100%);
+    box-shadow: 0 6px 16px rgba(255,79,176,0.5), inset 0 -3px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .aqua-orange {
+    background: linear-gradient(to bottom, #ffd27a 0%, #ff9a1d 50%, #d65f00 51%, #ffb53a 100%);
+    box-shadow: 0 6px 16px rgba(255,154,29,0.5), inset 0 -3px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .aqua-graphite {
+    background: linear-gradient(to bottom, #c7cdd6 0%, #7a818f 50%, #41454f 51%, #9aa0ad 100%);
+    box-shadow: 0 6px 16px rgba(60,64,74,0.5), inset 0 -3px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .aqua-btn:hover { transform: translateY(-2px); filter: brightness(1.08) saturate(1.1); }
+  .aqua-btn:active, .aqua-btn.pressed {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 3px 8px rgba(0,0,0,0.4);
+  }
+
+  /* ---- 2. Frutiger Aero hero tile ---- */
+  .aero-hero {
+    position: relative;
+    height: 320px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #4fb8ff 0%, #8fe0ff 35%, #b6f0c4 70%, #6fd83a 100%);
+    box-shadow: inset 0 2px 20px rgba(255,255,255,0.5), 0 10px 30px rgba(0,0,0,0.4);
+  }
+  .aero-hero .sun {
+    position: absolute;
+    top: -40px; right: -20px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,200,0.4) 40%, transparent 70%);
+    pointer-events: none;
+  }
+  .bubbles { position: absolute; inset: 0; pointer-events: none; }
+  .bubble {
+    position: absolute;
+    bottom: -60px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.95), rgba(255,255,255,0.25) 38%, rgba(180,230,255,0.15) 60%, transparent 75%);
+    border: 1px solid rgba(255,255,255,0.4);
+    animation: rise linear infinite;
+  }
+  @keyframes rise {
+    0%   { transform: translateY(0) translateX(0) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.9; }
+    50%  { transform: translateY(-180px) translateX(20px) scale(1); }
+    90%  { opacity: 0.7; }
+    100% { transform: translateY(-380px) translateX(-10px) scale(1.1); opacity: 0; }
+  }
+  .aero-glass {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 78%;
+    padding: 26px 30px;
+    border-radius: 16px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0.18));
+    border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 24px rgba(0,60,120,0.35);
+    backdrop-filter: blur(4px);
+    text-align: center;
+  }
+  .aero-glass h4 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.5rem;
+    color: #054a8c;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    margin-bottom: 4px;
+  }
+  .aero-glass p { color: #0a5fa0; font-size: 0.92rem; margin: 0; font-weight: 500; }
+  .droplet {
+    position: absolute;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(circle at 35% 25%, rgba(255,255,255,0.9), rgba(255,255,255,0.1) 50%, transparent);
+    border: 1px solid rgba(255,255,255,0.5);
+    pointer-events: none;
+  }
+
+  /* ---- 3. Web 2.0 glossy badges ---- */
+  .badge-row { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
+  .starburst {
+    position: relative;
+    width: 110px; height: 110px;
+    display: grid; place-items: center;
+    color: #fff;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    background: radial-gradient(circle at 40% 35%, #ffe98a, #ff8a1d 60%, #e85d00);
+    box-shadow: inset 0 3px 8px rgba(255,255,255,0.6), 0 4px 12px rgba(0,0,0,0.4);
+    clip-path: polygon(50% 0%, 61% 18%, 83% 12%, 79% 35%, 100% 39%, 85% 56%, 98% 76%, 74% 75%, 70% 98%, 50% 84%, 30% 98%, 26% 75%, 2% 76%, 15% 56%, 0% 39%, 21% 35%, 17% 12%, 39% 18%);
+    transition: transform 0.3s ease;
+  }
+  .starburst:hover { transform: rotate(15deg) scale(1.05); }
+  .sticker {
+    padding: 14px 26px;
+    border-radius: 12px;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  .sticker::after {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 50%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0));
+    border-radius: 12px 12px 40% 40%;
+  }
+  .sticker-new { background: linear-gradient(to bottom, #ff6fa0, #d6004f); box-shadow: 0 4px 12px rgba(214,0,79,0.4); }
+  .sticker-beta { background: linear-gradient(to bottom, #6fd1ff, #0070d6); box-shadow: 0 4px 12px rgba(0,112,214,0.4); }
+  .sticker-free { background: linear-gradient(to bottom, #9fe85a, #3a9e00); box-shadow: 0 4px 12px rgba(58,158,0,0.4); }
+
+  /* ---- 4. Chrome / metallic text ---- */
+  .chrome-text {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    text-align: center;
+    background: linear-gradient(to bottom,
+      #ffffff 0%, #c9d4e0 18%, #7d8ca0 40%, #2c3340 50%,
+      #58616e 52%, #aab6c4 70%, #e8eef5 88%, #ffffff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.6)) drop-shadow(0 0 1px rgba(180,200,255,0.8));
+    letter-spacing: 0.02em;
+  }
+  .chrome-gold {
+    background: linear-gradient(to bottom,
+      #fff7d6 0%, #ffe08a 18%, #c9941d 42%, #5e3e00 50%,
+      #a06f10 52%, #ffd35a 72%, #fff0b8 90%, #ffffff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ---- 5. Glossy progress bar ---- */
+  .glossy-bar-wrap {
+    height: 30px;
+    border-radius: 999px;
+    background: linear-gradient(to bottom, #0a1422, #16263b);
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+    overflow: hidden;
+    padding: 3px;
+  }
+  .glossy-bar {
+    height: 100%;
+    width: 65%;
+    border-radius: 999px;
+    background:
+      linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0) 50%),
+      repeating-linear-gradient(-45deg, #1d8eff 0 14px, #3aa6ff 14px 28px);
+    background-size: auto, 40px 40px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 0 12px rgba(29,142,255,0.6);
+    animation: stripes 0.8s linear infinite;
+    transition: width 0.3s ease;
+  }
+  @keyframes stripes { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 40px 0; } }
+  .glossy-bar.green {
+    background:
+      linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0) 50%),
+      repeating-linear-gradient(-45deg, #4fd11a 0 14px, #6fe83a 14px 28px);
+    background-size: auto, 40px 40px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 0 12px rgba(79,209,26,0.6);
+  }
+  .bar-controls { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+  .bar-controls button {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .bar-controls button:hover { border-color: var(--accent); }
+  .bar-pct { font-family: 'JetBrains Mono', monospace; color: var(--accent2); }
+
+  /* ---- 6. Aero glass window ---- */
+  .aero-stage {
+    position: relative;
+    height: 360px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #2d6fb8, #5fa8e0 50%, #7fd4b0);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.25);
+  }
+  .aero-window {
+    position: absolute;
+    top: 40px; left: 60px;
+    width: 340px;
+    border-radius: 12px 12px 10px 10px;
+    background: rgba(245,250,255,0.92);
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+    overflow: hidden;
+    user-select: none;
+  }
+  .aero-titlebar {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    cursor: grab;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(190,225,255,0.65));
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(120,170,220,0.5);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .aero-titlebar:active { cursor: grabbing; }
+  .aero-title {
+    font-size: 0.9rem; font-weight: 600; color: #0a3a66;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    margin-left: 4px;
+  }
+  .win-btns { margin-left: auto; display: flex; gap: 8px; }
+  .win-btn {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.2);
+    cursor: pointer;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 1px 2px rgba(0,0,0,0.3);
+    transition: filter 0.15s ease;
+  }
+  .win-btn::before {
+    content: "";
+    position: absolute; top: 2px; left: 4px; right: 4px; height: 40%;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.9), transparent);
+  }
+  .win-btn:hover { filter: brightness(1.15); }
+  .win-min { background: radial-gradient(circle at 40% 30%, #ffe98a, #ffb01d); }
+  .win-max { background: radial-gradient(circle at 40% 30%, #9fe85a, #4caf00); }
+  .win-close { background: radial-gradient(circle at 40% 30%, #ff9a8a, #e63020); }
+  .aero-body { padding: 18px 20px; color: #1a3a5c; font-size: 0.9rem; min-height: 90px; }
+  .aero-body h5 { font-size: 1rem; margin-bottom: 6px; color: #0a3a66; }
+  .drag-hint { font-size: 0.78rem; color: var(--text-dim); margin-top: 10px; }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <h1>Y2K / Frutiger Aero Revival</h1>
+  <p class="tagline">Glossy aqua gel, rising bubbles, blue skies and chrome — the optimistic, water-and-glass aesthetic of the early-2000s-to-2010 web, reborn for Gen-Z in 2024–2025.</p>
+  <span class="pill blue">Trend Study</span>
+  <span class="pill">Skeuomorphic</span>
+  <span class="pill warn">2004–2013 · revived</span>
+</header>
+
+<div class="container">
+
+  <!-- ============ SECTION 1: DEMOS ============ -->
+  <section id="demos">
+    <h2><span class="num">01</span>Live Demos</h2>
+    <p class="subtitle">Real, working CSS &amp; JS. Hover, click, drag — everything below runs in your browser.</p>
+
+    <!-- Demo 1: Aqua gel buttons -->
+    <div class="demo-card">
+      <span class="demo-label">Demo 1 — Aqua gel buttons</span>
+      <div class="aqua-row">
+        <button class="aqua-btn aqua-blue">Download</button>
+        <button class="aqua-btn aqua-green">Go</button>
+        <button class="aqua-btn aqua-pink">Sign Up</button>
+        <button class="aqua-btn aqua-orange">Explore</button>
+        <button class="aqua-btn aqua-graphite">Settings</button>
+      </div>
+      <p class="drag-hint">The classic Mac OS X "Aqua" pill: a bright glossy reflection on the top half, a saturated lower glow, and a satisfying press. Click them.</p>
+    </div>
+
+    <!-- Demo 2: Frutiger Aero hero tile -->
+    <div class="demo-card">
+      <span class="demo-label">Demo 2 — Frutiger Aero hero tile</span>
+      <div class="aero-hero" id="aeroHero">
+        <div class="sun"></div>
+        <div class="bubbles" id="bubbles"></div>
+        <div class="droplet" style="width:34px;height:34px;top:24px;left:30px;"></div>
+        <div class="droplet" style="width:20px;height:20px;bottom:40px;right:50px;"></div>
+        <div class="droplet" style="width:14px;height:14px;top:60px;right:90px;"></div>
+        <div class="aero-glass">
+          <h4>Pure. Clear. Optimistic.</h4>
+          <p>Sky, water, glass and nature — the Frutiger Aero promise.</p>
+        </div>
+      </div>
+      <p class="drag-hint">Sky-blue to green gradient, a soft sun, CSS-animated rising bubbles and a frosted glass panel with water-droplet highlights.</p>
+    </div>
+
+    <!-- Demo 3: Web 2.0 glossy badges -->
+    <div class="demo-card">
+      <span class="demo-label">Demo 3 — Web 2.0 glossy badges &amp; beta stars</span>
+      <div class="badge-row">
+        <div class="starburst">SALE!</div>
+        <div class="starburst" style="background:radial-gradient(circle at 40% 35%, #8af0ff, #1d8eff 60%, #0058d6);">NEW</div>
+        <span class="sticker sticker-new">New!</span>
+        <span class="sticker sticker-beta">Beta</span>
+        <span class="sticker sticker-free">Free</span>
+      </div>
+      <p class="drag-hint">Reflective starbursts and gel stickers — the unmistakable Web 2.0 badge language of 2006-era launch pages.</p>
+    </div>
+
+    <!-- Demo 4: Chrome / metallic text -->
+    <div class="demo-card">
+      <span class="demo-label">Demo 4 — Chrome / metallic text</span>
+      <div class="chrome-text">CHROME</div>
+      <div class="chrome-text chrome-gold" style="margin-top:6px;">GOLD</div>
+      <p class="drag-hint">A vertical metal gradient (white highlight → dark band → bright lower reflection) plus a drop-shadow bevel gives that classic logo-chrome shine.</p>
+    </div>
+
+    <!-- Demo 5: Glossy progress bar -->
+    <div class="demo-card">
+      <span class="demo-label">Demo 5 — Glossy progress bar / loader</span>
+      <div class="glossy-bar-wrap">
+        <div class="glossy-bar" id="progBar"></div>
+      </div>
+      <div class="bar-controls">
+        <button id="barMinus">– 10%</button>
+        <button id="barPlus">+ 10%</button>
+        <button id="barToggle">Toggle color</button>
+        <span class="bar-pct" id="barPct">65%</span>
+      </div>
+      <p class="drag-hint">Animated diagonal stripes with a top gloss line — the shimmering Vista / iTunes-era progress fill.</p>
+    </div>
+
+    <!-- Demo 6: Aero glass window -->
+    <div class="demo-card">
+      <span class="demo-label">Demo 6 — Draggable Aero glass window</span>
+      <div class="aero-stage" id="aeroStage">
+        <div class="aero-window" id="aeroWin">
+          <div class="aero-titlebar" id="winBar">
+            <span class="aero-title">My Documents</span>
+            <div class="win-btns">
+              <span class="win-btn win-min" title="Minimize"></span>
+              <span class="win-btn win-max" title="Maximize"></span>
+              <span class="win-btn win-close" title="Close" id="winClose"></span>
+            </div>
+          </div>
+          <div class="aero-body">
+            <h5>Welcome back</h5>
+            <p>Drag me around by the frosted titlebar. The gel buttons glow on hover; the close button hides the window.</p>
+          </div>
+        </div>
+      </div>
+      <p class="drag-hint">Frosted (backdrop-blur) titlebar over a glossy gradient desktop, with gel min/max/close orbs. Drag the bar; click the red orb to close (it returns after a moment).</p>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 2: WHAT IS IT ============ -->
+  <section id="what">
+    <h2><span class="num">02</span>What is Frutiger Aero / Y2K?</h2>
+    <p class="subtitle">A humanist, nature-and-technology aesthetic that ran from roughly 2004 to 2013.</p>
+    <div class="card">
+      <p><strong>Frutiger Aero</strong> (also called Web 2.0 Gloss or, loosely, late "Y2K" futurism) is a retroactively-named design movement covering the look of consumer technology in the mid/late 2000s. Think the auroras and bubbles of <strong>Windows Vista / 7 "Aero"</strong>, the glossy gel icons of <strong>early iOS</strong> and <strong>Mac OS X Aqua</strong>, and the reflective badges of the <a href="https://en.wikipedia.org/wiki/Web_2.0" target="_blank" rel="noopener">Web 2.0</a> launch-page era.</p>
+      <p>Its visual core is <strong>humanism + nature + technology in harmony</strong>: blue skies, clean water, droplets, leaves and grass, tropical fish, plus a heavy reliance on <strong>glass, gloss and transparency</strong>. It is fundamentally <strong>optimistic</strong> — a pre-recession, pre-flat-design belief that technology and the natural world fit together beautifully.</p>
+      <h3>Where the name comes from</h3>
+      <p>The term is a coinage by the online aesthetics community. <strong>"Frutiger"</strong> refers to typographer <strong>Adrian Frutiger</strong>, whose humanist sans-serif typefaces (Frutiger, and especially <em>Myriad</em>-adjacent humanist sans used across the era) defined the friendly, rounded corporate type of the period. <strong>"Aero"</strong> nods to Microsoft's <em>Windows Aero</em> interface language. See the <a href="https://en.wikipedia.org/wiki/Frutiger_Aero" target="_blank" rel="noopener">Wikipedia article on Frutiger Aero</a> and the broader <a href="https://aesthetics.fandom.com/wiki/Frutiger_Aero" target="_blank" rel="noopener">Aesthetics Wiki entry</a> for the cultural history.</p>
+      <h3>Its design DNA</h3>
+      <ul>
+        <li><strong>Skeuomorphism</strong> — interface elements imitate real materials (glass, water, brushed metal, leather). See <a href="https://en.wikipedia.org/wiki/Skeuomorph" target="_blank" rel="noopener">Skeuomorph on Wikipedia</a>.</li>
+        <li><strong>Gloss &amp; gel</strong> — bright top-half reflections, saturated lower glows, rounded "lozenge" shapes.</li>
+        <li><strong>Glass &amp; transparency</strong> — frosted panels, blur, light refraction, lens flares.</li>
+        <li><strong>Nature motifs</strong> — skies, bubbles, water droplets, plants, sunlight.</li>
+        <li><strong>Chrome &amp; bevels</strong> — metallic logos, beveled edges, drop shadows everywhere.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 3: WHY IT'S BACK ============ -->
+  <section id="why">
+    <h2><span class="num">03</span>Why it's back</h2>
+    <p class="subtitle">Gen-Z nostalgia, flat-design fatigue, and an algorithm that loves a vibe.</p>
+    <div class="card">
+      <p>After a decade of austere <strong>flat design</strong> — thin lines, single-weight icons, endless white space — many designers and especially <strong>Gen-Z audiences</strong> began craving texture, depth and joy again. Frutiger Aero offers exactly that: it is warm, tactile and unapologetically optimistic at a moment when a lot of contemporary UI feels cold and interchangeable.</p>
+      <h3>The drivers of the 2024–2025 revival</h3>
+      <ul>
+        <li><strong>Nostalgia for childhood tech.</strong> The people now entering design grew up on Vista wallpapers, the iPod, Wii menus and glossy app icons. That era reads as comforting and "pure."</li>
+        <li><strong>Anti-flat fatigue.</strong> Gloss, gradients and depth feel novel again precisely because flat minimalism dominated for so long.</li>
+        <li><strong>TikTok &amp; Pinterest.</strong> "Frutiger Aero" became a viral moodboard tag in 2023–2024, spreading bubble/sky/glass imagery far beyond design circles.</li>
+        <li><strong>Reaction to AI-era sameness.</strong> A bold, opinionated retro aesthetic is a way to feel human and specific.</li>
+      </ul>
+      <p>The result: 2024–2025 has seen aqua gel buttons, bubble backgrounds and glassy gradients return to album art, brand refreshes, indie apps and personal sites — sometimes ironically, increasingly sincerely.</p>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 4: MODERN USAGE ============ -->
+  <section id="modern">
+    <h2><span class="num">04</span>Modern, tasteful usage</h2>
+    <p class="subtitle">How to borrow the gloss and optimism without the 2006 clutter.</p>
+    <p>You don't have to choose between "sterile flat" and "full beveled chaos." The move in 2024–2025 is <strong>restrained Aero</strong>: keep the warmth and depth, drop the noise. Use gloss as an accent, not as the whole interface.</p>
+
+    <div class="code-block">
+<span class="c-com">/* Tasteful "neo-Aero" gel accent — one hero button, not every element */</span>
+<span class="c-sel">.cta</span> {
+  <span class="c-prop">border-radius</span>: <span class="c-val">999px</span>;
+  <span class="c-prop">background</span>: <span class="c-kw">linear-gradient</span>(
+    <span class="c-val">to bottom</span>,
+    <span class="c-val">#6fc3ff</span> <span class="c-val">0%</span>,
+    <span class="c-val">#1d8eff</span> <span class="c-val">50%</span>,
+    <span class="c-val">#2aa0ff</span> <span class="c-val">100%</span>
+  );
+  <span class="c-com">/* subtle gloss + glow — restraint is the whole trick */</span>
+  <span class="c-prop">box-shadow</span>:
+    <span class="c-kw">inset</span> <span class="c-val">0 1px 0 rgba(255,255,255,.6)</span>,
+    <span class="c-val">0 6px 16px rgba(29,142,255,.4)</span>;
+}
+<span class="c-sel">.cta</span><span class="c-sel">::before</span> {
+  <span class="c-prop">content</span>: <span class="c-str">""</span>;
+  <span class="c-prop">height</span>: <span class="c-val">42%</span>;            <span class="c-com">/* top-half reflection only */</span>
+  <span class="c-prop">background</span>: <span class="c-kw">linear-gradient</span>(<span class="c-val">rgba(255,255,255,.85)</span>, <span class="c-val">transparent</span>);
+}
+    </div>
+
+    <h3>Principles for modern Aero</h3>
+    <ul>
+      <li><strong>Pick one or two glossy heroes.</strong> A primary CTA, a logo or a single hero tile — let everything else stay calm.</li>
+      <li><strong>Keep type clean.</strong> Pair the gloss with a modern humanist sans (Inter, plus the era-correct Frutiger/Myriad feel) rather than beveled WordArt.</li>
+      <li><strong>Borrow the palette, not the textures.</strong> Sky-blue, aqua-green and warm sunlight read as Aero even on a flat surface.</li>
+      <li><strong>Use real translucency.</strong> <code>backdrop-filter: blur()</code> is the genuinely modern descendant of Aero glass — and it's now broadly supported.</li>
+      <li><strong>Animate sparingly.</strong> A few rising bubbles or one shimmer says "optimism"; fifty says "screensaver."</li>
+    </ul>
+  </section>
+
+  <!-- ============ SECTION 5: HONEST CAVEATS ============ -->
+  <section id="caveats">
+    <h2><span class="num">05</span>Honest trade-offs</h2>
+    <p class="subtitle">The aesthetic is fun — but it fights a few real-world constraints.</p>
+
+    <div class="note">
+      <strong>Accessibility &amp; performance caveats — design with eyes open:</strong>
+      <ul>
+        <li><strong>Gloss vs. contrast.</strong> Bright reflections and white text on saturated gradients frequently fail <a href="https://www.w3.org/WAI/WCAG21/quickref/#contrast-minimum" target="_blank" rel="noopener">WCAG contrast minimums</a>. Always test foreground/background contrast, and don't rely on a glossy highlight to carry meaning.</li>
+        <li><strong>Can read as dated or kitsch.</strong> Done literally, full beveled-skeuomorphic UI looks like 2006 — charming to some, "old software" to others. The taste lives in restraint.</li>
+        <li><strong>Performance of heavy effects.</strong> Stacked gradients, large blurs (<code>backdrop-filter</code>), big box-shadows and many animated elements can cause repaint jank, especially on low-end mobile. Limit blur radius, avoid animating shadow/blur, and prefer <code>transform</code>/<code>opacity</code> for motion.</li>
+        <li><strong>Motion sensitivity.</strong> Rising bubbles and shimmer loops should respect <code>@media (prefers-reduced-motion: reduce)</code>.</li>
+        <li><strong>Cognitive clutter.</strong> The original era over-decorated. Optimism shouldn't cost usability — keep hierarchy and affordances clear.</li>
+      </ul>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;">Used thoughtfully, Frutiger Aero is a reminder that interfaces are allowed to feel <em>joyful</em>. The goal of this revival isn't to copy 2007 — it's to recover its optimism with today's craft and accessibility standards.</p>
+  </section>
+
+</div>
+
+<script>
+  // ---- Demo 1: pressable aqua buttons (quick visual press feedback) ----
+  document.querySelectorAll('.aqua-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btn.classList.add('pressed');
+      setTimeout(function () { btn.classList.remove('pressed'); }, 140);
+    });
+  });
+
+  // ---- Demo 2: generate rising bubbles ----
+  (function () {
+    var container = document.getElementById('bubbles');
+    if (!container) return;
+    var count = 16;
+    for (var i = 0; i < count; i++) {
+      var b = document.createElement('div');
+      b.className = 'bubble';
+      var size = 8 + Math.random() * 34;
+      b.style.width = size + 'px';
+      b.style.height = size + 'px';
+      b.style.left = Math.random() * 100 + '%';
+      b.style.animationDuration = (4 + Math.random() * 5) + 's';
+      b.style.animationDelay = (-Math.random() * 6) + 's';
+      container.appendChild(b);
+    }
+  })();
+
+  // ---- Demo 5: progress bar controls ----
+  (function () {
+    var bar = document.getElementById('progBar');
+    var pct = document.getElementById('barPct');
+    var value = 65;
+    function render() {
+      value = Math.max(0, Math.min(100, value));
+      bar.style.width = value + '%';
+      pct.textContent = value + '%';
+    }
+    document.getElementById('barPlus').addEventListener('click', function () { value += 10; render(); });
+    document.getElementById('barMinus').addEventListener('click', function () { value -= 10; render(); });
+    document.getElementById('barToggle').addEventListener('click', function () { bar.classList.toggle('green'); });
+    render();
+  })();
+
+  // ---- Demo 6: draggable Aero window + close button ----
+  (function () {
+    var win = document.getElementById('aeroWin');
+    var bar = document.getElementById('winBar');
+    var stage = document.getElementById('aeroStage');
+    var closeBtn = document.getElementById('winClose');
+    if (!win || !bar || !stage) return;
+
+    var dragging = false, offsetX = 0, offsetY = 0;
+
+    bar.addEventListener('mousedown', function (e) {
+      // don't start a drag when clicking the control orbs
+      if (e.target.classList.contains('win-btn')) return;
+      dragging = true;
+      var winRect = win.getBoundingClientRect();
+      offsetX = e.clientX - winRect.left;
+      offsetY = e.clientY - winRect.top;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      var stageRect = stage.getBoundingClientRect();
+      var x = e.clientX - stageRect.left - offsetX;
+      var y = e.clientY - stageRect.top - offsetY;
+      x = Math.max(0, Math.min(x, stageRect.width - win.offsetWidth));
+      y = Math.max(0, Math.min(y, stageRect.height - win.offsetHeight));
+      win.style.left = x + 'px';
+      win.style.top = y + 'px';
+    });
+
+    document.addEventListener('mouseup', function () { dragging = false; });
+
+    closeBtn.addEventListener('click', function () {
+      win.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+      win.style.opacity = '0';
+      win.style.transform = 'scale(0.92)';
+      setTimeout(function () {
+        win.style.opacity = '1';
+        win.style.transform = 'scale(1)';
+      }, 1100);
+    });
+  })();
+</script>
+</body>
+</html>

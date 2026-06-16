@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bento Grid — UI Design Trends</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --surface: #14141f;
+    --surface2: #1d1d2c;
+    --border: #2a2a3e;
+    --text: #e6e6f0;
+    --text-dim: #8b8fa3;
+    --accent: #7aa2ff;
+    --accent2: #38e1c6;
+    --warn: #ffb86c;
+    --radius: 18px;
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* BACK LINK */
+  .back-link {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 9px 16px;
+    border-radius: 12px;
+    transition: border-color 0.25s var(--ease), transform 0.25s var(--ease), background 0.25s var(--ease);
+  }
+  .back-link::before { content: "←"; font-size: 15px; color: var(--accent); }
+  .back-link:hover {
+    border-color: var(--accent);
+    background: var(--surface);
+    transform: translateX(-2px);
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    text-align: center;
+    padding: 130px 24px 70px;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 0%, rgba(122, 162, 255, 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 80% 30%, rgba(56, 225, 198, 0.12) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 15% 20%, rgba(255, 184, 108, 0.08) 0%, transparent 50%);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: rgba(122, 162, 255, 0.1);
+    border: 1px solid rgba(122, 162, 255, 0.3);
+    color: var(--accent);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+
+  header h1 {
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    background: linear-gradient(120deg, #fff 10%, var(--accent) 55%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  header .tagline {
+    color: var(--text-dim);
+    font-size: clamp(1rem, 2.2vw, 1.25rem);
+    font-weight: 300;
+    margin-top: 18px;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* CONTAINER + SECTIONS */
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  section {
+    padding: 70px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  section h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  section .subtitle {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    font-weight: 300;
+    margin-bottom: 34px;
+    max-width: 720px;
+  }
+
+  /* GENERIC CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 10px; }
+  .card h3 .em { color: var(--accent); }
+  .card h3 .em.bad { color: var(--warn); }
+  .card p { color: var(--text-dim); font-size: 0.95rem; }
+  .card ul { list-style: none; margin-top: 10px; }
+  .card li { color: var(--text-dim); font-size: 0.93rem; padding-left: 20px; position: relative; margin-bottom: 7px; }
+  .card li::before { content: "▸"; position: absolute; left: 0; color: var(--accent2); }
+
+  a.link { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
+  a.link:hover { border-bottom-color: var(--accent); }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #0d0d17;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.75;
+    overflow-x: auto;
+    margin-top: 8px;
+    position: relative;
+  }
+  .code-block .cm { color: #5a5f78; font-style: italic; } /* comment */
+  .code-block .pr { color: var(--accent); }               /* property */
+  .code-block .vl { color: var(--accent2); }              /* value */
+  .code-block .sel { color: var(--warn); }                /* selector */
+  .code-block .kw { color: #c792ea; }                     /* keyword */
+  .code-block .an { color: var(--warn); font-weight: 600; } /* annotation */
+
+  /* NOTE */
+  .note {
+    background: rgba(255, 184, 108, 0.07);
+    border: 1px solid rgba(255, 184, 108, 0.3);
+    border-left: 4px solid var(--warn);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-top: 12px;
+  }
+  .note strong { color: var(--warn); }
+  .note p { color: var(--text-dim); font-size: 0.95rem; }
+  .note p + p { margin-top: 10px; }
+
+  /* ============================================ */
+  /* THE SHOWPIECE BENTO GRID                      */
+  /* ============================================ */
+  .bento {
+    display: grid;
+    gap: 16px;
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 130px;
+    margin-top: 6px;
+  }
+
+  .tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .tile:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 18px 40px -18px rgba(122, 162, 255, 0.5);
+  }
+  .tile .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .tile .icon {
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    margin-bottom: auto;
+  }
+
+  /* ---- BALANCED layout (default) ---- */
+  .bento.balanced .t-hero    { grid-column: span 2; grid-row: span 2; }
+  .bento.balanced .t-stat    { grid-column: span 1; grid-row: span 1; }
+  .bento.balanced .t-chart   { grid-column: span 2; grid-row: span 1; }
+  .bento.balanced .t-clock   { grid-column: span 1; grid-row: span 1; }
+  .bento.balanced .t-toggle  { grid-column: span 1; grid-row: span 1; }
+  .bento.balanced .t-icon    { grid-column: span 1; grid-row: span 1; }
+  .bento.balanced .t-spark   { grid-column: span 2; grid-row: span 1; }
+  .bento.balanced .t-ring    { grid-column: span 1; grid-row: span 2; }
+  .bento.balanced .t-tag     { grid-column: span 1; grid-row: span 1; }
+
+  /* ---- HERO-LED layout ---- */
+  .bento.hero .t-hero    { grid-column: span 4; grid-row: span 2; }
+  .bento.hero .t-stat    { grid-column: span 1; grid-row: span 1; }
+  .bento.hero .t-chart   { grid-column: span 2; grid-row: span 2; }
+  .bento.hero .t-clock   { grid-column: span 1; grid-row: span 1; }
+  .bento.hero .t-toggle  { grid-column: span 1; grid-row: span 1; }
+  .bento.hero .t-icon    { grid-column: span 1; grid-row: span 1; }
+  .bento.hero .t-spark   { grid-column: span 2; grid-row: span 1; }
+  .bento.hero .t-ring    { grid-column: span 2; grid-row: span 1; }
+  .bento.hero .t-tag     { grid-column: span 2; grid-row: span 1; }
+
+  /* ---- MOSAIC layout ---- */
+  .bento.mosaic .t-hero    { grid-column: span 2; grid-row: span 1; }
+  .bento.mosaic .t-stat    { grid-column: span 2; grid-row: span 1; }
+  .bento.mosaic .t-chart   { grid-column: span 1; grid-row: span 2; }
+  .bento.mosaic .t-clock   { grid-column: span 1; grid-row: span 1; }
+  .bento.mosaic .t-toggle  { grid-column: span 2; grid-row: span 1; }
+  .bento.mosaic .t-icon    { grid-column: span 1; grid-row: span 1; }
+  .bento.mosaic .t-spark   { grid-column: span 1; grid-row: span 2; }
+  .bento.mosaic .t-ring    { grid-column: span 1; grid-row: span 1; }
+  .bento.mosaic .t-tag     { grid-column: span 2; grid-row: span 1; }
+
+  /* HERO TILE styling */
+  .t-hero {
+    background:
+      radial-gradient(circle at 20% 20%, rgba(122, 162, 255, 0.35) 0%, transparent 55%),
+      radial-gradient(circle at 85% 90%, rgba(56, 225, 198, 0.3) 0%, transparent 55%),
+      linear-gradient(135deg, #1a2350, #14141f);
+    border-color: rgba(122, 162, 255, 0.4);
+    justify-content: flex-end;
+  }
+  .t-hero h3 { font-size: clamp(1.3rem, 2.6vw, 2rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+  .t-hero p  { color: rgba(230, 230, 240, 0.8); font-size: 0.9rem; margin-top: 8px; }
+  .t-hero .arrow {
+    position: absolute; top: 18px; right: 18px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.3s var(--ease);
+  }
+  .t-hero:hover .arrow { transform: translate(3px, -3px); }
+
+  /* STAT (count-up) */
+  .t-stat .big { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; color: var(--accent); line-height: 1; margin-top: 6px; }
+  .t-stat .sub { color: var(--text-dim); font-size: 0.8rem; margin-top: 4px; }
+
+  /* CHART (CSS bars) */
+  .t-chart .bars { display: flex; align-items: flex-end; gap: 8px; height: 100%; margin-top: 12px; }
+  .t-chart .bar {
+    flex: 1; border-radius: 6px 6px 3px 3px;
+    background: linear-gradient(180deg, var(--accent), rgba(122, 162, 255, 0.25));
+    animation: grow 1.1s var(--ease) both;
+    transform-origin: bottom;
+  }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+  /* CLOCK */
+  .t-clock .time { font-family: 'JetBrains Mono', monospace; font-size: 1.65rem; font-weight: 600; margin-top: auto; letter-spacing: 0.02em; }
+  .t-clock .time .sec { color: var(--accent2); }
+  .t-clock .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background: var(--accent2); margin-right:7px; animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+  /* TOGGLE */
+  .t-toggle { justify-content: space-between; }
+  .switch {
+    width: 52px; height: 30px; border-radius: 999px;
+    background: var(--surface2); border: 1px solid var(--border);
+    position: relative; cursor: pointer; transition: background 0.3s var(--ease);
+    margin-top: auto;
+  }
+  .switch::after {
+    content: ""; position: absolute; top: 3px; left: 3px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--text-dim); transition: transform 0.3s var(--ease), background 0.3s var(--ease);
+  }
+  .switch.on { background: rgba(56, 225, 198, 0.25); border-color: var(--accent2); }
+  .switch.on::after { transform: translateX(22px); background: var(--accent2); }
+  .t-toggle .state { font-size: 0.8rem; color: var(--text-dim); margin-top: 8px; }
+
+  /* SPARKLINE (SVG) */
+  .t-spark svg { width: 100%; height: 46px; margin-top: auto; }
+  .t-spark .spark-line { fill: none; stroke: var(--accent2); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .t-spark .spark-fill { fill: url(#sparkGrad); opacity: 0.35; }
+
+  /* RING (conic progress) */
+  .t-ring { align-items: center; justify-content: center; text-align: center; }
+  .ring {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: conic-gradient(var(--accent2) calc(var(--p) * 1%), var(--surface2) 0);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+  .ring::before { content: ""; position: absolute; width: 72px; height: 72px; border-radius: 50%; background: var(--surface); }
+  .ring span { position: relative; font-weight: 700; font-size: 1.2rem; }
+
+  /* ICON tile / TAG tile */
+  .t-icon { align-items: center; justify-content: center; }
+  .t-icon .icon { width: 52px; height: 52px; font-size: 1.6rem; margin: 0 0 10px; }
+  .t-icon .label { text-align: center; }
+  .t-tag .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+  .t-tag .chip { font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); }
+
+  /* LAYOUT SWITCHER BUTTONS */
+  .switcher { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
+  .switcher button {
+    font-family: inherit; font-size: 0.88rem; font-weight: 500;
+    color: var(--text-dim); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 18px; cursor: pointer;
+    transition: all 0.25s var(--ease);
+  }
+  .switcher button:hover { color: var(--text); border-color: var(--accent); }
+  .switcher button.active { color: var(--bg); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+
+  .hint { color: var(--text-dim); font-size: 0.85rem; margin-top: 16px; text-align: center; }
+  .hint code { background: var(--surface2); padding: 2px 7px; border-radius: 6px; color: var(--accent2); font-size: 0.8rem; }
+
+  /* RESPONSIVE PREVIEW */
+  .phone {
+    width: 230px; margin: 0 auto;
+    border: 8px solid var(--surface2);
+    border-radius: 30px; padding: 14px 10px;
+    background: var(--bg);
+  }
+  .phone .mini {
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+  }
+  .phone .mini div {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px; height: 38px;
+    display: flex; align-items: center; padding-left: 12px;
+    font-size: 0.72rem; color: var(--text-dim);
+  }
+  .phone .mini div::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); margin-right: 8px; }
+
+  /* RESPONSIVENESS — collapse bento on mobile */
+  @media (max-width: 760px) {
+    .bento { grid-template-columns: repeat(2, 1fr); }
+    .bento.balanced .t-hero,
+    .bento.hero .t-hero,
+    .bento.hero .t-chart { grid-column: span 2; }
+  }
+  @media (max-width: 480px) {
+    .bento,
+    .bento.balanced .t-hero,
+    .bento.hero .t-hero,
+    .bento.mosaic .t-hero,
+    .bento .tile {
+      grid-template-columns: 1fr;
+      grid-column: span 1 !important;
+      grid-row: span 1 !important;
+    }
+    .bento { grid-template-columns: 1fr; grid-auto-rows: minmax(120px, auto); }
+    header { padding-top: 100px; }
+  }
+
+  footer { text-align: center; padding: 50px 24px; color: var(--text-dim); font-size: 0.85rem; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <span class="pill">Layout Trend · 2023–2025</span>
+  <h1>The Bento Grid</h1>
+  <p class="tagline">Apple-keynote-style modular grids — varying-size rounded cards, each holding one crisp idea. The layout that took over SaaS landing pages and product dashboards.</p>
+</header>
+
+<div class="container">
+
+  <!-- ================= SHOWPIECE ================= -->
+  <section id="demo">
+    <h2>Live bento grid</h2>
+    <p class="subtitle">A real CSS Grid built with column &amp; row spans and <code>grid-auto-flow: dense</code>. Each tile is its own mini feature card — hover to lift them.</p>
+
+    <div class="bento balanced" id="bento">
+      <!-- HERO -->
+      <div class="tile t-hero">
+        <div class="arrow">↗</div>
+        <h3>Build faster.<br>Ship beautifully.</h3>
+        <p>A modular surface that scales from a hero pitch down to a single metric.</p>
+      </div>
+
+      <!-- STAT (count-up) -->
+      <div class="tile t-stat">
+        <span class="label">Uptime</span>
+        <div class="big"><span class="count" data-target="99.98" data-decimals="2">0</span>%</div>
+        <div class="sub">last 90 days</div>
+      </div>
+
+      <!-- CHART -->
+      <div class="tile t-chart">
+        <span class="label">Weekly throughput</span>
+        <div class="bars">
+          <div class="bar" style="height:45%; animation-delay:.05s"></div>
+          <div class="bar" style="height:70%; animation-delay:.12s"></div>
+          <div class="bar" style="height:55%; animation-delay:.19s"></div>
+          <div class="bar" style="height:88%; animation-delay:.26s"></div>
+          <div class="bar" style="height:64%; animation-delay:.33s"></div>
+          <div class="bar" style="height:96%; animation-delay:.40s"></div>
+          <div class="bar" style="height:78%; animation-delay:.47s"></div>
+        </div>
+      </div>
+
+      <!-- CLOCK -->
+      <div class="tile t-clock">
+        <span class="label"><span class="dot"></span>Live now</span>
+        <div class="time" id="clock">--:--:--</div>
+      </div>
+
+      <!-- TOGGLE -->
+      <div class="tile t-toggle">
+        <span class="label">Dark mode</span>
+        <div class="switch on" id="switch" role="switch" aria-checked="true" tabindex="0"></div>
+        <div class="state" id="switchState">Enabled</div>
+      </div>
+
+      <!-- ICON -->
+      <div class="tile t-icon">
+        <div class="icon">⚡</div>
+        <span class="label">Edge-fast</span>
+      </div>
+
+      <!-- SPARKLINE -->
+      <div class="tile t-spark">
+        <span class="label">Latency (ms)</span>
+        <svg viewBox="0 0 200 50" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#38e1c6"/>
+              <stop offset="100%" stop-color="#38e1c6" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path class="spark-fill" d="M0,38 L20,30 L40,34 L60,18 L80,24 L100,10 L120,20 L140,8 L160,16 L180,6 L200,12 L200,50 L0,50 Z"/>
+          <path class="spark-line" d="M0,38 L20,30 L40,34 L60,18 L80,24 L100,10 L120,20 L140,8 L160,16 L180,6 L200,12"/>
+        </svg>
+      </div>
+
+      <!-- RING -->
+      <div class="tile t-ring">
+        <div class="ring" style="--p:78"><span>78%</span></div>
+        <span class="label">Goal reached</span>
+      </div>
+
+      <!-- TAG -->
+      <div class="tile t-tag">
+        <span class="label">Stack</span>
+        <div class="chips">
+          <span class="chip">CSS Grid</span>
+          <span class="chip">aspect-ratio</span>
+          <span class="chip">container queries</span>
+          <span class="chip">no JS layout</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SWITCHER ================= -->
+  <section id="switcher">
+    <h2>Same content, three arrangements</h2>
+    <p class="subtitle">One of the bento's superpowers: re-flow the <em>exact same tiles</em> by swapping a single class on the grid. Nothing is added or removed — only the spans change.</p>
+
+    <div class="switcher" id="layoutBtns">
+      <button class="active" data-layout="balanced">Balanced</button>
+      <button data-layout="hero">Hero-led</button>
+      <button data-layout="mosaic">Mosaic</button>
+    </div>
+
+    <p class="hint">The grid above re-flows live. Current class: <code id="layoutClass">.bento.balanced</code></p>
+  </section>
+
+  <!-- ================= ANATOMY ================= -->
+  <section id="anatomy">
+    <h2>Anatomy of the grid</h2>
+    <p class="subtitle">The cleanest way to author a bento is named <code>grid-template-areas</code> — the CSS literally draws the layout as ASCII art, and reordering tiles is a copy-paste away.</p>
+
+    <div class="code-block">
+<span class="cm">/* The grid is an ASCII map — readable at a glance */</span>
+<span class="sel">.bento</span> {
+  <span class="pr">display</span>: <span class="vl">grid</span>;
+  <span class="pr">gap</span>: <span class="vl">16px</span>;
+  <span class="pr">grid-template-columns</span>: <span class="kw">repeat</span>(<span class="vl">4, 1fr</span>);
+  <span class="pr">grid-auto-rows</span>: <span class="vl">130px</span>;
+  <span class="pr">grid-auto-flow</span>: <span class="vl">dense</span>; <span class="an">/* ← backfills gaps */</span>
+  <span class="pr">grid-template-areas</span>:
+    <span class="vl">"hero hero stat chart"</span>
+    <span class="vl">"hero hero clock chart"</span>
+    <span class="vl">"icon spark spark ring "</span>
+    <span class="vl">"tag  toggle .    ring "</span>;
+}
+
+<span class="sel">.t-hero</span>  { <span class="pr">grid-area</span>: <span class="vl">hero</span>; }
+<span class="sel">.t-chart</span> { <span class="pr">grid-area</span>: <span class="vl">chart</span>; }
+<span class="cm">/* …one rule per tile — the name maps to the map above */</span>
+
+<span class="cm">/* Tiles never need to know their own size or position */</span>
+<span class="sel">.tile</span> {
+  <span class="pr">border-radius</span>: <span class="vl">18px</span>;
+  <span class="pr">aspect-ratio</span>: <span class="vl">auto</span>;
+  <span class="pr">container-type</span>: <span class="vl">inline-size</span>; <span class="an">/* ← query tile width */</span>
+}
+    </div>
+  </section>
+
+  <!-- ================= RESPONSIVE ================= -->
+  <section id="responsive">
+    <h2>It collapses gracefully</h2>
+    <p class="subtitle">Because the grid is just spans over columns, a single <code>@media</code> query drops it to one column on phones — tiles stack in source order, hero first. Resize this window past 760px and 480px to watch the real grid above re-flow.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Desktop → mobile in one rule</h3>
+        <div class="code-block">
+<span class="sel">@media</span> (<span class="pr">max-width</span>: <span class="vl">480px</span>) {
+  <span class="sel">.bento</span> { <span class="pr">grid-template-columns</span>: <span class="vl">1fr</span>; }
+  <span class="sel">.tile</span>  { <span class="pr">grid-column</span>: <span class="vl">span 1</span>; }
+}
+        </div>
+        <p style="margin-top:14px">No JS, no separate mobile markup. The tiles you already wrote simply stack.</p>
+      </div>
+
+      <div class="card" style="display:flex; align-items:center; justify-content:center;">
+        <div class="phone" aria-hidden="true">
+          <div class="mini">
+            <div>Hero</div>
+            <div>Uptime 99.98%</div>
+            <div>Throughput</div>
+            <div>Live clock</div>
+            <div>Latency</div>
+            <div>Goal 78%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT MAKES IT ================= -->
+  <section id="what">
+    <h2>What makes a bento grid</h2>
+    <p class="subtitle">It is not just "boxes in a grid." The good ones share a clear set of properties.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="em">●</span> Modular, varied-size tiles</h3>
+        <p>Cards span different numbers of columns and rows. The variation is the point — it creates rhythm and signals importance.</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">●</span> Visual hierarchy</h3>
+        <p>The biggest tile is the headline; smaller tiles are supporting facts. Size encodes priority before a single word is read.</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">●</span> One idea per tile</h3>
+        <p>Each cell carries a single, self-contained thought — a stat, a feature, a visual. No tile tries to say two things.</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">●</span> Scannability</h3>
+        <p>Rounded corners and consistent gaps turn the page into discrete, glanceable chunks the eye can hop between.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SHINES / FAILS ================= -->
+  <section id="fit">
+    <h2>Where it shines, where it fails</h2>
+    <p class="subtitle">The bento is a hierarchy-and-overview format. That is also exactly where it stops working.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="em">✓</span> Shines on</h3>
+        <ul>
+          <li><strong>Landing pages</strong> — pitch many features at a glance, with a hero tile leading.</li>
+          <li><strong>Dashboards</strong> — KPIs, charts and toggles of different weights, all visible at once.</li>
+          <li><strong>Feature overviews &amp; "what's new" pages</strong> — modular, skimmable, screenshot-friendly.</li>
+          <li><strong>Marketing / keynote visuals</strong> — the Apple-style "everything in one frame" hero.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="em bad">✕</span> Fails on</h3>
+        <ul>
+          <li><strong>Content-heavy reading</strong> — articles and docs need a single measured column, not chopped tiles.</li>
+          <li><strong>Linear, sequential flows</strong> — checkout, onboarding, forms — order matters more than overview.</li>
+          <li><strong>Dense data tables</strong> — rows and columns of records want a table, not cards.</li>
+          <li><strong>Anything that scrolls long</strong> — past one viewport the "at a glance" advantage evaporates.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW TO BUILD ================= -->
+  <section id="how">
+    <h2>How to build one</h2>
+    <p class="subtitle">Four modern CSS tools do almost all the work — no framework required.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="em">1.</span> <code>grid-template-areas</code></h3>
+        <p>Name your regions and draw the layout as a string map. It is the most readable way to author and rearrange a bento (see the anatomy section above).</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">2.</span> <code>grid-auto-flow: dense</code></h3>
+        <p>Let the browser backfill leftover gaps with later tiles, so mixed-size cards pack tightly without manual placement. Mind that it can reorder visual sequence.</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">3.</span> <code>aspect-ratio</code></h3>
+        <p>Keep tiles proportional (e.g. <code>1 / 1</code> or <code>16 / 9</code>) instead of pinning pixel heights, so the grid stays fluid across breakpoints.</p>
+      </div>
+      <div class="card">
+        <h3><span class="em">4.</span> Container queries</h3>
+        <p>With <code>container-type: inline-size</code>, a tile restyles based on <em>its own</em> width — so the same component looks right whether it spans 1 or 4 columns.</p>
+      </div>
+    </div>
+
+    <p class="subtitle" style="margin-top:30px; margin-bottom:14px">Further reading (real resources):</p>
+    <div class="card">
+      <ul>
+        <li><a class="link" href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout" target="_blank" rel="noopener">MDN — CSS Grid Layout</a></li>
+        <li><a class="link" href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-areas" target="_blank" rel="noopener">MDN — grid-template-areas</a></li>
+        <li><a class="link" href="https://web.dev/learn/css/grid/" target="_blank" rel="noopener">web.dev — Learn CSS: Grid</a></li>
+        <li><a class="link" href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" target="_blank" rel="noopener">MDN — Container queries</a></li>
+        <li><a class="link" href="https://linear.app/" target="_blank" rel="noopener">Linear</a> &middot; <a class="link" href="https://vercel.com/" target="_blank" rel="noopener">Vercel</a> &middot; <a class="link" href="https://www.apple.com/" target="_blank" rel="noopener">Apple</a> — bento-style landing pages in the wild</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= PITFALLS ================= -->
+  <section id="pitfalls">
+    <h2>Use it honestly</h2>
+    <p class="subtitle">The bento is fashionable, which makes it easy to over-apply.</p>
+
+    <div class="note">
+      <p><strong>It can become cluttered.</strong> A wall of equally-loud tiles destroys the hierarchy that makes a bento work. If everything is emphasized, nothing is — keep one dominant tile and let the rest support it.</p>
+      <p><strong>Reading order can break.</strong> Visual grid position is not DOM order. With <code>grid-auto-flow: dense</code> or area placement, the sequence a screen reader or keyboard user encounters may differ from what the eye sees. Author the DOM in a sensible reading order and use grid for layout only — never rely on visual position to convey meaning.</p>
+      <p><strong>Don't force unrelated content into tiles.</strong> A bento implies the cells belong together. Cramming a long article, a checkout flow, or a dense table into tiles fights the format. If the content is sequential or text-heavy, reach for a normal column instead.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Part of the <a href="../index.html">UI/UX Design Research</a> hub &middot; Bento Grid &middot; 2023–2025 layout trend
+</footer>
+
+<script>
+  /* ---- COUNT-UP STATS ---- */
+  function animateCount(el) {
+    const target = parseFloat(el.dataset.target);
+    const decimals = parseInt(el.dataset.decimals || "0", 10);
+    const duration = 1400;
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      el.textContent = (target * eased).toFixed(decimals);
+      if (t < 1) requestAnimationFrame(step);
+      else el.textContent = target.toFixed(decimals);
+    }
+    requestAnimationFrame(step);
+  }
+
+  const counters = document.querySelectorAll('.count');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { animateCount(e.target); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.4 });
+    counters.forEach(c => io.observe(c));
+  } else {
+    counters.forEach(animateCount);
+  }
+
+  /* ---- LIVE CLOCK ---- */
+  const clockEl = document.getElementById('clock');
+  function tick() {
+    const d = new Date();
+    const p = n => String(n).padStart(2, '0');
+    clockEl.innerHTML = p(d.getHours()) + ':' + p(d.getMinutes()) +
+      ':<span class="sec">' + p(d.getSeconds()) + '</span>';
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* ---- TOGGLE ---- */
+  const sw = document.getElementById('switch');
+  const swState = document.getElementById('switchState');
+  function flip() {
+    const on = sw.classList.toggle('on');
+    sw.setAttribute('aria-checked', on ? 'true' : 'false');
+    swState.textContent = on ? 'Enabled' : 'Disabled';
+  }
+  sw.addEventListener('click', flip);
+  sw.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
+  });
+
+  /* ---- LAYOUT SWITCHER ---- */
+  const bento = document.getElementById('bento');
+  const layoutClass = document.getElementById('layoutClass');
+  const btns = document.querySelectorAll('#layoutBtns button');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const layout = btn.dataset.layout;
+      bento.classList.remove('balanced', 'hero', 'mosaic');
+      bento.classList.add(layout);
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      layoutClass.textContent = '.bento.' + layout;
+    });
+  });
+</script>
+</body>
+</html>

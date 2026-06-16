@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll-Driven Animation &amp; Motion Design — UI/UX Design Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a12;
+    --surface:#14141f;
+    --surface2:#1d1d2c;
+    --border:#2a2a3e;
+    --text:#e6e6f0;
+    --text-dim:#8b8fa3;
+    --accent:#7aa2ff;
+    --accent2:#38e1c6;
+    --warn:#ffb86c;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.65;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Disable everything motion-y when the user / toggle asks for it */
+  body.reduce-motion * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  body.reduce-motion .reveal { opacity: 1 !important; transform: none !important; }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .back-link {
+    display: inline-block;
+    margin: 20px 0 0 24px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .back-link:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+
+  /* ---- scroll progress bar ---- */
+  #scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 1000;
+    box-shadow: 0 0 12px rgba(122,162,255,0.6);
+    transition: width 0.05s linear;
+  }
+
+  /* ---- reduced-motion master toggle ---- */
+  #motion-toggle {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    z-index: 1000;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  }
+  #motion-toggle:hover { border-color: var(--accent); }
+  #motion-toggle .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent2);
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  body.reduce-motion #motion-toggle .dot { background: var(--warn); }
+
+  header {
+    padding: 70px 24px 60px;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(122,162,255,0.18), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(56,225,198,0.12), transparent 55%);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    font-size: clamp(2.1rem, 6vw, 3.6rem);
+    font-weight: 800;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(120deg, var(--accent), var(--accent2) 70%, var(--warn));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header .tagline {
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    max-width: 640px;
+    margin: 0 auto 22px;
+  }
+  .pill {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--accent2);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  section h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  section h2 .num {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    margin-right: 10px;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin: 0 0 28px;
+    max-width: 720px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+
+  .code-block {
+    background: #0d0d18;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.84rem;
+    line-height: 1.6;
+    margin: 18px 0;
+    white-space: pre;
+    color: var(--text);
+  }
+  .code-block .c-kw  { color: #c792ea; }
+  .code-block .c-fn  { color: var(--accent); }
+  .code-block .c-str { color: var(--accent2); }
+  .code-block .c-com { color: var(--text-dim); font-style: italic; }
+  .code-block .c-num { color: var(--warn); }
+  .code-block .c-prop{ color: #82aaff; }
+
+  .note {
+    border-left: 3px solid var(--warn);
+    background: rgba(255,184,108,0.07);
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    margin: 22px 0;
+    color: var(--text);
+    font-size: 0.94rem;
+  }
+  .note strong { color: var(--warn); }
+  .note ul { margin: 8px 0 0; padding-left: 20px; }
+  .note li { margin: 4px 0; }
+
+  /* ===== DEMO 1: reveal on scroll ===== */
+  .reveal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    margin: 8px 0 4px;
+  }
+  .reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity 0.6s cubic-bezier(.16,.84,.44,1), transform 0.6s cubic-bezier(.16,.84,.44,1);
+  }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  .reveal-card {
+    background: linear-gradient(160deg, var(--surface2), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    min-height: 130px;
+  }
+  .reveal-card .big {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(120deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* ===== DEMO 3: sticky scrollytelling ===== */
+  .scrolly {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+  @media (max-width: 720px){ .scrolly { grid-template-columns: 1fr; } }
+  .scrolly-graphic-wrap { position: relative; }
+  .scrolly-graphic {
+    position: sticky;
+    top: 80px;
+    height: 280px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: 800;
+    transition: background 0.5s ease, color 0.3s ease;
+    background: var(--surface);
+  }
+  .scrolly-graphic .gfx-num { font-size: 4.5rem; line-height: 1; }
+  .scrolly-graphic .gfx-label { font-size: 0.95rem; font-weight: 600; margin-top: 8px; letter-spacing: 0.04em; }
+  .scrolly-steps { display: flex; flex-direction: column; gap: 70vh; padding: 30vh 0; }
+  .scrolly-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    border-radius: 0 12px 12px 0;
+    padding: 18px 22px;
+    opacity: 0.4;
+    transition: opacity 0.4s ease, border-color 0.4s ease;
+  }
+  .scrolly-step.active { opacity: 1; border-left-color: var(--accent); }
+  .scrolly-step h3 { margin: 0 0 6px; font-size: 1.15rem; }
+
+  /* ===== DEMO 4: CSS scroll-driven ===== */
+  .csa-track {
+    height: 60px;
+    border-radius: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    margin: 10px 0 4px;
+  }
+  .csa-fill {
+    position: absolute;
+    inset: 0;
+    transform-origin: left center;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+  .csa-box {
+    width: 80px; height: 80px;
+    border-radius: 14px;
+    margin: 14px auto;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    opacity: 0.25;
+    transform: scale(0.7) rotate(0deg);
+  }
+
+  @keyframes csa-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes csa-reveal {
+    from { opacity: 0.25; transform: scale(0.7) rotate(-8deg); }
+    to   { opacity: 1;    transform: scale(1)   rotate(8deg); }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .csa-supported { display: inline-flex !important; }
+    .csa-unsupported { display: none !important; }
+    /* progress fill linked to the document's own scroll */
+    .csa-fill {
+      animation: csa-grow linear;
+      animation-timeline: scroll(root block);
+    }
+    /* box revealed as it crosses the viewport */
+    .csa-box {
+      animation: csa-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    border: 1px solid var(--border);
+  }
+  .badge.ok   { color: var(--accent2); border-color: rgba(56,225,198,0.5); background: rgba(56,225,198,0.08); }
+  .badge.fb   { color: var(--warn);    border-color: rgba(255,184,108,0.5); background: rgba(255,184,108,0.08); }
+  .csa-supported { display: none; }
+
+  /* ===== DEMO 5: scroll-snap gallery ===== */
+  .snap-strip {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 6px 4px 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-color: var(--accent) var(--surface);
+  }
+  .snap-strip::-webkit-scrollbar { height: 8px; }
+  .snap-strip::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 8px; }
+  .snap-strip::-webkit-scrollbar-track { background: var(--surface); border-radius: 8px; }
+  .snap-panel {
+    scroll-snap-align: center;
+    flex: 0 0 78%;
+    max-width: 420px;
+    min-height: 180px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+
+  /* ===== marquee ===== */
+  .marquee {
+    overflow: hidden;
+    border-block: 1px solid var(--border);
+    padding: 14px 0;
+    margin: 8px 0;
+    white-space: nowrap;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .marquee-track {
+    display: inline-block;
+    animation: marquee 22s linear infinite;
+  }
+  .marquee-track span {
+    margin: 0 28px;
+    color: var(--text-dim);
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+  }
+  .marquee-track span b { color: var(--accent2); }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ===== comparison table ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0;
+    font-size: 0.9rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 11px 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  th { color: var(--accent); font-weight: 600; background: var(--surface); }
+  tr:hover td { background: rgba(122,162,255,0.04); }
+  td code, p code, li code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.84em;
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 5px;
+    color: var(--accent2);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 720px){ .grid-2 { grid-template-columns: 1fr; } }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px 80px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+  footer a { color: var(--text-dim); }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<div id="scroll-progress" aria-hidden="true"></div>
+
+<button id="motion-toggle" aria-pressed="false">
+  <span class="dot"></span><span id="motion-label">Motion: On</span>
+</button>
+
+<header>
+  <span class="pill">Advanced &middot; Motion</span>
+  <h1>Scroll-Driven Animation &amp; Motion Design</h1>
+  <p class="tagline">
+    The "animated site" trend, decoded: reveal-on-scroll, pinned scrollytelling,
+    scroll-linked progress, parallax, scroll-snap and the new native CSS
+    scroll timelines &mdash; with live, library-free demos you can read the source of.
+  </p>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>IntersectionObserver</span><span><b>animation-timeline: view()</b></span>
+    <span>scroll-snap-type</span><span><b>GSAP ScrollTrigger</b></span>
+    <span>position: sticky</span><span><b>Lenis smooth-scroll</b></span>
+    <span>transform + opacity</span><span><b>prefers-reduced-motion</b></span>
+    <span>requestAnimationFrame</span><span><b>will-change</b></span>
+    <!-- duplicate for seamless loop -->
+    <span>IntersectionObserver</span><span><b>animation-timeline: view()</b></span>
+    <span>scroll-snap-type</span><span><b>GSAP ScrollTrigger</b></span>
+    <span>position: sticky</span><span><b>Lenis smooth-scroll</b></span>
+    <span>transform + opacity</span><span><b>prefers-reduced-motion</b></span>
+    <span>requestAnimationFrame</span><span><b>will-change</b></span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ============ DEMO 1 ============ -->
+  <section id="reveal">
+    <h2><span class="num">01</span>Reveal on scroll</h2>
+    <p class="subtitle">
+      The bread-and-butter effect: elements start hidden and slightly offset, then
+      fade and slide into place as they enter the viewport. The right tool is
+      <code>IntersectionObserver</code> &mdash; it tells you when an element crosses a
+      threshold without you polling scroll position on every frame.
+    </p>
+
+    <div class="reveal-grid">
+      <div class="reveal reveal-card"><div class="big">01</div><p>Observed, not polled.</p></div>
+      <div class="reveal reveal-card"><div class="big">02</div><p>Transform + opacity only.</p></div>
+      <div class="reveal reveal-card"><div class="big">03</div><p>Unobserve after reveal.</p></div>
+      <div class="reveal reveal-card"><div class="big">04</div><p>Cheap and smooth.</p></div>
+    </div>
+
+    <div class="code-block"><span class="c-kw">const</span> io = <span class="c-kw">new</span> <span class="c-fn">IntersectionObserver</span>((entries) => {
+  <span class="c-kw">for</span> (<span class="c-kw">const</span> e <span class="c-kw">of</span> entries) {
+    <span class="c-kw">if</span> (e.isIntersecting) {
+      e.target.classList.<span class="c-fn">add</span>(<span class="c-str">'is-visible'</span>);
+      io.<span class="c-fn">unobserve</span>(e.target);   <span class="c-com">// reveal once, then stop watching</span>
+    }
+  }
+}, { threshold: <span class="c-num">0.15</span> });
+
+document.<span class="c-fn">querySelectorAll</span>(<span class="c-str">'.reveal'</span>).<span class="c-fn">forEach</span>(el => io.<span class="c-fn">observe</span>(el));</div>
+  </section>
+
+  <!-- ============ DEMO 2 ============ -->
+  <section id="progress">
+    <h2><span class="num">02</span>Scroll progress bar</h2>
+    <p class="subtitle">
+      The thin gradient bar pinned to the very top of this page fills as you scroll.
+      It is just <code>scrollTop / (scrollHeight - clientHeight)</code> &mdash; but the
+      read happens inside <code>requestAnimationFrame</code> and the listener is
+      <code>passive</code>, so it never blocks scrolling.
+    </p>
+
+    <div class="code-block"><span class="c-kw">let</span> ticking = <span class="c-kw">false</span>;
+<span class="c-fn">addEventListener</span>(<span class="c-str">'scroll'</span>, () => {
+  <span class="c-kw">if</span> (ticking) <span class="c-kw">return</span>;
+  ticking = <span class="c-kw">true</span>;
+  <span class="c-fn">requestAnimationFrame</span>(() => {
+    <span class="c-kw">const</span> d = document.documentElement;
+    <span class="c-kw">const</span> pct = d.scrollTop / (d.scrollHeight - d.clientHeight) * <span class="c-num">100</span>;
+    bar.style.width = pct + <span class="c-str">'%'</span>;
+    ticking = <span class="c-kw">false</span>;
+  });
+}, { passive: <span class="c-kw">true</span> });</div>
+    <div class="note"><strong>Why rAF?</strong> The scroll event can fire dozens of times per frame.
+      Coalescing the work into a single <code>requestAnimationFrame</code> call (the "ticking" guard)
+      means you only touch the DOM once per painted frame.</div>
+  </section>
+
+  <!-- ============ DEMO 3 ============ -->
+  <section id="scrolly">
+    <h2><span class="num">03</span>Sticky / pinned scrollytelling</h2>
+    <p class="subtitle">
+      A graphic stays <code>position: sticky</code> while the text steps scroll past it.
+      As each step becomes the active one, an <code>IntersectionObserver</code> swaps the
+      pinned graphic's number, label and color. This is the pattern behind most
+      "scrollytelling" data stories.
+    </p>
+
+    <div class="scrolly">
+      <div class="scrolly-graphic-wrap">
+        <div class="scrolly-graphic" id="gfx">
+          <div class="gfx-num" id="gfx-num">1</div>
+          <div class="gfx-label" id="gfx-label">Pin the graphic</div>
+        </div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="scrolly-step" data-num="1" data-color="#7aa2ff" data-label="Pin the graphic">
+          <h3>Step 1 &mdash; Pin</h3>
+          <p>The graphic on the left is <code>position: sticky; top: 80px</code>. It sticks
+            as long as its tall parent is in view.</p>
+        </div>
+        <div class="scrolly-step" data-num="2" data-color="#38e1c6" data-label="Observe steps">
+          <h3>Step 2 &mdash; Observe</h3>
+          <p>Each text step is observed with a center-of-viewport root margin. The most
+            centered step wins and becomes <code>.active</code>.</p>
+        </div>
+        <div class="scrolly-step" data-num="3" data-color="#ffb86c" data-label="Swap state">
+          <h3>Step 3 &mdash; Swap</h3>
+          <p>When the active step changes we update only the pinned graphic &mdash; cheap text
+            and a CSS color transition, no layout recalculation.</p>
+        </div>
+        <div class="scrolly-step" data-num="4" data-color="#c792ea" data-label="No scroll math">
+          <h3>Step 4 &mdash; Done</h3>
+          <p>No manual scroll-position math, no jank: the browser does the intersection
+            work off the main thread where it can.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="c-kw">const</span> obs = <span class="c-kw">new</span> <span class="c-fn">IntersectionObserver</span>(entries => {
+  entries.<span class="c-fn">forEach</span>(e => {
+    <span class="c-kw">if</span> (!e.isIntersecting) <span class="c-kw">return</span>;
+    <span class="c-kw">const</span> s = e.target;
+    gfxNum.textContent   = s.dataset.num;
+    gfxLabel.textContent = s.dataset.label;
+    gfx.style.background = s.dataset.color;       <span class="c-com">// CSS transitions the color</span>
+    steps.<span class="c-fn">forEach</span>(x => x.classList.<span class="c-fn">toggle</span>(<span class="c-str">'active'</span>, x === s));
+  });
+}, { rootMargin: <span class="c-str">'-45% 0px -45% 0px'</span> });   <span class="c-com">// "active" = crossing center</span></div>
+  </section>
+
+  <!-- ============ DEMO 4 ============ -->
+  <section id="css-native">
+    <h2><span class="num">04</span>CSS scroll-driven animation</h2>
+    <p class="subtitle">
+      The newest approach needs <em>no JavaScript at all</em>. CSS
+      <code>animation-timeline: scroll()</code> links an animation to a scroll container,
+      and <code>view()</code> links it to an element's progress through the viewport.
+      It runs off the main thread, so it never janks. Below, your browser's support is
+      detected with <code>@supports</code>; where it is missing we fall back to JS.
+    </p>
+
+    <p style="margin-bottom:14px;">
+      <span class="badge ok csa-supported">&#10003; Native <code>scroll()</code> / <code>view()</code> supported &mdash; the demo below is pure CSS</span>
+      <span class="badge fb csa-unsupported">&#9888; No native timelines &mdash; running the JavaScript fallback</span>
+    </p>
+
+    <p style="color:var(--text-dim);margin:18px 0 4px;font-size:0.88rem;">This bar is linked to the whole page's scroll:</p>
+    <div class="csa-track"><div class="csa-fill" id="csa-fill"></div></div>
+
+    <p style="color:var(--text-dim);margin:22px 0 0;font-size:0.88rem;">This box animates as it crosses your viewport (scroll it past):</p>
+    <div class="csa-box" id="csa-box"></div>
+
+    <div class="code-block"><span class="c-com">/* Native: zero JS, runs on the compositor */</span>
+<span class="c-prop">@keyframes</span> grow { <span class="c-kw">from</span> { transform: <span class="c-fn">scaleX</span>(<span class="c-num">0</span>); } <span class="c-kw">to</span> { transform: <span class="c-fn">scaleX</span>(<span class="c-num">1</span>); } }
+
+<span class="c-prop">@supports</span> (animation-timeline: <span class="c-fn">scroll</span>()) {
+  .fill {
+    animation: grow linear;
+    <span class="c-prop">animation-timeline</span>: <span class="c-fn">scroll</span>(root block);   <span class="c-com">/* page scroll */</span>
+  }
+  .box {
+    animation: reveal linear both;
+    <span class="c-prop">animation-timeline</span>: <span class="c-fn">view</span>();             <span class="c-com">/* element-in-view */</span>
+    <span class="c-prop">animation-range</span>: entry <span class="c-num">10%</span> cover <span class="c-num">45%</span>;
+  }
+}</div>
+    <div class="note"><strong>Browser support:</strong> Native scroll-driven animations ship in
+      Chrome/Edge 115+ and Safari 26+. Firefox is still behind a flag at the time of writing.
+      Always pair them with an <code>@supports</code> query and a JS fallback &mdash; which is
+      exactly what powers this demo when your browser lacks them.</div>
+  </section>
+
+  <!-- ============ DEMO 5 ============ -->
+  <section id="snap">
+    <h2><span class="num">05</span>Scroll-snap gallery</h2>
+    <p class="subtitle">
+      Pure CSS, no JS: <code>scroll-snap-type: x mandatory</code> on the strip plus
+      <code>scroll-snap-align: center</code> on each panel makes the viewport lock to a
+      panel as you flick horizontally. Great for carousels, mobile galleries and
+      "card decks." Drag, swipe, or shift+scroll the strip below.
+    </p>
+
+    <div class="snap-strip" tabindex="0" aria-label="Scroll-snap gallery">
+      <div class="snap-panel" style="background:linear-gradient(160deg,#1d1d2c,#2a2a3e);">Panel One<br><small style="font-weight:400;color:var(--text-dim);font-size:0.85rem;">snap-align: center</small></div>
+      <div class="snap-panel" style="background:linear-gradient(160deg,#16263a,#1d1d2c);color:var(--accent);">Panel Two</div>
+      <div class="snap-panel" style="background:linear-gradient(160deg,#14302b,#1d1d2c);color:var(--accent2);">Panel Three</div>
+      <div class="snap-panel" style="background:linear-gradient(160deg,#33271a,#1d1d2c);color:var(--warn);">Panel Four</div>
+      <div class="snap-panel" style="background:linear-gradient(160deg,#2a1d33,#1d1d2c);color:#c792ea;">Panel Five</div>
+    </div>
+
+    <div class="code-block"><span class="c-prop">.strip</span> {
+  display: flex;
+  overflow-x: auto;
+  <span class="c-prop">scroll-snap-type</span>: x mandatory;   <span class="c-com">/* lock to snap points */</span>
+}
+<span class="c-prop">.panel</span> {
+  flex: <span class="c-num">0</span> <span class="c-num">0</span> <span class="c-num">78%</span>;
+  <span class="c-prop">scroll-snap-align</span>: center;       <span class="c-com">/* where each panel lands */</span>
+}</div>
+  </section>
+
+  <!-- ============ TOOLBOX ============ -->
+  <section id="toolbox">
+    <h2><span class="num">06</span>The toolbox</h2>
+    <p class="subtitle">
+      Reach for the lightest tool that solves the job. Native APIs cover most needs now;
+      libraries earn their bytes when you want orchestrated timelines, pinning across
+      complex layouts, or buttery inertial scrolling.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Tool</th><th>Type</th><th>Best for</th><th>Support</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>IntersectionObserver</code></td>
+          <td>Native JS</td>
+          <td>Reveal, lazy-load, "active step" detection</td>
+          <td>Universal</td>
+        </tr>
+        <tr>
+          <td><code>scroll()</code> / <code>view()</code></td>
+          <td>Native CSS</td>
+          <td>Progress bars, parallax, in-view reveals &mdash; no JS, off main thread</td>
+          <td>Chrome/Edge 115+, Safari 26+, FF flagged</td>
+        </tr>
+        <tr>
+          <td><code>scroll-snap</code> + <code>sticky</code></td>
+          <td>Native CSS</td>
+          <td>Galleries, pinning</td>
+          <td>Universal</td>
+        </tr>
+        <tr>
+          <td>GSAP ScrollTrigger</td>
+          <td>Library (~50 KB)</td>
+          <td>Complex pinned timelines, scrubbing, cross-browser parity</td>
+          <td>All evergreen</td>
+        </tr>
+        <tr>
+          <td>Lenis</td>
+          <td>Library (~3 KB)</td>
+          <td>Smooth / inertial scroll feel, syncs with rAF loops</td>
+          <td>All evergreen</td>
+        </tr>
+        <tr>
+          <td>Framer Motion</td>
+          <td>Library (React)</td>
+          <td><code>useScroll</code> / <code>whileInView</code> in React apps</td>
+          <td>All evergreen</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="grid-2" style="margin-top:22px;">
+      <div class="card">
+        <strong style="color:var(--accent2);">Start native</strong>
+        <p style="margin:8px 0 0;color:var(--text-dim);font-size:0.92rem;">
+          IntersectionObserver + CSS scroll timelines + scroll-snap cover the
+          large majority of "animated site" effects with zero dependencies.</p>
+      </div>
+      <div class="card">
+        <strong style="color:var(--accent);">Add a library when</strong>
+        <p style="margin:8px 0 0;color:var(--text-dim);font-size:0.92rem;">
+          You need scrubbed timelines, pinning with measurement, or designed
+          inertia. GSAP ScrollTrigger and Lenis are the common pairing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PERFORMANCE ============ -->
+  <section id="performance">
+    <h2><span class="num">07</span>Performance</h2>
+    <p class="subtitle">
+      Scroll animation lives or dies on whether it stays at 60fps. The rules are simple
+      and almost always the same.
+    </p>
+
+    <ul style="color:var(--text-dim);line-height:1.9;">
+      <li><strong style="color:var(--text);">Animate only <code>transform</code> and <code>opacity</code>.</strong>
+        They are composited by the GPU and skip layout &amp; paint. Animating
+        <code>top</code>, <code>left</code>, <code>width</code> or <code>margin</code> triggers layout thrash.</li>
+      <li><strong style="color:var(--text);">Prefer <code>IntersectionObserver</code> / CSS timelines over scroll handlers.</strong>
+        They do the work off the main thread instead of running JS every frame.</li>
+      <li><strong style="color:var(--text);">If you must listen to scroll, make it <code>{ passive: true }</code></strong>
+        and coalesce work into one <code>requestAnimationFrame</code> per frame.</li>
+      <li><strong style="color:var(--text);">Use <code>will-change: transform</code> sparingly</strong> &mdash;
+        only on elements about to animate, then remove it. Overuse wastes GPU memory.</li>
+      <li><strong style="color:var(--text);">Read then write.</strong> Batch DOM reads (<code>getBoundingClientRect</code>)
+        separately from writes to avoid forced synchronous reflows mid-frame.</li>
+    </ul>
+
+    <div class="code-block"><span class="c-com">// GOOD: composited, never touches layout</span>
+el.style.transform = <span class="c-str">`translateY(${y}px)`</span>;
+
+<span class="c-com">// BAD: 'top' forces layout + paint every frame -> jank</span>
+el.style.top = y + <span class="c-str">'px'</span>;</div>
+  </section>
+
+  <!-- ============ CAVEATS ============ -->
+  <section id="caveats">
+    <h2><span class="num">08</span>Honest caveats</h2>
+    <p class="subtitle">
+      Motion is seasoning, not the meal. The cost of getting it wrong is real and
+      lands hardest on the users least able to opt out.
+    </p>
+
+    <div class="note">
+      <strong>Use scroll animation responsibly:</strong>
+      <ul>
+        <li><strong>Overuse hurts UX.</strong> If every element flies in, nothing feels important
+          and reading becomes a chore. Animate to direct attention, not to decorate.</li>
+        <li><strong>Motion sickness is real.</strong> Large parallax, fast scrubbing and big
+          translate distances can trigger nausea and vestibular discomfort.</li>
+        <li><strong>ALWAYS honor <code>prefers-reduced-motion</code>.</strong> Detect it, and ship a
+          calm variant (instant or fade-only). The toggle in the corner of this page does exactly that.</li>
+        <li><strong>Long-scroll handlers jank.</strong> Heavy work in a non-passive scroll listener
+          blocks the main thread and stutters on low-end devices. Prefer observers / CSS timelines.</li>
+        <li><strong>SEO &amp; content-in-JS.</strong> Content hidden until a script runs may not be
+          indexed or accessible. Keep meaning in the HTML; let animation only reveal it visually.</li>
+      </ul>
+    </div>
+
+    <div class="code-block"><span class="c-com">/* The non-negotiable baseline */</span>
+<span class="c-prop">@media</span> (prefers-reduced-motion: reduce) {
+  <span class="c-prop">*</span> { animation: none !important; transition: none !important; }
+  <span class="c-prop">.reveal</span> { opacity: <span class="c-num">1</span>; transform: none; }
+}</div>
+  </section>
+
+  <!-- ============ RESOURCES ============ -->
+  <section id="resources" style="border-bottom:none;">
+    <h2><span class="num">09</span>Real resources</h2>
+    <p class="subtitle">Primary sources &mdash; specs, docs and the libraries themselves.</p>
+    <div class="grid-2">
+      <div class="card">
+        <strong>Native APIs</strong>
+        <ul style="margin:8px 0 0;padding-left:18px;line-height:1.9;">
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll-driven_animations" target="_blank" rel="noopener">MDN &mdash; CSS scroll-driven animations</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API" target="_blank" rel="noopener">MDN &mdash; Intersection Observer API</a></li>
+          <li><a href="https://web.dev/articles/scroll-driven-animations" target="_blank" rel="noopener">web.dev &mdash; Scroll-driven animations</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <strong>Libraries</strong>
+        <ul style="margin:8px 0 0;padding-left:18px;line-height:1.9;">
+          <li><a href="https://gsap.com/docs/v3/Plugins/ScrollTrigger/" target="_blank" rel="noopener">GSAP ScrollTrigger</a></li>
+          <li><a href="https://github.com/darkroomengineering/lenis" target="_blank" rel="noopener">Lenis &mdash; smooth scroll</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline" target="_blank" rel="noopener">MDN &mdash; animation-timeline</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  UI/UX Design Research &mdash; Scroll-Driven Animation &amp; Motion Design.
+  All demos are vanilla JS/CSS. <a href="../index.html">Back to Hub</a>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var body = document.body;
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ---------- Master reduced-motion toggle ---------- */
+  var toggleBtn = document.getElementById('motion-toggle');
+  var label = document.getElementById('motion-label');
+
+  function setReduced(on) {
+    body.classList.toggle('reduce-motion', on);
+    toggleBtn.setAttribute('aria-pressed', String(on));
+    label.textContent = on ? 'Motion: Off' : 'Motion: On';
+  }
+  // Respect the OS preference on load
+  setReduced(prefersReduced.matches);
+  // Let the user override either way
+  toggleBtn.addEventListener('click', function () {
+    setReduced(!body.classList.contains('reduce-motion'));
+  });
+  if (prefersReduced.addEventListener) {
+    prefersReduced.addEventListener('change', function (e) { setReduced(e.matches); });
+  }
+
+  function motionOk() { return !body.classList.contains('reduce-motion'); }
+
+  /* ---------- DEMO 1: reveal on scroll ---------- */
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var revealObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(function (el) { revealObs.observe(el); });
+  } else {
+    reveals.forEach(function (el) { el.classList.add('is-visible'); });
+  }
+
+  /* ---------- DEMO 2: scroll progress bar ---------- */
+  var bar = document.getElementById('scroll-progress');
+  var ticking = false;
+  function updateProgress() {
+    var d = document.documentElement;
+    var max = d.scrollHeight - d.clientHeight;
+    var pct = max > 0 ? (d.scrollTop / max) * 100 : 0;
+    bar.style.width = pct + '%';
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(updateProgress); }
+  }, { passive: true });
+  window.addEventListener('resize', updateProgress, { passive: true });
+  updateProgress();
+
+  /* ---------- DEMO 3: sticky scrollytelling ---------- */
+  var gfx = document.getElementById('gfx');
+  var gfxNum = document.getElementById('gfx-num');
+  var gfxLabel = document.getElementById('gfx-label');
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.scrolly-step'));
+  if ('IntersectionObserver' in window) {
+    var stepObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var s = e.target;
+        gfxNum.textContent = s.getAttribute('data-num');
+        gfxLabel.textContent = s.getAttribute('data-label');
+        gfx.style.background = s.getAttribute('data-color');
+        gfx.style.color = '#0a0a12';
+        steps.forEach(function (x) { x.classList.toggle('active', x === s); });
+      });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    steps.forEach(function (s) { stepObs.observe(s); });
+  } else if (steps[0]) {
+    steps[0].classList.add('active');
+  }
+
+  /* ---------- DEMO 4: CSS scroll-driven w/ JS fallback ---------- */
+  var nativeTimelines = (CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
+  var csaFill = document.getElementById('csa-fill');
+  var csaBox = document.getElementById('csa-box');
+
+  if (!nativeTimelines) {
+    // JS fallback: drive the same effects from a passive, rAF-coalesced scroll handler
+    var csaTicking = false;
+    function csaUpdate() {
+      var d = document.documentElement;
+      var max = d.scrollHeight - d.clientHeight;
+      var p = max > 0 ? d.scrollTop / max : 0;
+      if (motionOk()) {
+        csaFill.style.transform = 'scaleX(' + p + ')';
+      } else {
+        csaFill.style.transform = 'scaleX(1)';
+      }
+      // box: progress through viewport
+      var r = csaBox.getBoundingClientRect();
+      var vh = window.innerHeight || d.clientHeight;
+      var prog = 1 - (r.top / vh);            // 0 when entering bottom, 1 when leaving top
+      prog = Math.max(0, Math.min(1, prog));
+      if (motionOk()) {
+        var scale = 0.7 + prog * 0.3;
+        var rot = -8 + prog * 16;
+        csaBox.style.opacity = (0.25 + prog * 0.75).toFixed(3);
+        csaBox.style.transform = 'scale(' + scale.toFixed(3) + ') rotate(' + rot.toFixed(1) + 'deg)';
+      } else {
+        csaBox.style.opacity = '1';
+        csaBox.style.transform = 'none';
+      }
+      csaTicking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!csaTicking) { csaTicking = true; requestAnimationFrame(csaUpdate); }
+    }, { passive: true });
+    window.addEventListener('resize', csaUpdate, { passive: true });
+    csaUpdate();
+  }
+  // When native timelines exist, CSS handles everything; the @supports block also
+  // flips the support badge. Nothing to do here in that case.
+})();
+</script>
+</body>
+</html>

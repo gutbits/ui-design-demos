@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D &amp; WebGL Web Design — Advanced UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a12; --surface: #14141f; --surface2: #1d1d2c;
+    --border: #2a2a3e; --text: #e6e6f0; --text-dim: #8b8fa3;
+    --accent: #7aa2ff; --accent2: #38e1c6; --warn: #ffb86c;
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; padding: 16px 24px; font-size: 0.95rem; }
+  .back-link::before { content: '←'; }
+
+  header {
+    text-align: center; padding: 70px 24px 50px;
+    background: radial-gradient(1000px 380px at 50% -10%, rgba(122,162,255,0.18), transparent),
+                radial-gradient(900px 380px at 75% 20%, rgba(56,225,198,0.14), transparent),
+                linear-gradient(135deg, #14141f, #0f1620 50%, #14141f);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    font-size: 3.1rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff, #c9d8ff 35%, #b6fff0 80%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p { color: var(--text-dim); max-width: 660px; margin: 0 auto; font-size: 1.1rem; }
+  .pill { display: inline-block; margin-top: 18px; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent2); border: 1px solid var(--border); padding: 6px 14px; border-radius: 999px; background: rgba(56,225,198,0.06); }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 58px 0; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  h2 { font-size: 1.85rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  .subtitle { color: var(--text-dim); margin-bottom: 30px; font-size: 1.02rem; max-width: 780px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+
+  /* 3D demo */
+  .demo-wrap { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border);
+    background: radial-gradient(120% 120% at 50% 0%, #16182a, #07080f); }
+  #scene { display: block; width: 100%; height: 420px; touch-action: none; cursor: grab; }
+  #scene.dragging { cursor: grabbing; }
+  .demo-fallback { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    text-align: center; color: var(--warn); padding: 30px; font-size: 0.95rem; line-height: 1.6; }
+  .demo-fallback.show { display: flex; }
+  .hint { position: absolute; left: 14px; bottom: 12px; font-size: 0.72rem; color: var(--text-dim);
+    background: rgba(10,10,18,0.55); padding: 5px 10px; border-radius: 8px; pointer-events: none;
+    font-family: 'JetBrains Mono', monospace; }
+
+  .picker { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 6px; }
+  .pbtn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 9px 18px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; font-family: inherit; }
+  .pbtn:hover { border-color: var(--accent2); }
+  .pbtn.active { background: var(--accent2); border-color: var(--accent2); color: #07090f; font-weight: 600; }
+  .pbtn.toggle.active { background: var(--accent); border-color: var(--accent); color: #07090f; }
+
+  .ctrl-row { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 20px; }
+  .ctrl { flex: 1; min-width: 200px; }
+  .ctrl label { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-dim); margin-bottom: 6px; }
+  .ctrl label span { color: var(--accent2); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  input[type="range"] { width: 100%; height: 6px; border-radius: 4px; -webkit-appearance: none; appearance: none; background: var(--surface2); outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent2); cursor: pointer; }
+  input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border: none; border-radius: 50%; background: var(--accent2); cursor: pointer; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 14px; margin-top: 18px; }
+  .box { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .box .n { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent); margin-bottom: 6px; }
+  .box h4 { font-size: 0.98rem; margin-bottom: 6px; }
+  .box p { font-size: 0.8rem; color: var(--text-dim); }
+
+  .code-block {
+    background: #04060c; border: 1px solid var(--border); border-radius: 12px; padding: 22px;
+    margin: 18px 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.7; color: #c8cee8; white-space: pre;
+  }
+  .code-block .c { color: #5f6a8a; }
+  .code-block .k { color: var(--accent); }
+  .code-block .ty { color: var(--accent2); }
+  .code-block .f { color: #9fe89c; }
+  .code-block .n { color: var(--warn); }
+
+  table.cmp { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
+  table.cmp th, table.cmp td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.cmp th { color: var(--accent2); font-weight: 600; }
+  table.cmp td:first-child { color: var(--text); font-weight: 500; width: 22%; }
+  table.cmp td { color: var(--text-dim); }
+
+  .note { background: rgba(255,184,108,0.08); border-left: 3px solid var(--warn); padding: 16px 20px; margin: 18px 0; border-radius: 0 10px 10px 0; color: var(--text-dim); font-size: 0.92rem; }
+  .note strong { color: var(--text); }
+  ul { padding-left: 22px; margin: 14px 0; }
+  li { margin-bottom: 8px; color: var(--text-dim); }
+  li strong { color: var(--text); }
+  code.inline { background: var(--surface2); padding: 2px 7px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; color: var(--accent2); }
+
+  footer { text-align: center; padding: 44px 24px; color: var(--text-dim); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-link">Back to Hub</a>
+
+<header>
+  <h1>3D &amp; WebGL Web Design</h1>
+  <p>Real geometry, lights and materials rendered on the GPU — product viewers, hero scenes and immersive interfaces that flat CSS can't reach. With an honest look at the cost.</p>
+  <span class="pill">Advanced · WebGL &amp; three.js</span>
+</header>
+
+<div class="container">
+
+<!-- ===== LIVE DEMO ===== -->
+<section>
+  <h2>Live 3D Playground</h2>
+  <p class="subtitle">A real three.js scene running on your GPU — not a video. Drag the canvas to rotate the mesh, then switch geometry and push the material and motion sliders. Everything you change updates the scene in real time.</p>
+
+  <div class="card">
+    <div class="demo-wrap">
+      <div id="scene"></div>
+      <div class="hint">drag to rotate</div>
+      <div class="demo-fallback" id="fallback">
+        The 3D demo needs WebGL and the three.js CDN.<br>
+        Your browser blocked one of them — the rest of this page still explains everything below.
+      </div>
+    </div>
+
+    <div class="picker">
+      <button class="pbtn active" data-geo="knot">Torus Knot</button>
+      <button class="pbtn" data-geo="sphere">Icosahedron</button>
+      <button class="pbtn" data-geo="box">Rounded Box</button>
+      <button class="pbtn" data-geo="torus">Torus</button>
+      <button class="pbtn toggle" id="wireBtn">Wireframe: off</button>
+    </div>
+
+    <div class="ctrl-row">
+      <div class="ctrl">
+        <label>Rotation speed <span id="speedVal">1.0</span></label>
+        <input type="range" id="speed" min="0" max="3" step="0.1" value="1">
+      </div>
+      <div class="ctrl">
+        <label>Metalness <span id="metalVal">0.70</span></label>
+        <input type="range" id="metal" min="0" max="1" step="0.05" value="0.7">
+      </div>
+      <div class="ctrl">
+        <label>Roughness <span id="roughVal">0.25</span></label>
+        <input type="range" id="rough" min="0" max="1" step="0.05" value="0.25">
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>What's happening:</strong> three.js builds a <code class="inline">WebGLRenderer</code> that draws a mesh lit by an ambient light plus two colored point lights. The sliders write straight into the live <code class="inline">MeshStandardMaterial</code> — a physically based material, so metalness and roughness change how light actually reflects. Your drag rotates the mesh; auto-rotation pauses if your OS requests reduced motion.
+  </div>
+</section>
+
+<!-- ===== WHY 3D ===== -->
+<section>
+  <h2>Why 3D on the Web</h2>
+  <p class="subtitle">Used with restraint, real 3D adds something flat design cannot fake: spatial depth you can move through and inspect.</p>
+
+  <div class="card">
+    <div class="grid">
+      <div class="box"><div class="n">depth</div><h4>Real perspective</h4><p>Parallax, occlusion and lighting that respond to a moving camera read as genuinely three-dimensional, not a layered illusion.</p></div>
+      <div class="box"><div class="n">product</div><h4>360° viewers</h4><p>Configurators for shoes, cars, furniture and devices let buyers orbit and customize the actual object before purchase.</p></div>
+      <div class="box"><div class="n">immersion</div><h4>Memorable scenes</h4><p>Award-site hero scenes, data sculptures and interactive stories that pull people in and hold attention.</p></div>
+      <div class="box"><div class="n">utility</div><h4>Visualization</h4><p>Maps, medical and scientific models, CAD previews and 3D charts where a flat projection would hide information.</p></div>
+    </div>
+    <p style="margin-top:18px;color:var(--text-dim);font-size:0.95rem;">The tradeoff is real: a 3D scene ships extra JavaScript, runs the GPU continuously, drains battery and is invisible to text-based tools. Treat it like a heavy ingredient — powerful in one hero moment, rarely the right choice for an entire interface.</p>
+  </div>
+</section>
+
+<!-- ===== THE STACK ===== -->
+<section>
+  <h2>The Stack</h2>
+  <p class="subtitle">A short map from the raw browser API up to no-code tools. Pick the highest level that still gives you the control you need.</p>
+
+  <div class="card">
+    <table class="cmp">
+      <tr><th>Layer</th><th>What it is</th><th>Reach for it when</th></tr>
+      <tr><td><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API" target="_blank" rel="noopener">WebGL</a></td><td>The browser's low-level GPU graphics API (OpenGL ES based). Everything else builds on it.</td><td>You want raw control or are writing your own renderer. Verbose to use directly.</td></tr>
+      <tr><td><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API" target="_blank" rel="noopener">WebGPU</a></td><td>The modern successor API — compute shaders, better performance, WGSL. Shipping in current Chrome/Edge, rolling out elsewhere.</td><td>New, performance-critical work targeting modern browsers, with a WebGL fallback.</td></tr>
+      <tr><td><a href="https://threejs.org/" target="_blank" rel="noopener">three.js</a></td><td>The de-facto standard 3D library. Scenes, cameras, materials, loaders, controls over WebGL/WebGPU.</td><td>Almost any custom 3D on the web. Big community, huge examples gallery.</td></tr>
+      <tr><td><a href="https://r3f.docs.pmnd.rs/" target="_blank" rel="noopener">React Three Fiber</a></td><td>A React renderer for three.js — express the scene as components and state.</td><td>Your app is already React and you want declarative, reusable 3D.</td></tr>
+      <tr><td><a href="https://www.babylonjs.com/" target="_blank" rel="noopener">Babylon.js</a></td><td>A full-featured engine with built-in physics, GUI, asset pipeline and a playground.</td><td>Game-like or richer engine features out of the box.</td></tr>
+      <tr><td><a href="https://spline.design/" target="_blank" rel="noopener">Spline</a></td><td>No-code visual editor that designs scenes in the browser and exports an embed or React component.</td><td>Designers want 3D without writing render code; quick hero scenes.</td></tr>
+    </table>
+  </div>
+
+  <div class="note">
+    <strong>Default pick:</strong> for most projects, start with <strong>three.js</strong> (or React Three Fiber if you're in React). Drop to raw WebGL/WebGPU only for specialized performance work, and reach for Spline when a designer needs to ship a scene without code.
+  </div>
+</section>
+
+<!-- ===== BUILDING BLOCKS ===== -->
+<section>
+  <h2>Building Blocks</h2>
+  <p class="subtitle">Every three.js scene is the same five nouns. Once these click, the rest is variations on a theme.</p>
+
+  <div class="card">
+    <div class="grid">
+      <div class="box"><div class="n">01</div><h4>Scene</h4><p>The container holding every object, light and helper.</p></div>
+      <div class="box"><div class="n">02</div><h4>Camera</h4><p>Your viewpoint. A <code class="inline">PerspectiveCamera</code> mimics human depth.</p></div>
+      <div class="box"><div class="n">03</div><h4>Renderer</h4><p>Draws the scene to a <code class="inline">&lt;canvas&gt;</code> each frame via the GPU.</p></div>
+      <div class="box"><div class="n">04</div><h4>Mesh</h4><p>Geometry (the shape) + material (its surface), placed in the scene.</p></div>
+      <div class="box"><div class="n">05</div><h4>Light</h4><p>Without light, a <code class="inline">StandardMaterial</code> renders black. Ambient + point/directional.</p></div>
+    </div>
+  </div>
+
+  <div class="code-block"><span class="c">// A minimal three.js scene — the five nouns in order</span>
+<span class="k">const</span> scene    = <span class="k">new</span> <span class="ty">THREE.Scene</span>();
+<span class="k">const</span> camera   = <span class="k">new</span> <span class="ty">THREE.PerspectiveCamera</span>(<span class="n">50</span>, w/h, <span class="n">0.1</span>, <span class="n">100</span>); <span class="c">// fov, aspect, near, far</span>
+camera.position.z = <span class="n">4</span>;
+
+<span class="k">const</span> renderer = <span class="k">new</span> <span class="ty">THREE.WebGLRenderer</span>({ antialias: <span class="k">true</span> });
+renderer.setSize(w, h);
+container.appendChild(renderer.domElement);            <span class="c">// the &lt;canvas&gt;</span>
+
+<span class="c">// Mesh = geometry + material</span>
+<span class="k">const</span> geo  = <span class="k">new</span> <span class="ty">THREE.TorusKnotGeometry</span>(<span class="n">1</span>, <span class="n">0.32</span>, <span class="n">160</span>, <span class="n">24</span>);
+<span class="k">const</span> mat  = <span class="k">new</span> <span class="ty">THREE.MeshStandardMaterial</span>({ color: <span class="n">0x7aa2ff</span>, metalness: <span class="n">0.7</span>, roughness: <span class="n">0.25</span> });
+<span class="k">const</span> mesh = <span class="k">new</span> <span class="ty">THREE.Mesh</span>(geo, mat);
+scene.add(mesh);
+
+<span class="c">// Lights — PBR materials are black without them</span>
+scene.add(<span class="k">new</span> <span class="ty">THREE.AmbientLight</span>(<span class="n">0xffffff</span>, <span class="n">0.4</span>));
+<span class="k">const</span> key = <span class="k">new</span> <span class="ty">THREE.PointLight</span>(<span class="n">0x38e1c6</span>, <span class="n">60</span>); key.position.set(<span class="n">3</span>,<span class="n">3</span>,<span class="n">4</span>); scene.add(key);
+
+<span class="c">// Render loop — runs ~60 times a second</span>
+<span class="k">function</span> <span class="f">animate</span>() {
+  mesh.rotation.y += <span class="n">0.01</span>;
+  renderer.render(scene, camera);
+  <span class="f">requestAnimationFrame</span>(animate);
+}
+<span class="f">animate</span>();</div>
+</section>
+
+<!-- ===== PERFORMANCE & A11Y ===== -->
+<section>
+  <h2>Performance &amp; Accessibility — Honest Caveats</h2>
+  <p class="subtitle">3D is the heaviest thing you can put on a page. Ship it responsibly or it quietly breaks the experience for a large share of your users.</p>
+
+  <div class="card">
+    <ul>
+      <li><strong>Draw calls &amp; poly budget</strong> — every separate mesh is roughly one draw call; hundreds of them stall the GPU. Merge geometry, reuse materials, and keep triangle counts modest (think tens of thousands, not millions, for web).</li>
+      <li><strong>Mobile GPUs vary wildly</strong> — a scene that flies on a laptop can crawl on a budget phone. Test on real low-end hardware, cap <code class="inline">devicePixelRatio</code>, and consider lower-detail models for small screens.</li>
+      <li><strong>Battery &amp; heat</strong> — a continuous render loop pegs the GPU. Pause rendering when the canvas scrolls off-screen (<code class="inline">IntersectionObserver</code>) or the tab is hidden.</li>
+      <li><strong>prefers-reduced-motion</strong> — honor it. Pause auto-rotation and continuous animation, as this demo does, for users who get motion sickness.</li>
+      <li><strong>No-WebGL fallback</strong> — old devices, locked-down browsers and some accessibility tools have no WebGL. Detect it and show a static image or text, never a blank box.</li>
+      <li><strong>Accessibility tree</strong> — a <code class="inline">&lt;canvas&gt;</code> is opaque to screen readers and keyboard users. Provide real text alternatives, accessible labels for controls, and don't lock essential content inside the 3D view.</li>
+      <li><strong>SEO &amp; content</strong> — search engines can't read pixels. Keep meaningful copy, headings and links in actual HTML; treat the 3D layer as enhancement, not the source of truth.</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <strong>Rule of thumb:</strong> the page must be useful with the canvas removed. If turning off WebGL leaves an empty or broken page, the 3D was load-bearing in a way it shouldn't be. Enhance progressively — real content first, GPU spectacle on top.
+  </div>
+</section>
+
+</div>
+
+<footer>3D &amp; WebGL Web Design — Advanced UI Research · the scene above is a live, editable three.js render</footer>
+
+<!-- three.js from CDN -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script>
+// ============================================================
+//  Real interactive three.js scene.
+//  - graceful fallback if WebGL or the CDN is unavailable
+//  - hand-rolled pointer-drag rotation (no second CDN import)
+//  - sliders/buttons mutate the live scene
+//  - respects prefers-reduced-motion
+// ============================================================
+window.onload = function () {
+  const container = document.getElementById('scene');
+  const fallback = document.getElementById('fallback');
+
+  // ---- Feature detection: three.js loaded + WebGL available ----
+  function webglOK() {
+    try {
+      const c = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext &&
+        (c.getContext('webgl') || c.getContext('experimental-webgl')));
+    } catch (e) { return false; }
+  }
+  if (typeof THREE === 'undefined' || !webglOK()) {
+    fallback.classList.add('show');
+    return;
+  }
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Renderer / scene / camera ----
+  let w = container.clientWidth, h = container.clientHeight || 420;
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(w, h);
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 100);
+  camera.position.set(0, 0, 4.2);
+
+  // ---- Lighting: ambient + two accent point lights ----
+  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+  const light1 = new THREE.PointLight(0x38e1c6, 70, 0, 2); // accent2 (teal)
+  light1.position.set(4, 3, 5);
+  scene.add(light1);
+  const light2 = new THREE.PointLight(0x7aa2ff, 55, 0, 2); // accent (blue)
+  light2.position.set(-4, -2, 3);
+  scene.add(light2);
+
+  // ---- Material (PBR) shared across geometries ----
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xdfe6ff, metalness: 0.7, roughness: 0.25, wireframe: false
+  });
+
+  // ---- Geometry factory ----
+  function makeGeo(kind) {
+    switch (kind) {
+      case 'sphere': return new THREE.IcosahedronGeometry(1.35, 1);
+      case 'box':    return new THREE.BoxGeometry(2, 2, 2, 4, 4, 4);
+      case 'torus':  return new THREE.TorusGeometry(1.2, 0.42, 24, 80);
+      case 'knot':
+      default:       return new THREE.TorusKnotGeometry(1, 0.34, 160, 28);
+    }
+  }
+
+  let mesh = new THREE.Mesh(makeGeo('knot'), material);
+  scene.add(mesh);
+
+  function setGeometry(kind) {
+    const old = mesh.geometry;
+    mesh.geometry = makeGeo(kind);
+    old.dispose();
+  }
+
+  // ---- Hand-rolled pointer-drag rotation ----
+  let dragging = false, lastX = 0, lastY = 0;
+  let dragRotX = 0, dragRotY = 0;       // user-applied rotation offset
+  const el = renderer.domElement;
+
+  function onDown(e) {
+    dragging = true; container.classList.add('dragging');
+    const p = e.touches ? e.touches[0] : e;
+    lastX = p.clientX; lastY = p.clientY;
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    const p = e.touches ? e.touches[0] : e;
+    dragRotY += (p.clientX - lastX) * 0.01;
+    dragRotX += (p.clientY - lastY) * 0.01;
+    dragRotX = Math.max(-1.4, Math.min(1.4, dragRotX)); // clamp pitch
+    lastX = p.clientX; lastY = p.clientY;
+  }
+  function onUp() { dragging = false; container.classList.remove('dragging'); }
+
+  el.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+
+  // ---- Controls ----
+  let speed = 1;
+  const speedEl = document.getElementById('speed');
+  const metalEl = document.getElementById('metal');
+  const roughEl = document.getElementById('rough');
+  const wireBtn = document.getElementById('wireBtn');
+
+  speedEl.oninput = () => { speed = +speedEl.value; document.getElementById('speedVal').textContent = speed.toFixed(1); };
+  metalEl.oninput = () => { material.metalness = +metalEl.value; document.getElementById('metalVal').textContent = (+metalEl.value).toFixed(2); };
+  roughEl.oninput = () => { material.roughness = +roughEl.value; document.getElementById('roughVal').textContent = (+roughEl.value).toFixed(2); };
+
+  wireBtn.addEventListener('click', () => {
+    material.wireframe = !material.wireframe;
+    wireBtn.classList.toggle('active', material.wireframe);
+    wireBtn.textContent = 'Wireframe: ' + (material.wireframe ? 'on' : 'off');
+  });
+
+  document.querySelectorAll('.pbtn[data-geo]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pbtn[data-geo]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setGeometry(btn.dataset.geo);
+    });
+  });
+
+  // ---- Resize ----
+  function resize() {
+    w = container.clientWidth; h = container.clientHeight || 420;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  window.addEventListener('resize', resize);
+
+  // ---- Render loop ----
+  let t = 0, last = performance.now();
+  function frame(now) {
+    const dt = (now - last) / 1000; last = now;
+    if (!reduce) t += dt * speed;                 // auto-rotation (paused on reduced-motion)
+
+    mesh.rotation.x = dragRotX;
+    mesh.rotation.y = dragRotY + t * 0.6;
+    mesh.position.y = reduce ? 0 : Math.sin(t * 0.8) * 0.12; // subtle float
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+};
+</script>
+</body>
+</html>
